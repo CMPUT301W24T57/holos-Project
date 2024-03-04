@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -17,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
     Button scanButton;
+    Button genNavButton;
 
     // Declaring a private variable to hold a reference to the Firestore database
     private FirebaseFirestore database;
@@ -29,8 +31,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         scanButton = findViewById(R.id.scan_btn);
+        genNavButton = findViewById(R.id.gen_btn);
         scanButton.setOnClickListener(v-> {
             scanQRCode();
+        });
+        genNavButton.setOnClickListener(v-> {
+            gotoQRGen();
         });
 
         // Initializing the Firestore database instance when the activity is created
@@ -47,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
         options.setOrientationLocked(true);
         options.setCaptureActivity(CaptureAct.class);
         barLauncher.launch(options);
+    }
+
+    private void gotoQRGen() {
+        Intent intent = new Intent(this, QRGen.class);
+        startActivity(intent);
     }
 
     ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result->{ //basic popup after scanning to test things
