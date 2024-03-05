@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- This is the XML File for the Attendee Dashboard.  -->
+<!-- Root layout element is the DrawerLayout -->
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,6 +11,7 @@
     tools:context=".AttendeeDashboardActivity">
 
     <!-- Main content layout -->
+    <!-- This main content layout includes the Toolbar, RecyclerView (for events) and FloatingActionButton for QR Code scanning -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
