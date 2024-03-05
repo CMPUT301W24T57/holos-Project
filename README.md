@@ -1,10 +1,16 @@
-March 3rd 6:40 pm
+March 5th 3:30pm
+
+CURRENTLY WORKING ON:
+- Updating/Storing attendee data on Firebase 
 
 What does this build Contain? 
 - Basic Intro Screen
 - Initial Attendee Profile Creation
 - Storing Profile Creation data on Firebase
-- Barbones Attendee Dashboard 
+- Barbones Attendee Dashboard
+- Drawer Menu within the Attendee Dashboard
+- ViewAllEvents Activity (not integrated with Firebase yet)
+- EditProfile Activity (Not implemented with Firebase yet)
 
 Here are images that show what this build contains: 
 
@@ -12,7 +18,16 @@ Here are images that show what this build contains:
 
 ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/ef913f69-740c-45a4-9007-ba90a70ca121)
 
-![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/15509be0-9906-458c-a521-b729df018654)
+![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/8545856e-1160-43a4-9b9e-3cc3584b5dc3)
+
+![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/14855a6c-6234-4d1e-bbe6-fb8b73d140b2)
+
+![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/b2a6d01b-6dc8-4596-834f-5c86c267f2d4)
+
+![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/ee95e7b0-ffeb-4082-841a-2386bb8e8dac)
+
+
+
 
 
 

@@ -29,12 +29,24 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Declare FirstTimeProfileCreationActivity -->
-        <activity android:name=".FirstTimeProfileCreationActivity" /> <!-- Declare AttendeeDashboardActivity -->
-        <activity android:name=".AttendeeDashboardActivity" />
+          
+        </activity><!-- Declare FirstTimeProfileCreationActivity -->
+        <activity android:name=".FirstTimeProfileCreationActivity" >
+        </activity>
+
+        <!-- Declare AttendeeDashboardActivity -->
+        <activity android:name=".AttendeeDashboardActivity" >
+        </activity>
+
+        <!-- Declare EditProfileActivity -->
+        <activity android:name=".EditProfileActivity" >
+        </activity>
+
+        <!-- Declare ViewAllEventsActivity -->
+        <activity android:name=".ViewAllEventsActivity" >
+        </activity>
     </application>
 
 </manifest>

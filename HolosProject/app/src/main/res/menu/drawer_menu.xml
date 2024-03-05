@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- drawer_menu contains the items that are inside the drawer when it gets opened -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_edit_profile"
+        android:title="Edit Profile"
+        />
+    <item
+        android:id="@+id/nav_view_all_events"
+        android:title="View All Events"
+        />
+    <item
+        android:id="@+id/nav_view_registered_events"
+        android:title="View My Events"
+        />
+    <!-- Add more menu items here -->
+    <!-- If the user is an Admin, we need an item that says "View Admin Panel -->
+    <!-- If the user is an Organizer, we need an item that says "View Organizer Dashboard -->
+    <!-- We could have these options displayed always, and then check permissions if the user taps it-->
+</menu>
