@@ -8,7 +8,8 @@ What does this build Contain?
 - Basic Intro Screen
 - Initial Attendee Profile Creation
 - Storing Profile Creation data on Firebase
-- Barbones Attendee Dashboard 
+- Barbones Attendee Dashboard
+- Drawer Menu within the Attendee Dashboard
 
 Here are images that show what this build contains: 
 
@@ -18,6 +19,7 @@ Here are images that show what this build contains:
 
 ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/15509be0-9906-458c-a521-b729df018654)
 
+![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/5abceae3-b3ca-479c-ada0-ed08781f237b)
 
 
  The only button on the first image with implementation is the Attendee button. Pressing this leads to the second image, which is the profile creation screen. Erquette informed us that the first time an attendee runs the app, they should be prompted to create an account. Filling the fields in on the second image and confirming uploads the data to Firebase, and then moves them over to the Attendee Dashobard. All of the UI here is really primitive, I spent little time on them, i was only focusing on trying to get activites and the logic implemented, we can just make it look nicer later. (we only have until friday 4pm :rage3: ) 
