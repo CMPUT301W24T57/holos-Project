@@ -12,9 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * FileName: MainActivity
- * Description: MainActivity currently servers (i believe) zero purpose. It is not the activity that is run opening the app, ive changed that to be FirstTimeProfileCreation.
-
- *  Associated with the activity_main layout, but ive made no changes to it, and that layout is also currently serving no purpose. I think i will end up deleting these two files.
+ * Description: checks if user is signed in and navigates them to their destination or login
  **/
 
 public class MainActivity extends AppCompatActivity {
