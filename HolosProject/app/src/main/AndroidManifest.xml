@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Include the permission for internet access, our app needs it to view events, etc -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -15,25 +14,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HolosProject"
         tools:targetApi="31">
-
-        <!-- Declare IntroActivity as the launcher activity -->
+        <activity android:name=".IntroActivity" />
         <activity
-            android:name=".IntroActivity"
+            android:name=".TestSuccessScreen"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerCreation"
+            android:exported="false" />
+        <activity
+            android:name=".Login"
+            android:exported="false" /> <!-- Declare IntroActivity as the launcher activity -->
+        <activity
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!-- Declare FirstTimeProfileCreationActivity -->
-        <activity android:name=".FirstTimeProfileCreationActivity" >
-        </activity>
-
-        <!-- Declare AttendeeDashboardActivity -->
-        <activity android:name=".AttendeeDashboardActivity" >
-        </activity>
-
-
+        </activity> <!-- Declare FirstTimeProfileCreationActivity -->
+        <activity android:name=".FirstTimeProfileCreationActivity" /> <!-- Declare AttendeeDashboardActivity -->
+        <activity android:name=".AttendeeDashboardActivity" />
     </application>
 
 </manifest>

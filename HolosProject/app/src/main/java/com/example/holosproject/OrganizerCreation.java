@@ -26,6 +26,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.checkerframework.checker.units.qual.C;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +39,7 @@ import java.util.Map;
  *  Associated with the activity_first_time_profile_creation.xml layout.
  **/
 
-public class FirstTimeProfileCreationActivity extends AppCompatActivity {
+public class OrganizerCreation extends AppCompatActivity {
     // This activity is shown during the first runtime of the app. If a user initially selects "Attendee", then this
     // activity will appear, prompting them to create a profile.
 
@@ -58,55 +60,74 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
     private CollectionReference userProfileInfoRef;
     private FirebaseUser user;
     private FirebaseAuth mAuth;
-
+    String emailpad = "@holos.project";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first_time_profile_creation);
+        setContentView(R.layout.activity_organizer_creation);
         mAuth = FirebaseAuth.getInstance();
-        imageViewProfile = findViewById(R.id.imageViewProfile);
-        editTextName = findViewById(R.id.editTextName);
-        editTextContact = findViewById(R.id.editTextContact);
-        editTextHomepage = findViewById(R.id.editTextHomepage);
-        switchNotifications = findViewById(R.id.switchNotifications);
-        switchGeolocation = findViewById(R.id.switchGeolocation);
-        buttonFinishProfileCreation = findViewById(R.id.buttonFinishProfileCreation);
+        imageViewProfile = findViewById(R.id.organizer_imageViewProfile);
+        editTextUsername = findViewById(R.id.organizer_creation_username);
+        editTextPassword = findViewById(R.id.organizer_creation_password);
+        editTextName = findViewById(R.id.organizer_editTextName);
+        editTextContact = findViewById(R.id.organizer_editTextContact);
+        editTextHomepage = findViewById(R.id.organizer_editTextHomepage);
+        switchNotifications = findViewById(R.id.organizer_switchNotifications);
+        switchGeolocation = findViewById(R.id.organizer_switchGeolocation);
+        buttonFinishProfileCreation = findViewById(R.id.organizer_buttonFinishProfileCreation);
 
-        // TODO: image support
+        // TODO: Set up a listener for the imageViewProfile to open an image selector, handle uploading an image, etc
+        // TODO: Finish setting up profile creation with profile image support, currently have no profile image support yet.
 
+        // Initialize Firestore
 
         buttonFinishProfileCreation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final String email = editTextUsername.getText().toString().trim() + emailpad;
+                String password = editTextPassword.getText().toString().trim();
                 final String name = editTextName.getText().toString().trim();
                 final String contact = editTextContact.getText().toString().trim();
                 final String homepage = editTextHomepage.getText().toString().trim();
-                createAccount(name, contact, homepage);
+                if (email.isEmpty() || password.isEmpty()) {
+                    // Handle empty fields
+                    return;
+                }
+                createAccount(email, password, name, contact, homepage);
             }
-        });
+         });
+
+
+
+
     }
 
     /**
-     * Creating an account without email or password.
+     * Creates the account with email and password.
+     * @param email
+     * The users email.
+     * @param password
+     * The users password.
      * @param name
      * The users name.
      * @param contact
-     * The users password.
+     * The users contact information.
      * @param homepage
      * The users homepage.
      */
-    private void createAccount(String name, String contact, String homepage) {
-        mAuth.signInAnonymously()
-                .addOnCompleteListener(FirstTimeProfileCreationActivity.this, new OnCompleteListener<AuthResult>() {
+    private void createAccount(String email, String password, String name, String contact, String homepage) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(OrganizerCreation.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            // The user information that will be stored
+                            // Prepare the user profile information to be stored
                             Map<String, Object> userProfile = new HashMap<>();
-                            userProfile.put("role", "attendee");
+                            userProfile.put("role", "organizer");
+                            userProfile.put("email", email); // Might need adjustment due to 'final'
                             userProfile.put("name", name);
                             userProfile.put("contact", contact);
                             userProfile.put("homepage", homepage);
@@ -132,7 +153,7 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                                     });
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(FirstTimeProfileCreationActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OrganizerCreation.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
                     }
@@ -142,12 +163,15 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             // If the user is signed in go to the next activity
-            Intent intent = new Intent(FirstTimeProfileCreationActivity.this, MainActivity.class);
+            Intent intent = new Intent(OrganizerCreation.this, MainActivity.class);
             startActivity(intent);
             finish(); // prevents them from being able to use the back button
         } else {
-            // authentication failed
-            Toast.makeText(FirstTimeProfileCreationActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+            // Sign-in has failed
+            Toast.makeText(OrganizerCreation.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
         }
     }
-}
+    }
+
+
+
