@@ -11,5 +11,5 @@ Here are images that show what this build contains:
 
 ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/ef913f69-740c-45a4-9007-ba90a70ca121)
 
- The only button on the first image with implementation is the Attendee button. Pressing this leads to the second image, which is the profile creation screen. Erquette informed us that the first time an attendee runs the app, they should be prompted to create an account. Filling the fields in on the second image and confirming uploads the data to Firebase. 
+ The only button on the first image with implementation is the Attendee button. Pressing this leads to the second image, which is the profile creation screen. Erquette informed us that the first time an attendee runs the app, they should be prompted to create an account. Filling the fields in on the second image and confirming uploads the data to Firebase. The UI here is really primitive, I spend little time on them, i am only currently focusing on trying to get activites and the logic implemented. 
 
