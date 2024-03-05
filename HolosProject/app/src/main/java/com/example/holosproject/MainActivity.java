@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -70,6 +71,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void gotoEventDisplay() {
+        Intent intent = new Intent(this, EventDisplay.class);
+
+        startActivity(intent);
+    }
+
     ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result->{ //basic popup after scanning to test things
        if(result.getContents() != null) {
 
@@ -82,15 +89,9 @@ public class MainActivity extends AppCompatActivity {
                    if (task.isSuccessful()) {
                        DocumentSnapshot document = task.getResult();
                        if (document.exists()) {
-                           AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                           builder.setTitle("Result");
-                           builder.setMessage(qrText);
-                           builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
-                               @Override
-                               public void onClick(DialogInterface dialog, int which) {
-                                   dialog.dismiss();
-                               }
-                           }).show();
+                           setContentView(R.layout.activity_event_display);
+                           TextView eventName = findViewById(R.id.event_Name);
+                           eventName.setText(qrText);
                        } else {
                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                            builder.setTitle("Result");
