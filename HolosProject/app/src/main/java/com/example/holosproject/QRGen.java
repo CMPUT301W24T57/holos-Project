@@ -51,10 +51,11 @@ public class QRGen extends AppCompatActivity {
         ImageView QRView = findViewById(R.id.QRView);
         TextInputEditText editText = findViewById(R.id.qrText);
 
+// GENERATE QR CODE FUNCTIONALITY
         genButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                QRGEncoder qrgEncoder = new QRGEncoder(editText.getText().toString(), null, QRGContents.Type.TEXT, 200);
+                QRGEncoder qrgEncoder = new QRGEncoder(editText.getText().toString(), null, QRGContents.Type.TEXT, 250);
                 try {
                     Bitmap bitmap = qrgEncoder.getBitmap(0);
                     QRView.setImageBitmap(bitmap);
@@ -63,6 +64,8 @@ public class QRGen extends AppCompatActivity {
                 }
             }
         });
+
+        // SAVING QR CODE FUNCTIONALITY
 
         findViewById(R.id.save_btn).setOnClickListener(v -> {
                 OutputStream fos;

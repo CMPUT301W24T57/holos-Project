@@ -16,7 +16,7 @@
         android:hint="Enter text:"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:translationY="-75dp">
+        android:translationY="-100dp">
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,12 +43,12 @@
         android:text="Save QR Code" />
 
     <ImageView
-        android:layout_width="200sp"
-        android:layout_height="200sp"
         android:id="@+id/QRView"
-        android:layout_centerHorizontal="true"
+        android:layout_width="250sp"
+        android:layout_height="250sp"
         android:layout_below="@id/save_btn"
-        android:layout_marginTop="20sp">
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp">
 
     </ImageView>
 
