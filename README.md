@@ -19,7 +19,8 @@ Here are images that show what this build contains:
 
 ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/15509be0-9906-458c-a521-b729df018654)'
 
-![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/bec80189-5c6d-4b8e-a1f8-e3c457f1f776)
+![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/14855a6c-6234-4d1e-bbe6-fb8b73d140b2)
+
 
 
 
