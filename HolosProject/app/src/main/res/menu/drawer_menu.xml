@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_edit_profile"
+        android:title="Edit Profile"
+        />
+    <item
+        android:id="@+id/nav_view_all_events"
+        android:title="View All Events"
+        />
+    <item
+        android:id="@+id/nav_view_registered_events"
+        android:title="View Registered Events"
+        />
+    <!-- Add more menu items here -->
+</menu>

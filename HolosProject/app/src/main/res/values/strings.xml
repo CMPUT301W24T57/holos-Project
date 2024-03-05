@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">HolosProject</string>
+
+    <!-- These two strings are for the Drawer Menu -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+
 </resources>
