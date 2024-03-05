@@ -1,4 +1,8 @@
-March 3rd 6:40 pm
+March 5th 11:33Am
+
+CURRENTLY WORKING ON:
+- Hamburger popout menu for attendee dashboard (this menu will be extended to all users on almost all screens) 
+
 
 What does this build Contain? 
 - Basic Intro Screen
