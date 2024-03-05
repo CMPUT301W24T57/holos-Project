@@ -17,5 +17,5 @@
     <!-- Add more menu items here -->
     <!-- If the user is an Admin, we need an item that says "View Admin Panel -->
     <!-- If the user is an Organizer, we need an item that says "View Organizer Dashboard -->
-
+    <!-- We could have these options displayed always, and then check permissions if the user taps it-->
 </menu>

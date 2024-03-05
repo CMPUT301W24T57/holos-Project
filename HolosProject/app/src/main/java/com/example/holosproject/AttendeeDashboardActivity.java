@@ -2,6 +2,7 @@ package com.example.holosproject;
 import androidx.appcompat.widget.Toolbar;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -22,8 +23,9 @@ import java.util.List;
  * FileName: AttendeeDashboardActivity
  * Description: This is the logic for the AttendeeDashboard activity. It contains the logic for displaying the RecyclerView, which is the current implemented view for the
  * list of events. This is where the click listeners for the different sections of this screen will go. (The QR Code, Each Event, the drawer pop out menu, etc.)
- *
- *
+
+ * This dashboard shows all of the events the user is currently enrolled in. There is a different activity for all open events.
+
  * This file also contains first implementation of the drawer menu. This shit was really hard to set up to be honest, lots of different parts.
  * The XML files associated with the drawer are: hamburger_menu.xml, hamburger_menu_header.xml, and activity_attendee_dashboard.xml.
 
@@ -45,9 +47,21 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.nav_edit_profile) {// If the user selects the "Edit Profile" section of the drawer, what happens? (navigate to edit profile activity)
+        // If the user selects one of the items in the drawer, what happens? (navigate to that respective activity)
+        int id = item.getItemId();
+
+        if (id == R.id.nav_edit_profile) {
+            Intent intent = new Intent(this, EditProfileActivity.class);
+            startActivity(intent);
+
+        } else if (id == R.id.nav_view_all_events) {
+            Intent intent = new Intent(this, ViewAllEventsActivity.class);
+            startActivity(intent);
+
         }
-        // Handle other menu item clicks here
+        else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
