@@ -9,6 +9,14 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * FileName: IntroActivity
+ * Description: This is the activity that is shown the very first time a user runs the app. Once they have selected their role, this will not be the opening page.
+ *  This activity simply prompts the user to select if they are attendee, organizer or administrator.
+
+ *  Associated with the activity_intro.xml layout.
+ **/
+
 public class IntroActivity extends AppCompatActivity { // AppCombatActivity provides various methods and features to manage the lifecycle of an activity
     // IntroActivity is currently set to be the Activity that runs on app runtime. This is the screen that asks the user what role do they want.
     // For the future (Not sure if needed before Project 3 Deadline?), we will use SharedPreferences to save what the user selects, so each time they open the app

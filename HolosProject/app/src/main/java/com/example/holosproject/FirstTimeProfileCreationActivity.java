@@ -1,6 +1,7 @@
 package com.example.holosproject;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +23,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+
+/**
+ * FileName: FirstTimeProfileCreationActivity
+ * Description: This is the activity that is shown after a user selects their role, prompting them to create a profile by entering their information.
+ *  If the user fills in all the fields, we will try to add the data to firebase. If it gets added, we move to the Attendee Dashboard. Otherwise stay on this page.
+
+ *  Associated with the activity_first_time_profile_creation.xml layout.
+ **/
 
 public class FirstTimeProfileCreationActivity extends AppCompatActivity {
     // This activity is shown during the first runtime of the app. If a user initially selects "Attendee", then this
@@ -100,6 +109,10 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                     public void onSuccess(DocumentReference documentReference) {
                         // Handles the successful addition of the profile, can now navigate to another activity
                         Toast.makeText(FirstTimeProfileCreationActivity.this, "Profile Created", Toast.LENGTH_SHORT).show();
+
+                        // Start the AttendeeDashboardActivity
+                        Intent intent = new Intent(FirstTimeProfileCreationActivity.this, AttendeeDashboardActivity.class);
+                        startActivity(intent);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

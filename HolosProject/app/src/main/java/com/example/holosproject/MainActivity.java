@@ -7,6 +7,13 @@ import android.os.Bundle;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * FileName: MainActivity
+ * Description: MainActivity currently servers (i believe) zero purpose. It is not the activity that is run opening the app, ive changed that to be FirstTimeProfileCreation.
+
+ *  Associated with the activity_main layout, but ive made no changes to it, and that layout is also currently serving no purpose. I think i will end up deleting these two files.
+ **/
+
 public class MainActivity extends AppCompatActivity {
 
     // Declaring a private variable to hold a reference to the Firestore database

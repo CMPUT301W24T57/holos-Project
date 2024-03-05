@@ -25,9 +25,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <!-- Declare FirstTimeProfileCreationActivity -->
         <activity android:name=".FirstTimeProfileCreationActivity" >
+        </activity>
+
+        <!-- Declare AttendeeDashboardActivity -->
+        <activity android:name=".AttendeeDashboardActivity" >
         </activity>
 
 
