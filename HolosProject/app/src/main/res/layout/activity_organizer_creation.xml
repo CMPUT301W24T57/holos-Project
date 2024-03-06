@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- This activity shows after a user selects attendee from the intro page. They are to first create a profile-->
+    <!-- I did not spend very much time on the UI, so it looks like shit. Feel free to change any of it-->
+    <TextView
+        android:id="@+id/organizer_profile_creation_textHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Your Profile"
+        android:textSize="30sp"
+        android:layout_marginTop="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    "
+
+    <!-- CURRENTLY USING A PLACEHOLDER ICON FOR THIS IMAGEVIEW.-->
+    <ImageView
+        android:id="@+id/organizer_imageViewProfile"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_launcher_foreground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_profile_creation_textHeader" />
+
+    <TextView
+        android:id="@+id/organizer_profile_photo_subtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tap the photo to edit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_imageViewProfile">
+    </TextView>
+
+
+    <EditText
+        android:id="@+id/organizer_editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:hint="Name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_imageViewProfile" />
+
+    <EditText
+        android:id="@+id/organizer_editTextContact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Contact Information"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_editTextName" />
+
+    <EditText
+        android:id="@+id/organizer_editTextHomepage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Homepage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_editTextContact" />
+
+    <Switch
+        android:id="@+id/organizer_switchNotifications"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Notifications"
+        app:layout_constraintEnd_toStartOf="@+id/organizer_switchGeolocation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_editTextHomepage"
+        />
+
+    <Switch
+        android:id="@+id/organizer_switchGeolocation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/organizer_switchNotifications"
+        android:text="Geolocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/organizer_switchNotifications"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_editTextHomepage"
+        />
+
+    <Button
+        android:id="@+id/organizer_buttonFinishProfileCreation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finish Profile"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_switchGeolocation"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
