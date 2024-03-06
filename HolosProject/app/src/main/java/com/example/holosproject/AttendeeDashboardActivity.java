@@ -1,10 +1,17 @@
 package com.example.holosproject;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -14,7 +21,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +58,15 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
 
+    // References for attendee QR scan:
+    private FloatingActionButton scanButton;
+    private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result->{ //basic popup after scanning to test things
+        if(result.getContents() != null) {
+            String scanContents = result.getContents();
+            handleScan(scanContents);
+        }
+    });
+
     // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -65,6 +88,36 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    /**
+     * scanQRCode
+     * Description: Sends user to a QR code scan screen when QR scan floating action button is tapped.
+     */
+    private void scanQRCode() { // basic QR code scan
+        ScanOptions options = new ScanOptions();
+        options.setBeepEnabled(false);
+        options.setOrientationLocked(true);
+        options.setCaptureActivity(CaptureAct.class);
+        barLauncher.launch(options);
+    }
+
+    /**
+     * handleScan
+     * Description: Handles the results of a QR scan. Barebones for now, need to figure out event
+     * implementation in the firebase before handling things in a more complicated manner.
+     *
+     */
+    private void handleScan(String scanContents) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
+        builder.setTitle("Result");
+        builder.setMessage(scanContents);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).show();
     }
 
     @Override
@@ -96,10 +149,14 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventsAdapter = new AttendeeDashboardEventsAdapter(eventList);
         eventsRecyclerView.setAdapter(eventsAdapter);
-    }
 
-    // TODO: Create click listener for QR Code Button, change the icon to a QR code instead of a camera.
+        // TODO: Create click listener for QR Code Button, change the icon to a QR code instead of a camera.
+        scanButton = findViewById(R.id.fabQRCode);
+        scanButton.setOnClickListener(v-> {
+            scanQRCode();
+        });
+
 
     // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
-
+}
 }
