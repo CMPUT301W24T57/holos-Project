@@ -25,8 +25,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -60,6 +62,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     // References for attendee QR scan:
     private FloatingActionButton scanButton;
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+    private CollectionReference eventRef = database.collection("eventTestNW");
+
     private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result->{ //basic popup after scanning to test things
         if(result.getContents() != null) {
             String scanContents = result.getContents();
@@ -109,17 +115,41 @@ public class AttendeeDashboardActivity extends AppCompatActivity
      *
      */
     private void handleScan(String scanContents) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
-        builder.setTitle("Result");
-        builder.setMessage(scanContents);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
+        DocumentReference docRef = eventRef.document(scanContents);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
+                        builder.setTitle("Result");
+                        builder.setMessage(scanContents);
+                        eventList.add(new Event(scanContents, (String) document.get("Date")));
+                        eventsAdapter.notifyItemInserted(eventList.size());
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
+                        builder.setTitle("Result");
+                        builder.setMessage("Event Not Found in Firebase");
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+                    }
+                } else {
+                    Log.d("Firestore", "Database Error");
+                }
             }
-        }).show();
+    });
     }
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
