@@ -1,21 +1,18 @@
 package com.example.holosproject;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
-
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -97,8 +94,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     }
 
     /**
-     * scanQRCode
-     * Description: Sends user to a QR code scan screen when QR scan floating action button is tapped.
+     * Sends user to a QR code scan screen when QR scan floating action button is tapped.
      */
     private void scanQRCode() { // basic QR code scan
         ScanOptions options = new ScanOptions();
@@ -109,9 +105,11 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     }
 
     /**
-     * handleScan
-     * Description: Handles the results of a QR scan. Barebones for now, need to figure out event
-     * implementation in the firebase before handling things in a more complicated manner.
+     * Handles what happens when a valid QR code is scanned.
+     * Given the text contained in the QR code, attempts to match the text with the title of a document
+     * In the events collection in the database. Given it finds a match, it takes the title of the event
+     * and its date and adds it to the user's visible event list. (Does not add to anything in database yet)
+     * @param scanContents: a string containing the contents of the scanned QR code
      *
      */
     private void handleScan(String scanContents) {
@@ -185,7 +183,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         scanButton.setOnClickListener(v-> {
             scanQRCode();
         });
-
 
     // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
 }
