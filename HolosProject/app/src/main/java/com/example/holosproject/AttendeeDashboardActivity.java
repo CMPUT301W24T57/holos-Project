@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -58,7 +59,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
 
     // References for attendee QR scan:
-    private Button scanButton;
+    private FloatingActionButton scanButton;
     private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result->{ //basic popup after scanning to test things
         if(result.getContents() != null) {
             String scanContents = result.getContents();
