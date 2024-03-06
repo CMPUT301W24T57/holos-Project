@@ -41,9 +41,9 @@ import java.util.List;
  * This dashboard shows all of the events the user is currently enrolled in. There is a different activity for all open events.
 
  * This file also contains first implementation of the drawer menu. This shit was really hard to set up to be honest, lots of different parts.
- * The XML files associated with the drawer are: hamburger_menu.xml, hamburger_menu_header.xml, and activity_attendee_dashboard.xml.
+ * The XML files associated with the drawer are: drawer_menu.xml, drawer_menu_header.xml, and activity_attendee_dashboard.xml.
 
- * Associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
+ * AttendeeDashboardActivity is associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
  **/
 
 public class AttendeeDashboardActivity extends AppCompatActivity
@@ -157,6 +157,5 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         });
 
 
-    // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
 }
 }

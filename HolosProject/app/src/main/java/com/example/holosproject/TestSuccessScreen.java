@@ -90,7 +90,7 @@ public class TestSuccessScreen extends AppCompatActivity {
         if ("attendee".equals(role)) {
             startActivity(new Intent(this, AttendeeDashboardActivity.class));
         } else if ("admin".equals(role)) {
-            startActivity(new Intent(this, AttendeeDashboardActivity.class));
+            startActivity(new Intent(this, AdminDashboardActivity.class));
         } else if ("organizer".equals(role)){
             startActivity(new Intent(this, AttendeeDashboardActivity.class));
         }
