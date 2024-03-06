@@ -7,10 +7,10 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-     <!-- These two strings are for the Drawer Menu -->
-     <string name="navigation_drawer_open">Open navigation drawer</string>
-     <string name="navigation_drawer_close">Close navigation drawer</string>
-      
+    <!-- These two strings are for the Drawer Menu -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

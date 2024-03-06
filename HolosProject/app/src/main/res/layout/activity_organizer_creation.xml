@@ -39,32 +39,16 @@
         app:layout_constraintTop_toBottomOf="@+id/organizer_imageViewProfile">
     </TextView>
 
-    <EditText
-        android:id="@+id/organizer_creation_username"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Username"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_profile_photo_subtext" />
-
-    <EditText
-        android:id="@+id/organizer_creation_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_creation_username" />
 
     <EditText
         android:id="@+id/organizer_editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
         android:hint="Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_creation_password" />
+        app:layout_constraintTop_toBottomOf="@+id/organizer_imageViewProfile" />
 
     <EditText
         android:id="@+id/organizer_editTextContact"
