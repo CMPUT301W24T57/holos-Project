@@ -12,7 +12,7 @@ What does this build Contain?
 - ViewAllEvents Activity (not integrated with Firebase yet)
 - EditProfile Activity (Not implemented with Firebase yet)
 
-Here are images that show what this build contains: 
+Here are images that show what this build contains:
 
 ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/82182216/2d88b80c-f689-4d43-bc3f-5bfd1143ca34)
 
