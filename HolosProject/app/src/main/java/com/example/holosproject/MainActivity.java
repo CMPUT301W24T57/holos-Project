@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         // Initializing the Firestore database instance when the activity is created
         database = FirebaseFirestore.getInstance();
         // This next line initializes "userAccountNamesRef" by obtaining a reference to the "Profile Account Names" collection in the Firestore database.
-        // userAccountNamesRef holds a reference to the "Proifle Account Names" collection in our database.
+        // userAccountNamesRef holds a reference to the "Profile Account Names" collection in our database.
         userAccountNamesRef = database.collection("Profile Account Names");
     }
     @Override
