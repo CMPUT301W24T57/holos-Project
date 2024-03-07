@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.checkerframework.checker.units.qual.C;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,6 +116,8 @@ public class OrganizerCreation extends AppCompatActivity {
                             userProfile.put("name", name);
                             userProfile.put("contact", contact);
                             userProfile.put("homepage", homepage);
+                            userProfile.put("myEvents", new ArrayList<String>());
+                            userProfile.put("createdEvents", new ArrayList<String>());
                             // TODO: Add the image name or image reference to userProfile map
 
                             // Store the user profile in Firestore
