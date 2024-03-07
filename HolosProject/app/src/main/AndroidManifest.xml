@@ -60,6 +60,8 @@
         <activity android:name=".EditProfileActivity"></activity> <!-- Declare ViewAllEventsActivity -->
         <activity android:name=".ViewAllEventsActivity"></activity>
         <activity android:name=".AdminDashboardActivity"></activity>
+        <activity android:name=".OrganizerDashboardActivity" />
+        <activity android:name=".AddEventActivity" />
     </application>
 
 </manifest>

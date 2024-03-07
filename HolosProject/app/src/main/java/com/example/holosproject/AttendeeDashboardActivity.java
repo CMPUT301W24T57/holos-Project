@@ -80,10 +80,17 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         } else if (id == R.id.nav_view_all_events) {
             Intent intent = new Intent(this, ViewAllEventsActivity.class);
             startActivity(intent);
+            finish();
 
         }
         else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
             drawerLayout.closeDrawer(GravityCompat.START);
+        }
+
+        else if (id == R.id.nav_view_organizer_dashboard) {
+            Intent intent = new Intent(this, OrganizerDashboardActivity.class);
+            startActivity(intent);
+            finish();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -135,6 +142,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("");
 
         drawerLayout = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);

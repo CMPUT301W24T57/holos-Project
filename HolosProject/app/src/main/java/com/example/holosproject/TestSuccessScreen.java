@@ -91,8 +91,12 @@ public class TestSuccessScreen extends AppCompatActivity {
             startActivity(new Intent(this, AttendeeDashboardActivity.class));
         } else if ("admin".equals(role)) {
             startActivity(new Intent(this, AdminDashboardActivity.class));
+            // LARGE NOTE HERE: Organizer and Attendee are gonna become the same role. Everything an organizer must do, an attendee
+            // must be able to do as well. Because of this, we can just make them the same role.
+            // in the future we can edit The code to reflect this. As of right now, if you sign up as an organizer, it will say you
+            // are an attendee in the database, whatever.
         } else if ("organizer".equals(role)){
-            startActivity(new Intent(this, AttendeeDashboardActivity.class));
+            startActivity(new Intent(this, OrganizerDashboardActivity.class));
         }
         finish(); // Close current activity
     }
