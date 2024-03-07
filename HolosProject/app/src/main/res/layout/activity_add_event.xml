@@ -76,7 +76,7 @@
         android:id="@+id/button_upload_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload QR & Poster Image"
+        android:text="Upload QR and Poster Image"
         android:layout_below="@id/edit_text_event_description"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
