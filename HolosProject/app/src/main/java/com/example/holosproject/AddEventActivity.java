@@ -38,7 +38,6 @@ public class AddEventActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setResult(RESULT_CANCELED);
                 finish();
             }
         });
@@ -55,16 +54,20 @@ public class AddEventActivity extends AppCompatActivity {
                 if (!eventName.isEmpty() && !eventDate.isEmpty() && !eventTime.isEmpty() && !eventLocation.isEmpty() && !eventDescription.isEmpty()) {
                     Event newEvent = new Event(eventName, eventDate, eventTime, eventLocation, eventDescription);
 
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("event", (Serializable) newEvent);
-                    setResult(RESULT_OK, resultIntent);
                     finish();
+
+
                 } else {
                     // Show error message if any field is empty
                     Toast.makeText(AddEventActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        //TODO: Add button functionality to the "Upload QR and Postier Image
+        
     }
+
+
 }
 

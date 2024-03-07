@@ -18,6 +18,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity {
     private OrganizerDashboardEventsAdapter eventAdapter;
     private List<Event> eventList;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,25 +41,12 @@ public class OrganizerDashboardActivity extends AppCompatActivity {
         fabAddEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(OrganizerDashboardActivity.this, AddEventActivity.class);
-                startActivityForResult(intent, 1);
+                createNewEvent();
             }
         });
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            if (data != null) {
-                Event event = (Event) data.getSerializableExtra("event");
-                if (event != null) {
-                    eventList.add(event);
-                    eventAdapter.notifyDataSetChanged();
-                    Toast.makeText(this, "Event added successfully", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
+    public void createNewEvent(){
+        Intent intent = new Intent(this, AddEventActivity.class);
+        startActivity(intent);
     }
 }
