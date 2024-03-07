@@ -1,10 +1,16 @@
 package com.example.holosproject;
 
+import static android.app.PendingIntent.getActivity;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -22,6 +28,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -104,6 +111,27 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         barLauncher.launch(options);
     }
 
+    private void goToEventDisplay() {
+        Intent intent = new Intent(this, EventDisplay.class);
+        startActivity(intent);
+    }
+
+    private void rsvpEvent(String scanContents, DocumentSnapshot document) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
+        builder.setTitle("Event Added");
+        Timestamp timestamp = (Timestamp) document.get("Test");
+        builder.setMessage(scanContents + " during " + timestamp.toDate());
+        // this should be changed to add to the database later
+        eventList.add(new Event(scanContents, (String) document.get("Date")));
+        eventsAdapter.notifyItemInserted(eventList.size());
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).show();
+    }
+
     /**
      * Handles what happens when a valid QR code is scanned.
      * Given the text contained in the QR code, attempts to match the text with the title of a document
@@ -120,17 +148,22 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
-                        builder.setTitle("Result");
-                        builder.setMessage(scanContents);
-                        eventList.add(new Event(scanContents, (String) document.get("Date")));
-                        eventsAdapter.notifyItemInserted(eventList.size());
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).show();
+                        rsvpEvent(scanContents, document);
+//                        setContentView(R.layout.activity_event_display);
+//                        TextView eventName = findViewById(R.id.event_Name);
+//                        eventName.setText(scanContents);
+//                        Button rsvpButton = findViewById(R.id.rsvpButton);
+//                        rsvpButton.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                Intent intent = new Intent(AttendeeDashboardActivity.this, AttendeeDashboardActivity.class);
+//                                startActivity(intent);
+//
+//                                //rsvpEvent(scanContents, document);
+//                                eventList.add(new Event(scanContents, (String) document.get("Date")));
+//                                eventsAdapter.notifyDataSetChanged();
+//                            }
+//                        });
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
                         builder.setTitle("Result");
@@ -183,7 +216,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         scanButton.setOnClickListener(v-> {
             scanQRCode();
         });
-
     // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
 }
 }

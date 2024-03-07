@@ -15,9 +15,29 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text=""
-        android:textColor="#FF0000"
+        android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/event_Date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text=""
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:layout_below="@id/event_Name"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/rsvpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RSVP for Event"
+        android:layout_below="@id/event_Date"
+        android:layout_centerHorizontal="true"
+        />
 
 
 </RelativeLayout>
