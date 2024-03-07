@@ -1,7 +1,7 @@
 package com.example.holosproject;
 
 public class UserProfile {
-    private String username;
+    private String name;
     private String contact;
     private String homepage;
     private String uid; // Unique ID for Firebase operations
@@ -16,11 +16,11 @@ public class UserProfile {
         this.contact = contact;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getHomepage() {

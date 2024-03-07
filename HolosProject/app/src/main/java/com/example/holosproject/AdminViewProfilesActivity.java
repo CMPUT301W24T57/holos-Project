@@ -2,6 +2,7 @@ package com.example.holosproject;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,14 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
+/**
+ * FileName: AdminViewProfilesActivity
+ * Description: Admin can view all user profiles, and tap on them to prompt a deletion
+
+ * AdminViewProfilesActivity is associated with the admin_view_profiles.xml, and the admin_view_profiles_list_item.xml
+ **/
 
 public class AdminViewProfilesActivity extends AppCompatActivity {
 
@@ -37,7 +46,7 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        List<UserProfile> profiles = new ArrayList<>();
+                        profiles = new ArrayList<>(); // Use the class member variable
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             UserProfile profile = document.toObject(UserProfile.class);
                             profile.setUid(document.getId()); // Save the document ID for deletion
@@ -53,6 +62,7 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
 
     }
 
+    // Method specifying what happens when we tap on a user's profile, which is getting prompted to delete it.
     private void onItemClick(View view, int position) {
         UserProfile selectedProfile = profiles.get(position);
         new AlertDialog.Builder(this)
@@ -63,6 +73,7 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
                 .show();
     }
 
+    // Method to delete profile from firebase
     private void deleteProfile(UserProfile profile) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("userProfiles").document(profile.getUid())
@@ -71,10 +82,16 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
                     // Remove the profile from the list and notify the adapter
                     profiles.remove(profile);
                     adapter.notifyDataSetChanged();
+                    showToast("Profile Deleted");
                 })
                 .addOnFailureListener(e -> {
-                    // Handle the error
+                    showToast("Error: Did not delete profile");
                 });
+    }
+
+    // Method to show Toast message
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }

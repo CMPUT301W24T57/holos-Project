@@ -62,6 +62,7 @@
         <activity android:name=".AdminDashboardActivity"></activity>
         <activity android:name=".OrganizerDashboardActivity" />
         <activity android:name=".AddEventActivity" />
+        <activity android:name=".AdminViewProfilesActivity" />
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.holosproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -58,7 +59,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         // Set onClickListeners for each button
         btnViewProfiles.setOnClickListener(v -> {
-            // Navigate to the View Profiles Activity
+            Intent intent = new Intent(this, AdminViewProfilesActivity.class);
+            startActivity(intent);
+            finish();
         });
 
         btnViewEvents.setOnClickListener(v -> {

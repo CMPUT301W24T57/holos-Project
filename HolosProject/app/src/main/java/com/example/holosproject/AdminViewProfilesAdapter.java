@@ -12,6 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+
+/**
+ * FileName: AdminViewProfilesAdapter
+
+ * Adapter for the recyclerview used to view all user profiles in the admin panel
+ **/
+
 public class AdminViewProfilesAdapter extends RecyclerView.Adapter<AdminViewProfilesAdapter.ViewHolder> {
 
     private List<UserProfile> profiles;
@@ -36,7 +43,7 @@ public class AdminViewProfilesAdapter extends RecyclerView.Adapter<AdminViewProf
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UserProfile profile = profiles.get(position);
-        holder.usernameTextView.setText(profile.getUsername());
+        holder.usernameTextView.setText(profile.getName());
         holder.contactTextView.setText(profile.getContact());
         holder.homepageTextView.setText(profile.getHomepage());
         // Use a placeholder image for now
