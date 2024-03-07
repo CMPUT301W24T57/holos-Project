@@ -3,40 +3,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Organizer Dashboard title -->
     <TextView
-        android:id="@+id/titleTextView"
+        android:id="@+id/text_dashboard_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Organizer Dashboard"
         android:textSize="24sp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
-    
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"/>
+
+    <!-- Header for the Events section -->
     <TextView
-        android:id="@+id/eventsHeaderTextView"
+        android:id="@+id/text_events_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Events"
-        android:textSize="20sp"
-        android:layout_below="@id/titleTextView"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@id/text_dashboard_title"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
+    <!-- RecyclerView to display events -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/eventsRecyclerView"
+        android:id="@+id/recycler_view_events"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/eventsHeaderTextView"
+        android:layout_below="@id/text_events_header"
         android:layout_marginTop="8dp"/>
 
-    <Button
-        android:id="@+id/addEventButton"
+    <!-- Floating action button to add new events -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Add Event" />
-
-
-
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/baseline_add_24" />
 </RelativeLayout>
