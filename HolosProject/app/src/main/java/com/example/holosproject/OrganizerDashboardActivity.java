@@ -111,47 +111,37 @@ public class OrganizerDashboardActivity extends AppCompatActivity
             startActivity(intent);
         });
 
-
-//        eventsList.add(new Event("test","test","test","test","test"));
-//        Log.d(TAG, "Test events have been added.");
+        // When eventList has been fixed uncomment
         //fetchUserEvents();
     }
+
     /*
-    private void populateTestEvents() {
-        eventsList.clear(); // Clear the list before adding test events
-
-        // Add test events
-        eventsList.add(new Event("Event 1", "2024-03-08", "10:00 AM", "Address 1", "Creator 1"));
-        eventsList.add(new Event("Event 2", "2024-03-09", "11:00 AM", "Address 2", "Creator 2"));
-        eventsList.add(new Event("Event 3", "2024-03-10", "12:00 PM", "Address 3", "Creator 3"));
-
-        // Notify the adapter that the dataset has changed
-        eventsAdapter.notifyDataSetChanged();
-    }
+        Finds the users events that are stored in createdEvents in userProfies/users
+     */
     private void fetchUserEvents() {
-
         if (currentUser != null) {
-
             String userId = currentUser.getUid();
             db.collection("userProfiles").document(userId).get()
                     .addOnCompleteListener(task -> {
-
                         if (task.isSuccessful() && task.getResult() != null) {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
                                 Log.d(TAG, "document exists");
                                 List<String> myEvents = (List<String>) document.get("createdEvents");
                                 if (myEvents != null && !myEvents.isEmpty()) {
-                                    Log.d(TAG, "MyEvents have been found");
+                                    Log.d(TAG, "Created events have been found");
                                     fetchEventsFromCollection(myEvents);
                                 }
                             }
-                        } else {
-                            // Handle failure
                         }
                     });
         }
     }
+
+    /*
+        Try's to find matches for a users myEvents if found append them to eventList.
+        Also appends the id of the object to event id for easier object access.
+     */
     private void fetchEventsFromCollection(List<String> myEvents) {
         for (String eventId : myEvents) {
             Log.d(TAG, "Your events");
@@ -160,6 +150,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             Event event = documentSnapshot.toObject(Event.class);
+                            event.setEventId(documentSnapshot.getId());// adds event id so we can more easily access it later
                             eventsList.add(event);
                             eventsAdapter.notifyDataSetChanged();
                         } else {
@@ -171,5 +162,4 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                     });
         }
     }
-*/
 }

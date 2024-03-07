@@ -61,13 +61,15 @@ public class AddEventActivity extends AppCompatActivity {
         // ...
     }
 
+    /*
+    Adds the event object to events in firebase.
+     */
     private void saveEvent(String eventName, String eventTime, String eventDate, String eventAddress) {
         // Get a reference to the Firestore database
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Get the current user
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
         // Create a new event object with the provided details
         Event event = new Event(eventName, eventTime,eventDate, eventAddress, currentUser.getUid());
 
@@ -87,12 +89,13 @@ public class AddEventActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error adding event", e);
-                        // Handle the failure to add the event, such as displaying an error message to the user
                     }
                 });
     }
 
-
+    /*
+    adds the eventId to created events
+     */
     private void addToMyEvents(String eventId) {
         // Get the current user
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -100,14 +103,12 @@ public class AddEventActivity extends AppCompatActivity {
             // Handle the case where the user is not signed in
             return;
         }
-
-        // Get a reference to the Firestore database
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Get the document reference for the user's profile
+        // Finds the user's profile
         DocumentReference userProfileRef = db.collection("userProfiles").document(currentUser.getUid());
 
-        // Update the createdEvents array in the user's profile
+        // Adds the eventId to created events.
         userProfileRef.update("createdEvents", FieldValue.arrayUnion(eventId))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
