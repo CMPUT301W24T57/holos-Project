@@ -61,7 +61,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         btnViewProfiles.setOnClickListener(v -> {
             Intent intent = new Intent(this, AdminViewProfilesActivity.class);
             startActivity(intent);
-            finish();
+            // Not using finish();, because we need to be able to get back to this screen.
+            // Maybe we add a back button to the view profiles screen?
         });
 
         btnViewEvents.setOnClickListener(v -> {
@@ -69,7 +70,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
 
         btnViewImages.setOnClickListener(v -> {
-            // Navigate to the View Images Activity
+            Intent intent = new Intent(this, AdminViewImagesActivity.class);
+            startActivity(intent);
         });
 
 
