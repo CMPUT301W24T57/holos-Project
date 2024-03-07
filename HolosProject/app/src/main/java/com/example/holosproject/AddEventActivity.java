@@ -1,12 +1,16 @@
+package com.example.holosproject;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.holosproject.R;
+import java.io.Serializable;
 
 public class AddEventActivity extends AppCompatActivity {
 
@@ -48,13 +52,19 @@ public class AddEventActivity extends AppCompatActivity {
                 String eventLocation = eventLocationEditText.getText().toString();
                 String eventDescription = eventDescriptionEditText.getText().toString();
 
-                Event newEvent = new Event(eventName, eventDate, eventTime, eventLocation, eventDescription);
+                if (!eventName.isEmpty() && !eventDate.isEmpty() && !eventTime.isEmpty() && !eventLocation.isEmpty() && !eventDescription.isEmpty()) {
+                    Event newEvent = new Event(eventName, eventDate, eventTime, eventLocation, eventDescription);
 
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("event", newEvent);
-                setResult(RESULT_OK, resultIntent);
-                finish();
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("event", (Serializable) newEvent);
+                    setResult(RESULT_OK, resultIntent);
+                    finish();
+                } else {
+                    // Show error message if any field is empty
+                    Toast.makeText(AddEventActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 }
+

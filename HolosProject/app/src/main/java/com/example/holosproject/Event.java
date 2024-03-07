@@ -14,6 +14,9 @@ public class Event {
         this.date = date;
     }
 
+    public Event(String eventName, String eventDate, String eventTime, String eventLocation, String eventDescription) {
+    }
+
     public String getName() {
         return name;
     }
