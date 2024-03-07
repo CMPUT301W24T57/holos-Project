@@ -70,8 +70,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     private CollectionReference eventRef = database.collection("eventTestNW");
 
-    private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result->{ //basic popup after scanning to test things
-        if(result.getContents() != null) {
+    private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> { //basic popup after scanning to test things
+        if (result.getContents() != null) {
             String scanContents = result.getContents();
             handleScan(scanContents);
         }
@@ -91,8 +91,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             Intent intent = new Intent(this, ViewAllEventsActivity.class);
             startActivity(intent);
 
-        }
-        else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
+        } else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
             drawerLayout.closeDrawer(GravityCompat.START);
         }
 
@@ -111,8 +110,9 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         barLauncher.launch(options);
     }
 
-    private void goToEventDisplay() {
+    private void goToEventDisplay(String scanContents) {
         Intent intent = new Intent(this, EventDisplay.class);
+        intent.putExtra("contents", scanContents);
         startActivity(intent);
     }
 
@@ -137,8 +137,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
      * Given the text contained in the QR code, attempts to match the text with the title of a document
      * In the events collection in the database. Given it finds a match, it takes the title of the event
      * and its date and adds it to the user's visible event list. (Does not add to anything in database yet)
-     * @param scanContents: a string containing the contents of the scanned QR code
      *
+     * @param scanContents: a string containing the contents of the scanned QR code
      */
     private void handleScan(String scanContents) {
         DocumentReference docRef = eventRef.document(scanContents);
@@ -148,9 +148,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        rsvpEvent(scanContents, document);
-//                        setContentView(R.layout.activity_event_display);
-//                        TextView eventName = findViewById(R.id.event_Name);
+                        //rsvpEvent(scanContents, document);
+                        goToEventDisplay(scanContents);
+                        //setContentView(R.layout.activity_event_display);
+                        //TextView eventName = findViewById(R.id.event_Name);
 //                        eventName.setText(scanContents);
 //                        Button rsvpButton = findViewById(R.id.rsvpButton);
 //                        rsvpButton.setOnClickListener(new View.OnClickListener() {
@@ -179,8 +180,9 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                     Log.d("Firestore", "Database Error");
                 }
             }
-    });
+        });
     }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -213,9 +215,25 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
         // TODO: Create click listener for QR Code Button, change the icon to a QR code instead of a camera.
         scanButton = findViewById(R.id.fabQRCode);
-        scanButton.setOnClickListener(v-> {
+        scanButton.setOnClickListener(v -> {
             scanQRCode();
         });
-    // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
-}
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            String eventTitle = bundle.getString("title");
+            DocumentReference docRef = eventRef.document(eventTitle);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            rsvpEvent(eventTitle, document);
+                        }
+                    }
+                }
+                // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
+            });
+        }
+    }
 }
