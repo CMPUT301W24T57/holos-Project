@@ -47,9 +47,9 @@ import java.util.List;
  * This dashboard shows all of the events the user is currently enrolled in. There is a different activity for all open events.
 
  * This file also contains first implementation of the drawer menu. This shit was really hard to set up to be honest, lots of different parts.
- * The XML files associated with the drawer are: hamburger_menu.xml, hamburger_menu_header.xml, and activity_attendee_dashboard.xml.
+ * The XML files associated with the drawer are: drawer_menu.xml, drawer_menu_header.xml, and activity_attendee_dashboard.xml.
 
- * Associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
+ * AttendeeDashboardActivity is associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
  **/
 
 public class AttendeeDashboardActivity extends AppCompatActivity
@@ -90,9 +90,16 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         } else if (id == R.id.nav_view_all_events) {
             Intent intent = new Intent(this, ViewAllEventsActivity.class);
             startActivity(intent);
+            finish();
 
         } else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
             drawerLayout.closeDrawer(GravityCompat.START);
+        }
+
+        else if (id == R.id.nav_view_organizer_dashboard) {
+            Intent intent = new Intent(this, OrganizerDashboardActivity.class);
+            startActivity(intent);
+            finish();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -198,6 +205,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("");
 
         drawerLayout = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -237,3 +245,4 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }
     }
 }
+
