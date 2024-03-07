@@ -19,6 +19,11 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * FileName: OrganizerDashboardActivity
+ *
+ * layout files associated with this: organizer_dashboard.xml
+ **/
 
 public class OrganizerDashboardActivity extends AppCompatActivity
                              implements NavigationView.OnNavigationItemSelectedListener {
