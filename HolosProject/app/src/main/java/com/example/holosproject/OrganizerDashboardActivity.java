@@ -2,6 +2,7 @@ package com.example.holosproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +32,14 @@ public class OrganizerDashboardActivity extends AppCompatActivity
     private RecyclerView eventsRecyclerView;
     private FloatingActionButton fabAddEvent;
     private OrganizerDashboardEventsAdapter eventsAdapter;
+
     private List<Event> eventsList; // model class
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
+    private FirebaseUser currentUser;
+    private final String TAG = "OrganizerDashboardActivity";
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -69,6 +80,11 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         setTitle("");
 
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
+
+
         // Setting up the recyclerview
         eventsRecyclerView = findViewById(R.id.recycler_view_events); // Assuming this is the ID in your XML
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -94,5 +110,66 @@ public class OrganizerDashboardActivity extends AppCompatActivity
             Intent intent = new Intent(this, AddEventActivity.class);
             startActivity(intent);
         });
+
+
+//        eventsList.add(new Event("test","test","test","test","test"));
+//        Log.d(TAG, "Test events have been added.");
+        //fetchUserEvents();
     }
+    /*
+    private void populateTestEvents() {
+        eventsList.clear(); // Clear the list before adding test events
+
+        // Add test events
+        eventsList.add(new Event("Event 1", "2024-03-08", "10:00 AM", "Address 1", "Creator 1"));
+        eventsList.add(new Event("Event 2", "2024-03-09", "11:00 AM", "Address 2", "Creator 2"));
+        eventsList.add(new Event("Event 3", "2024-03-10", "12:00 PM", "Address 3", "Creator 3"));
+
+        // Notify the adapter that the dataset has changed
+        eventsAdapter.notifyDataSetChanged();
+    }
+    private void fetchUserEvents() {
+
+        if (currentUser != null) {
+
+            String userId = currentUser.getUid();
+            db.collection("userProfiles").document(userId).get()
+                    .addOnCompleteListener(task -> {
+
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d(TAG, "document exists");
+                                List<String> myEvents = (List<String>) document.get("createdEvents");
+                                if (myEvents != null && !myEvents.isEmpty()) {
+                                    Log.d(TAG, "MyEvents have been found");
+                                    fetchEventsFromCollection(myEvents);
+                                }
+                            }
+                        } else {
+                            // Handle failure
+                        }
+                    });
+        }
+    }
+    private void fetchEventsFromCollection(List<String> myEvents) {
+        for (String eventId : myEvents) {
+            Log.d(TAG, "Your events");
+            db.collection("events").document(eventId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            Event event = documentSnapshot.toObject(Event.class);
+                            eventsList.add(event);
+                            eventsAdapter.notifyDataSetChanged();
+                        } else {
+                            Log.d(TAG, "Document does not exist");
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error getting document", e);
+                    });
+        }
+    }
+*/
 }

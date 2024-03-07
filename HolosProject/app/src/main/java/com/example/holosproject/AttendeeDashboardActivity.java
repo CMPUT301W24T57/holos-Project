@@ -25,6 +25,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.journeyapps.barcodescanner.ScanContract;
@@ -51,6 +53,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     // Using a RecyclerView to display all of the Events our user is currently enrolled in
     private RecyclerView eventsRecyclerView;
+    private final String TAG = "TestScreen";
+    private FirebaseUser currentUser;
     private AttendeeDashboardEventsAdapter eventsAdapter;
     private List<Event> eventList = new ArrayList<>(); // This is the data source
 
@@ -135,9 +139,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // get the current user.
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         // Sample data
-        eventList.add(new Event("Event 1", "January 1, 2024"));
-        eventList.add(new Event("Event 2", "November 3rd, 2024"));
 
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);
