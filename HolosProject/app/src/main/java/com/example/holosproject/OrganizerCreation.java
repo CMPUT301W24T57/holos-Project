@@ -67,8 +67,6 @@ public class OrganizerCreation extends AppCompatActivity {
         setContentView(R.layout.activity_organizer_creation);
         mAuth = FirebaseAuth.getInstance();
         imageViewProfile = findViewById(R.id.organizer_imageViewProfile);
-        editTextUsername = findViewById(R.id.organizer_creation_username);
-        editTextPassword = findViewById(R.id.organizer_creation_password);
         editTextName = findViewById(R.id.organizer_editTextName);
         editTextContact = findViewById(R.id.organizer_editTextContact);
         editTextHomepage = findViewById(R.id.organizer_editTextHomepage);
@@ -84,30 +82,17 @@ public class OrganizerCreation extends AppCompatActivity {
         buttonFinishProfileCreation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String email = editTextUsername.getText().toString().trim() + emailpad;
-                String password = editTextPassword.getText().toString().trim();
                 final String name = editTextName.getText().toString().trim();
                 final String contact = editTextContact.getText().toString().trim();
                 final String homepage = editTextHomepage.getText().toString().trim();
-                if (email.isEmpty() || password.isEmpty()) {
-                    // Handle empty fields
-                    return;
-                }
-                createAccount(email, password, name, contact, homepage);
+                createAccount(name, contact, homepage);
             }
          });
-
-
-
 
     }
 
     /**
      * Creates the account with email and password.
-     * @param email
-     * The users email.
-     * @param password
-     * The users password.
      * @param name
      * The users name.
      * @param contact
@@ -115,19 +100,18 @@ public class OrganizerCreation extends AppCompatActivity {
      * @param homepage
      * The users homepage.
      */
-    private void createAccount(String email, String password, String name, String contact, String homepage) {
-        mAuth.createUserWithEmailAndPassword(email, password)
+    private void createAccount(String name, String contact, String homepage) {
+        mAuth.signInAnonymously()
                 .addOnCompleteListener(OrganizerCreation.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "createUserWithEmail:success");
+                            Log.d(TAG, "createUser:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            // Prepare the user profile information to be stored
+                            // The user information that will be stored
                             Map<String, Object> userProfile = new HashMap<>();
-                            userProfile.put("role", "organizer");
-                            userProfile.put("email", email); // Might need adjustment due to 'final'
+                            userProfile.put("role", "attendee");
                             userProfile.put("name", name);
                             userProfile.put("contact", contact);
                             userProfile.put("homepage", homepage);

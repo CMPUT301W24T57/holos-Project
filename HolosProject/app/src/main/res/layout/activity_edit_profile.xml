@@ -8,10 +8,10 @@
     <!-- This activity shows after a user selects attendee from the intro page. They are to first create a profile-->
     <!-- I did not spend very much time on the UI, so it looks like shit. Feel free to change any of it-->
     <TextView
-        android:id="@+id/organizer_profile_creation_textHeader"
+        android:id="@+id/profile_creation_textHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Your Profile"
+        android:text="Edit Your Profile"
         android:textSize="30sp"
         android:layout_marginTop="48dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,86 +21,94 @@
 
     <!-- CURRENTLY USING A PLACEHOLDER ICON FOR THIS IMAGEVIEW.-->
     <ImageView
-        android:id="@+id/organizer_imageViewProfile"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:id="@+id/imageViewProfile"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
         android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_profile_creation_textHeader" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_creation_textHeader" />
 
     <TextView
-        android:id="@+id/organizer_profile_photo_subtext"
+        android:id="@+id/profile_photo_subtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tap the photo to edit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_imageViewProfile">
+        app:layout_constraintTop_toBottomOf="@+id/imageViewProfile">
     </TextView>
 
-
     <EditText
-        android:id="@+id/organizer_editTextName"
+        android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="Users name should be here:"
         android:layout_marginTop="48dp"
-        android:hint="Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_imageViewProfile" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_photo_subtext" />
 
     <EditText
-        android:id="@+id/organizer_editTextContact"
+        android:id="@+id/editTextContact"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Contact Information"
+        android:hint="Users Contact Information Should be here"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_editTextName" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextName" />
 
     <EditText
-        android:id="@+id/organizer_editTextHomepage"
+        android:id="@+id/editTextHomepage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Homepage"
+        android:hint="Users Homepage should be here"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_editTextContact" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextContact" />
 
     <Switch
-        android:id="@+id/organizer_switchNotifications"
+        android:id="@+id/switchNotifications"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Notifications"
-        app:layout_constraintEnd_toStartOf="@+id/organizer_switchGeolocation"
+        app:layout_constraintEnd_toStartOf="@+id/switchGeolocation"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_editTextHomepage"
+        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage"
         />
 
     <Switch
-        android:id="@+id/organizer_switchGeolocation"
+        android:id="@+id/switchGeolocation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/organizer_switchNotifications"
+        android:layout_below="@id/switchNotifications"
         android:text="Geolocation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/organizer_switchNotifications"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_editTextHomepage"
+        app:layout_constraintStart_toEndOf="@+id/switchNotifications"
+        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage"
         />
 
     <Button
-        android:id="@+id/organizer_buttonFinishProfileCreation"
+        android:id="@+id/buttonFinishProfileCreation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Finish Profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_switchGeolocation"
+        app:layout_constraintTop_toBottomOf="@+id/switchGeolocation"
         />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/buttonEditProfileBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_input_add">  <!-- CURRENTLY USING A PLACEHOLDER ICON FOR THIS BACK BUTTON.-->
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

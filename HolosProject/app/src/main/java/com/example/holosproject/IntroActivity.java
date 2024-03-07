@@ -47,7 +47,7 @@ public class IntroActivity extends AppCompatActivity { // AppCombatActivity prov
         attendeeButton = findViewById(R.id.AttendeeButton);
         organzierButton = findViewById(R.id.OrganizerButton);
         administratorButton = findViewById(R.id.AdministratorButton);
-        loginButton = findViewById(R.id.login_button);
+//        loginButton = findViewById(R.id.login_button);
         mAuth = FirebaseAuth.getInstance();
 
 
@@ -68,17 +68,17 @@ public class IntroActivity extends AppCompatActivity { // AppCombatActivity prov
         administratorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(IntroActivity.this, FirstTimeProfileCreationActivity.class);
+                Intent intent = new Intent(IntroActivity.this, Login.class);
                 startActivity(intent);
             }
         });
-        loginButton.setOnClickListener(new View.OnClickListener() {
+/*        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(IntroActivity.this, Login.class);
                 startActivity(intent);
             }
-        });
+        });*/
     }
 
 }

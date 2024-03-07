@@ -16,7 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
+// Not in use anymore
 public class Login extends AppCompatActivity {
     private EditText username;
     private EditText password;
@@ -79,7 +79,7 @@ public class Login extends AppCompatActivity {
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             //
-            Intent intent = new Intent(Login.this, MainActivity.class);
+            Intent intent = new Intent(Login.this, TestSuccessScreen.class);
             startActivity(intent);
             finish(); // Close the current activity
         } else {
