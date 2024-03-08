@@ -52,7 +52,7 @@ public class AddEventActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveEvent(eventName.getText().toString(), eventTime.getText().toString(),eventDate.getText().toString(),eventAddress.getText().toString());
+                saveEvent(eventName.getText().toString(), eventDate.getText().toString(),eventTime.getText().toString(),eventAddress.getText().toString());
             }
         });
 
