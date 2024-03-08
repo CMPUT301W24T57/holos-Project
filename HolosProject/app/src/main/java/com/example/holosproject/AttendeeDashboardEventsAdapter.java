@@ -53,7 +53,7 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         textViewEventName.setText("EVENT NAME: " + event.getName());
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
         textViewEventTime.setText("EVENT TIME: " + event.getTime());
-        textViewEventLocation.setText("EVENT LOCATION: " + event.getLocation());
+        textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
         dispbuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface diagdisp, int i) {
