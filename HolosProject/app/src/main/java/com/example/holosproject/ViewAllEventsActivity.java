@@ -58,7 +58,7 @@ import androidmads.library.qrgenearator.QRGEncoder;
  **/
 
 public class ViewAllEventsActivity extends AppCompatActivity
-                    implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     // Using a RecyclerView to display all of the Events that exist within our app
     private RecyclerView allEventsRecyclerView;
@@ -70,10 +70,13 @@ public class ViewAllEventsActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
 
-    // Needed for promo QR code behaviour
-    private boolean fetchDone = false;
-
     // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
+    /**
+     * When a user selects an item from the nav drawer menu, this method is called.
+     * @param item The selected menu item.
+     * @return True if the event was handled successfully, false otherwise.
+     */
+    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // If the user selects one of the items in the drawer, what happens? (navigate to that respective activity)
         int id = item.getItemId();
@@ -93,7 +96,6 @@ public class ViewAllEventsActivity extends AppCompatActivity
             finish();
         }
 
-
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -105,11 +107,6 @@ public class ViewAllEventsActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        // Sample data
-        //allEventsList.add(new Event("Presidential Re-election", 43, "Brampton", "8:00", "January 1, 2024"));
-        //allEventsList.add(new Event("Coronation Day", 56, "Ohio", "6:00", "November 3rd, 2024"));
-
 
         // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -124,7 +121,6 @@ public class ViewAllEventsActivity extends AppCompatActivity
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
 
         allEventsRecyclerView = findViewById(R.id.allEventsRecyclerView);
         allEventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -146,8 +142,12 @@ public class ViewAllEventsActivity extends AppCompatActivity
                 }
             }, 1000);
         }
+        // TODO: Fetch all events from Firestore and update the RecyclerView
     }
 
+    /**
+     * Fetches events from the database and updates the RecyclerView.
+     */
     private void fetchEvents() {
         // Fetches events from database, and does manual serialization :-(
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -177,7 +177,6 @@ public class ViewAllEventsActivity extends AppCompatActivity
                         // Handle the error properly
                     }
                 });
-        fetchDone = true;
     }
 
     private void handlePromo(String eventID) {
@@ -356,4 +355,3 @@ public class ViewAllEventsActivity extends AppCompatActivity
         }
     }
 }
-

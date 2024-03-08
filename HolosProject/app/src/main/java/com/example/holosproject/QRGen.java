@@ -34,7 +34,13 @@ import androidmads.library.qrgenearator.QRGEncoder;
 import androidmads.library.qrgenearator.QRGSaver;
 
 public class QRGen extends AppCompatActivity {
-// see https://github.com/androidmads/QRGenerator
+
+    /**
+     * Called when the activity is starting.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     *                           Note: Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +57,13 @@ public class QRGen extends AppCompatActivity {
         ImageView QRView = findViewById(R.id.QRView);
         TextInputEditText editText = findViewById(R.id.qrText);
 
-// GENERATE QR CODE FUNCTIONALITY
+        // GENERATE QR CODE FUNCTIONALITY
         genButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Called when the generate QR code button is clicked.
+             *
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 QRGEncoder qrgEncoder = new QRGEncoder(editText.getText().toString(), null, QRGContents.Type.TEXT, 250);
@@ -66,25 +77,24 @@ public class QRGen extends AppCompatActivity {
         });
 
         // SAVING QR CODE FUNCTIONALITY
-
         findViewById(R.id.save_btn).setOnClickListener(v -> {
-                OutputStream fos;
-                try {
-                    QRGEncoder qrgEncoder = new QRGEncoder(editText.getText().toString(), null, QRGContents.Type.TEXT, 200);
-                    Bitmap bitmap = qrgEncoder.getBitmap(0);
-                    ContentResolver resolver = getContentResolver();
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, editText.getText().toString() + "Code" + ".jpg");
-                    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
-                    Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-                    fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    Objects.requireNonNull(fos);
-                    Toast.makeText(QRGen.this, "Image saved", Toast.LENGTH_LONG).show();
-                    editText.setText(null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            OutputStream fos;
+            try {
+                QRGEncoder qrgEncoder = new QRGEncoder(editText.getText().toString(), null, QRGContents.Type.TEXT, 200);
+                Bitmap bitmap = qrgEncoder.getBitmap(0);
+                ContentResolver resolver = getContentResolver();
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, editText.getText().toString() + "Code" + ".jpg");
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
+                Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                Objects.requireNonNull(fos);
+                Toast.makeText(QRGen.this, "Image saved", Toast.LENGTH_LONG).show();
+                editText.setText(null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 }

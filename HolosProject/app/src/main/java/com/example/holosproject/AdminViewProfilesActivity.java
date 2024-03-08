@@ -62,7 +62,12 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
 
     }
 
-    // Method specifying what happens when we tap on a user's profile, which is getting prompted to delete it.
+    /**
+     * Handles click events on user profiles in the RecyclerView.
+     *
+     * @param view     The clicked view.
+     * @param position The position of the clicked item in the RecyclerView.
+     */
     private void onItemClick(View view, int position) {
         UserProfile selectedProfile = profiles.get(position);
         new AlertDialog.Builder(this)
@@ -73,7 +78,11 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
                 .show();
     }
 
-    // Method to delete profile from firebase
+    /**
+     * Deletes a user profile from Firebase.
+     *
+     * @param profile The profile to be deleted.
+     */
     private void deleteProfile(UserProfile profile) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("userProfiles").document(profile.getUid())
@@ -89,7 +98,11 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
                 });
     }
 
-    // Method to show Toast message
+    /**
+     * Shows a toast message.
+     *
+     * @param message The message to be displayed in the toast.
+     */
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }

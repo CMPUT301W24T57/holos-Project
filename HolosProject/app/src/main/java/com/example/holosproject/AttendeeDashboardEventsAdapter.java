@@ -40,10 +40,14 @@ import androidmads.library.qrgenearator.QRGEncoder;
  * Associated with the tem_attendee_dashboard.xml layout.
  **/
 
-public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<AttendeeDashboardEventsAdapter.EventViewHolder>  {
+public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<AttendeeDashboardEventsAdapter.EventViewHolder> {
     private List<Event> eventList;
     private final String TAG = "Event_details";
 
+    /**
+     * Constructs an AttendeeDashboardEventsAdapter with the given list of events.
+     * @param eventList The list of events to display.
+     */
     public AttendeeDashboardEventsAdapter(List<Event> eventList) {
         this.eventList = eventList;
     }
@@ -55,14 +59,17 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         return new EventViewHolder(view, this);
     }
 
+    /**
+     * Displays the details of the event in a dialog.
+     * @param context The context of the application.
+     * @param event The event to display details of.
+     */
     private void showEventDetailsDialog(Context context, Event event) {
         AlertDialog.Builder dispbuilder = new AlertDialog.Builder(context);
-
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View diagView = inflater.inflate(R.layout.event_info, null);
         dispbuilder.setView(diagView);
-
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -81,6 +88,7 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
         textViewEventTime.setText("EVENT TIME: " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
+
         // QR DISPLAY:
         QRGEncoder qrgEncoder = new QRGEncoder(event.getEventId(), null, QRGContents.Type.TEXT, 200);
         try {
@@ -90,8 +98,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
             e.printStackTrace();
         }
 
-        /*String attendeesStr = "Attendees: " + String.join(", ", event.getAttendees());
-        textViewEventAttendeeList.setText(attendeesStr);*/
         List<String> attendeeIds1 = event.getAttendees();
         displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
 
@@ -124,7 +130,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
             @Override
             public void onClick(DialogInterface diagdisp, int i) {
                 diagdisp.dismiss();
-
             }
         });
 
@@ -138,8 +143,11 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         holder.textViewEventName.setText(event.getName());
         holder.textViewEventDate.setText(event.getDate());
     }
-    /*
-    Adds event to the users myEvents
+
+    /**
+     * Adds an event to the user's myEvents.
+     * @param userId The ID of the user.
+     * @param eventId The ID of the event to add.
      */
     private void addUserEvent(String userId, String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -151,11 +159,10 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
     }
 
     /**
-     * Removes an event from a user's myEvents list
-     * @param userId: the ID of the user we are deleting from
-     * @param eventId: the event ID to delete
+     * Removes an event from the user's myEvents list.
+     * @param userId The ID of the user.
+     * @param eventId The ID of the event to remove.
      */
-
     private void removeUserEvent(String userId, String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("userProfiles").document(userId);
@@ -165,26 +172,25 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                 .addOnFailureListener(e -> Log.e(TAG, "Error removing event", e));
     }
 
-    /*
-    since names are passed in to event as a uid use the uid to find every string
+    /**
+     * Displays attendee names in the TextView.
+     * @param attendeeIds The list of attendee IDs.
+     * @param textViewEventAttendeeList The TextView to display the names.
+     * @param db The instance of FirebaseFirestore.
      */
     private void displayAttendeeNames(List<String> attendeeIds, TextView textViewEventAttendeeList, FirebaseFirestore db) {
         List<String> attendeeNames = new ArrayList<>();
-
-        // Since the counter decrements it ensures that we find all attendees
         AtomicInteger fetchCounter = new AtomicInteger(attendeeIds.size());
 
         for (String attendeeId : attendeeIds) {
             db.collection("userProfiles").document(attendeeId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            // Find the name
                             String name = documentSnapshot.getString("name");
                             if (name != null) {
                                 attendeeNames.add(name);
                             }
                         }
-                        // Decrement the counter and check if all fetches are done
                         if (fetchCounter.decrementAndGet() == 0) {
                             String namesStr = String.join(", ", attendeeNames);
                             textViewEventAttendeeList.setText("Attendees: " + namesStr);
@@ -199,6 +205,7 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                     });
         }
     }
+
     @Override
     public int getItemCount() {
         return eventList.size();

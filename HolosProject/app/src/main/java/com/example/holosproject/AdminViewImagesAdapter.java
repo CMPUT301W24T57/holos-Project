@@ -23,8 +23,12 @@ public class AdminViewImagesAdapter extends RecyclerView.Adapter<AdminViewImages
     private List<Integer> imagesList;
     private Context context; // Define context to use in dialog
 
+    /**
+     * Constructs an AdminViewImagesAdapter with the specified list of image resources.
+     *
+     * @param imagesList The list of image resources to be displayed.
+     */
     public AdminViewImagesAdapter(List<Integer> imagesList) {
-        this.context = context;
         this.imagesList = imagesList;
     }
 
@@ -35,6 +39,7 @@ public class AdminViewImagesAdapter extends RecyclerView.Adapter<AdminViewImages
         View view = LayoutInflater.from(context).inflate(R.layout.admin_image_list_item, parent, false);
         return new ViewHolder(view);
     }
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // Bind the image resource to the ImageView
@@ -48,15 +53,26 @@ public class AdminViewImagesAdapter extends RecyclerView.Adapter<AdminViewImages
         return imagesList.size();
     }
 
+    /**
+     * ViewHolder class for holding ImageView references.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
 
+        /**
+         * Constructs a ViewHolder with the given View.
+         *
+         * @param itemView The view containing the ImageView.
+         */
         public ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.image); // Make sure this is the correct ID
         }
     }
 
+    /**
+     * Displays a dialog for confirming image deletion.
+     */
     private void showDeleteConfirmation() {
         // Use the context passed to the adapter to create the dialog
         new AlertDialog.Builder(context)

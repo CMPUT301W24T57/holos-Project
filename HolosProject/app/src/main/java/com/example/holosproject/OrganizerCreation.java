@@ -41,9 +41,6 @@ import java.util.Map;
  **/
 
 public class OrganizerCreation extends AppCompatActivity {
-    // This activity is shown during the first runtime of the app. If a user initially selects "Attendee", then this
-    // activity will appear, prompting them to create a profile.
-
     // UI Elements
     private ImageView imageViewProfile;
     private EditText editTextName;
@@ -54,7 +51,7 @@ public class OrganizerCreation extends AppCompatActivity {
     private Switch switchNotifications;
     private Switch switchGeolocation;
     private Button buttonFinishProfileCreation;
-    private static final String TAG = "EmailPasswordActivity";
+    private static final String TAG = "OrganizerCreation";
 
     // Firestore database reference
     private FirebaseFirestore database;
@@ -62,6 +59,7 @@ public class OrganizerCreation extends AppCompatActivity {
     private FirebaseUser user;
     private FirebaseAuth mAuth;
     String emailpad = "@holos.project";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,18 +86,16 @@ public class OrganizerCreation extends AppCompatActivity {
                 final String homepage = editTextHomepage.getText().toString().trim();
                 createAccount(name, contact, homepage);
             }
-         });
+        });
 
     }
 
     /**
      * Creates the account with email and password.
-     * @param name
-     * The users name.
-     * @param contact
-     * The users contact information.
-     * @param homepage
-     * The users homepage.
+     *
+     * @param name     The user's name.
+     * @param contact  The user's contact information.
+     * @param homepage The user's homepage.
      */
     private void createAccount(String name, String contact, String homepage) {
         mAuth.signInAnonymously()
@@ -147,6 +143,11 @@ public class OrganizerCreation extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Updates the UI based on the user's authentication status.
+     *
+     * @param user The FirebaseUser object representing the current user.
+     */
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             // If the user is signed in go to the next activity
@@ -158,7 +159,7 @@ public class OrganizerCreation extends AppCompatActivity {
             Toast.makeText(OrganizerCreation.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
         }
     }
-    }
+}
 
 
 

@@ -31,18 +31,11 @@ import java.util.Map;
  * XML Files associated with this are: activity_edit_profile.xml
  **/
 
-public class EditProfileActivity  extends AppCompatActivity {
+public class EditProfileActivity extends AppCompatActivity {
 
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
-
     private Button finishEditProfileButton;
-
-    // TODO: Populate the ImageView with users Profile Image
-
-    // TODO: Change the FloatingButton Back button to have a "Go Back" Arrow icon instead (currently has a placeholder)
-
-    // TODO: Populate Notification and Geolocation switch with corresponding setting (This currently isn't stored within Firebase)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +45,7 @@ public class EditProfileActivity  extends AppCompatActivity {
         // Getting the current user from Firebase
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Initialize your EditTexts and other UI components
+        // Initialize EditTexts and other UI components
         editTextName = findViewById(R.id.editTextName);
         editTextHomepage = findViewById(R.id.editTextHomepage);
         editTextContact = findViewById(R.id.editTextContact);
@@ -85,7 +78,11 @@ public class EditProfileActivity  extends AppCompatActivity {
         });
     }
 
-    // Gets the current User Profile, and populates our fields with their profile data
+    /**
+     * fetchUserProfile retrieves the current user profile and populates UI fields with the data.
+     *
+     * @param uid The user ID to fetch the profile for.
+     */
     private void fetchUserProfile(String uid) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userProfileRef = db.collection("userProfiles").document(uid);
@@ -113,49 +110,48 @@ public class EditProfileActivity  extends AppCompatActivity {
         });
     }
 
-        // This method takes the text in the text fields, validates them, and them updates the proper document in
-        // Firebase with this data.
-        private void updateProfile() {
-            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Get the current user's ID
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
+    /**
+     * updateProfile validates input data and updates the user's profile in Firebase Firestore.
+     */
+    private void updateProfile() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Get the current user's ID
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            // Collect data from input fields
-            String newName = ((EditText)findViewById(R.id.editTextName)).getText().toString();
-            String newContact = ((EditText)findViewById(R.id.editTextContact)).getText().toString();
-            String newHomepage = ((EditText)findViewById(R.id.editTextHomepage)).getText().toString();
+        // Collect data from input fields
+        String newName = editTextName.getText().toString();
+        String newContact = editTextContact.getText().toString();
+        String newHomepage = editTextHomepage.getText().toString();
 
-            // Add more fields as necessary here
+        // Validate input data
+        if (newName.isEmpty() || newContact.isEmpty() || newHomepage.isEmpty()) {
+            // Show error message
+            return;
+        }
 
-            // Validate input data
-            if(newName.isEmpty() || newContact.isEmpty() || newHomepage.isEmpty()) {
-                // Show error message
-                return;
-            }
+        // Create a map of the data to update
+        Map<String, Object> updatedUserData = new HashMap<>();
+        updatedUserData.put("name", newName);
+        updatedUserData.put("contact", newContact);
+        updatedUserData.put("homepage", newHomepage);
+        // Add more fields to update here
 
-            // Create a map of the data to update
-            Map<String, Object> updatedUserData = new HashMap<>();
-            updatedUserData.put("name", newName);
-            updatedUserData.put("contact", newContact);
-            updatedUserData.put("homepage", newHomepage);
-            // Add more fields to update here
-
-            // Update the user's profile document in Firestore
-            db.collection("userProfiles").document(userId)
-                    .update(updatedUserData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Handle success
-                            Toast.makeText(EditProfileActivity.this, "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(Exception e) {
-                            // Handle failure
-                            Toast.makeText(EditProfileActivity.this, "Profile Update Failed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+        // Update the user's profile document in Firestore
+        db.collection("userProfiles").document(userId)
+                .update(updatedUserData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Handle success
+                        Toast.makeText(EditProfileActivity.this, "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(Exception e) {
+                        // Handle failure
+                        Toast.makeText(EditProfileActivity.this, "Profile Update Failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
