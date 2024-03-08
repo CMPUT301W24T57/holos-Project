@@ -32,13 +32,13 @@ import java.util.List;
  **/
 
 public class OrganizerDashboardActivity extends AppCompatActivity
-                             implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView eventsRecyclerView;
     private FloatingActionButton fabAddEvent;
     private OrganizerDashboardEventsAdapter eventsAdapter;
 
-    private List<Event> eventList = new ArrayList<>(); // model class
+    private List<Event> eventsList; // model class
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private FirebaseFirestore db;
@@ -93,8 +93,9 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         // Setting up the recyclerview
         eventsRecyclerView = findViewById(R.id.recycler_view_events); // Assuming this is the ID in your XML
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        eventsList = new ArrayList<>();
         // TODO: Populate the ArrayList with the users created events
-        eventsAdapter = new OrganizerDashboardEventsAdapter(eventList);
+        eventsAdapter = new OrganizerDashboardEventsAdapter(eventsList);
         eventsRecyclerView.setAdapter(eventsAdapter);
 
         // Setup the drawer
@@ -116,7 +117,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         });
 
         // When eventList has been fixed uncomment
-        //fetchUserEvents();
+        fetchUserEvents();
     }
 
     /*
@@ -148,14 +149,24 @@ public class OrganizerDashboardActivity extends AppCompatActivity
      */
     private void fetchEventsFromCollection(List<String> myEvents) {
         for (String eventId : myEvents) {
-            Log.d(TAG, "Your events");
             db.collection("events").document(eventId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            Event event = documentSnapshot.toObject(Event.class);
-                            event.setEventId(documentSnapshot.getId());// adds event id so we can more easily access it later
-                            eventList.add(event);
+                            // Manual deserialization
+                            String name = documentSnapshot.getString("name");
+                            String date = documentSnapshot.getString("date");
+                            String time = documentSnapshot.getString("time");
+                            String address = documentSnapshot.getString("address");
+                            String creator = documentSnapshot.getString("creator");
+                            ArrayList<String> attendees = (ArrayList<String>) documentSnapshot.get("attendees");
+
+                            // Assuming that your Event constructor sets the eventId as well
+                            Event event = new Event(name, date, time, address, creator);
+                            event.setEventId(eventId);
+                            event.setAttendees(attendees);
+
+                            eventsList.add(event);
                             eventsAdapter.notifyDataSetChanged();
                         } else {
                             Log.d(TAG, "Document does not exist");
@@ -166,4 +177,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                     });
         }
     }
+
+    // TODO: Fix the bug where events you create dont display until you leave the screen and come back
+
 }
