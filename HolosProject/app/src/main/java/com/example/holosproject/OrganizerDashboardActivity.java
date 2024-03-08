@@ -38,7 +38,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
     private FloatingActionButton fabAddEvent;
     private OrganizerDashboardEventsAdapter eventsAdapter;
 
-    private List<Event> eventsList; // model class
+    private List<Event> eventList = new ArrayList<>(); // model class
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private FirebaseFirestore db;
@@ -93,9 +93,8 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         // Setting up the recyclerview
         eventsRecyclerView = findViewById(R.id.recycler_view_events); // Assuming this is the ID in your XML
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        eventsList = new ArrayList<>();
         // TODO: Populate the ArrayList with the users created events
-        eventsAdapter = new OrganizerDashboardEventsAdapter(eventsList);
+        eventsAdapter = new OrganizerDashboardEventsAdapter(eventList);
         eventsRecyclerView.setAdapter(eventsAdapter);
 
         // Setup the drawer
@@ -117,7 +116,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         });
 
         // When eventList has been fixed uncomment
-        fetchUserEvents();
+        //fetchUserEvents();
     }
 
     /*
@@ -156,7 +155,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                         if (documentSnapshot.exists()) {
                             Event event = documentSnapshot.toObject(Event.class);
                             event.setEventId(documentSnapshot.getId());// adds event id so we can more easily access it later
-                            eventsList.add(event);
+                            eventList.add(event);
                             eventsAdapter.notifyDataSetChanged();
                         } else {
                             Log.d(TAG, "Document does not exist");
