@@ -74,7 +74,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
         holder.textViewEventName.setText(event.getName());
-        holder.textViewEventName.setText(String.format("%s, %s", event.getDate(), event.getTime()));
+        holder.textViewEventDate.setText(String.format("%s, %s", event.getDate(), event.getTime()));
     }
     private void showEventDetailsDial(Context context, Event event) {
         AlertDialog.Builder dispbuilder = new AlertDialog.Builder(context);
