@@ -51,4 +51,26 @@
         android:layout_marginBottom="14dp"/>
 
 
+    <TextView
+        android:id="@+id/textViewEventAnnouncementsDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="80dp"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:text="RECENT ANNOUNCEMENTS"
+        android:textSize="22sp" />
+
+
+    <TextView
+        android:id="@+id/textViewEventNullAnnouncementsDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="-40dp"
+        android:text="No announcements have been made for this event yet. Check back later!"
+        android:textSize="17sp" />
+
+
 </LinearLayout>
