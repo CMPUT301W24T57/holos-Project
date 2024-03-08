@@ -68,14 +68,19 @@
         android:layout_marginTop="7dp"
         android:layout_marginBottom="14dp"/>
 
-
+    <ImageView
+        android:id="@+id/QRView"
+        android:layout_width="200sp"
+        android:layout_height="200sp"
+        android:layout_marginTop="20dp">
+    </ImageView>
 
     <TextView
         android:id="@+id/textViewEventAnnouncementsDiag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="50dp"
         android:textStyle="bold"
         android:gravity="center_horizontal"
         android:text="RECENT ANNOUNCEMENTS"
