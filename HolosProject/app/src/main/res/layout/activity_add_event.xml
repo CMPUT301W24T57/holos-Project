@@ -60,22 +60,24 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"/>
 
-<!--    &lt;!&ndash; EditText for event description &ndash;&gt;
-    <EditText
-        android:id="@+id/edit_text_event_description"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Event Description"
-        android:layout_below="@id/edit_text_event_address"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>-->
+    <!--    &lt;!&ndash; EditText for event description &ndash;&gt;
+        <EditText
+            android:id="@+id/edit_text_event_description"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Event Description"
+            android:layout_below="@id/edit_text_event_address"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"/>-->
 
     <!-- Button to upload QR & poster image -->
     <Button
         android:id="@+id/button_upload_image"
+        android:text="Upload Image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/edit_text_event_address"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
