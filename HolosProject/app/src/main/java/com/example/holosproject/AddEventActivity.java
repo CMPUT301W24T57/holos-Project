@@ -1,73 +1,131 @@
 package com.example.holosproject;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.Serializable;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddEventActivity extends AppCompatActivity {
-
-    private EditText eventNameEditText;
-    private EditText eventDateEditText;
-    private EditText eventTimeEditText;
-    private EditText eventLocationEditText;
-    private EditText eventDescriptionEditText;
-    private Button cancelButton;
-    private Button saveButton;
-
+    private EditText eventName;
+    private EditText eventDate;
+    private EditText eventTime;
+    private EditText eventAddress;
+    private EditText eventDescription;// leaving out for now
+    private final String TAG = "addEventActivityScreen";
+    private FirebaseUser currentUser;
+    private Button save;
+    private Button cancel;
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
-
-        eventNameEditText = findViewById(R.id.edit_text_event_name);
-        eventDateEditText = findViewById(R.id.edit_text_event_date);
-        eventTimeEditText = findViewById(R.id.edit_text_event_time);
-        eventLocationEditText = findViewById(R.id.edit_text_event_address);
-        eventDescriptionEditText = findViewById(R.id.edit_text_event_description);
-        cancelButton = findViewById(R.id.button_cancel);
-        saveButton = findViewById(R.id.button_save);
-
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        eventName = findViewById(R.id.edit_text_event_name);
+        eventTime = findViewById(R.id.edit_text_event_time);
+        eventDate = findViewById(R.id.edit_text_event_date);
+        eventAddress = findViewById(R.id.edit_text_event_address);
+        cancel = findViewById(R.id.button_cancel);
+        save = findViewById(R.id.button_save);
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String eventName = eventNameEditText.getText().toString();
-                String eventDate = eventDateEditText.getText().toString();
-                String eventTime = eventTimeEditText.getText().toString();
-                String eventLocation = eventLocationEditText.getText().toString();
-                String eventDescription = eventDescriptionEditText.getText().toString();
-
-                if (!eventName.isEmpty() && !eventDate.isEmpty() && !eventTime.isEmpty() && !eventLocation.isEmpty() && !eventDescription.isEmpty()) {
-                    Event newEvent = new Event(eventName, eventDate, eventTime, eventLocation, eventDescription);
-
-                    finish();
-
-
-                } else {
-                    // Show error message if any field is empty
-                    Toast.makeText(AddEventActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                }
+                saveEvent(eventName.getText().toString(), eventTime.getText().toString(),eventDate.getText().toString(),eventAddress.getText().toString());
             }
         });
 
-        //TODO: Add button functionality to the "Upload QR and Postier Image
-        
+        // Here, you'll have your logic for adding events
+        // This includes initializing your views, setting up click listeners, and handling the event creation process
+        // ...
+    }
+
+    /*
+    Adds the event object to events in firebase.
+     */
+    private void saveEvent(String eventName, String eventTime, String eventDate, String eventAddress) {
+        // Get a reference to the Firestore database
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Get the current user
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        // Create a new event object with the provided details
+        Event event = new Event(eventName, eventTime,eventDate, eventAddress, currentUser.getUid());
+
+        // Add the event to the Firestore database
+        db.collection("events")
+                .add(event)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        String eventID = documentReference.getId();
+                        Log.d(TAG, "Event added with ID: " + documentReference.getId());
+                        addToMyEvents(eventID);
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding event", e);
+                    }
+                });
+    }
+
+    /*
+    adds the eventId to created events
+     */
+    private void addToMyEvents(String eventId) {
+        // Get the current user
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            // Handle the case where the user is not signed in
+            return;
+        }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Finds the user's profile
+        DocumentReference userProfileRef = db.collection("userProfiles").document(currentUser.getUid());
+
+        // Adds the eventId to created events.
+        userProfileRef.update("createdEvents", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Event ID added to createdEvents array");
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding event ID to createdEvents array", e);
+                        // Handle the failure to add the event ID to the createdEvents array
+                    }
+                });
     }
 
 
-}
 
+}
