@@ -123,7 +123,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
     /**
      * Fetches events created by the current user from Firestore.
      */
-    private     void fetchUserEvents() {
+    private void fetchUserEvents() {
         if (currentUser != null) {
             String userId = currentUser.getUid();
             db.collection("userProfiles").document(userId).get()
@@ -172,9 +172,6 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                     });
         }
     }
-    // TODO: Fix the bug where events you create dont display until you leave the screen and come back
+    // TODO: Fix the bug where events you create don't display until you leave the screen and come back
 
 }
-
-
-
