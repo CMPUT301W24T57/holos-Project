@@ -14,7 +14,7 @@ public class Event {
     private String address;
     private final String creator;
     private ArrayList<String> attendees;
-    private  String eventId;
+    private String eventId;
 
     public Event(String name, String date, String time, String address, String creator) {
         this.name = name;
