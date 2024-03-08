@@ -117,7 +117,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         });
 
         // When eventList has been fixed uncomment
-        //fetchUserEvents();
+        fetchUserEvents();
     }
 
     /*
