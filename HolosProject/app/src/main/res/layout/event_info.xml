@@ -50,4 +50,5 @@
         android:text="Event Location:"
         android:layout_marginBottom="14dp"/>
 
+
 </LinearLayout>
