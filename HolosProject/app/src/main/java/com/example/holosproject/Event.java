@@ -14,6 +14,8 @@ public class Event {
     private String address;
     private final String creator;
     private ArrayList<String> attendees;
+
+    private ArrayList<String> checkIns;
     private String eventId;
 
     public Event(String name, String date, String time, String address, String creator) {
@@ -24,24 +26,21 @@ public class Event {
         this.creator = creator;
         this.eventId = "";
         this.attendees = new ArrayList<String>();
+        this.checkIns = new ArrayList<String>();
 
     }
-
-    public Event() {
-        this.name = "";
-        this.date = "";
-        this.time = "";
-        this.address = "";
-        this.creator = "";
-        this.eventId = "";
-        this.attendees = new ArrayList<String>();
-    }
-
     // Getters and setters for the event attributes
     public ArrayList<String> getAttendees() {
         return attendees;
     }
 
+    public ArrayList<String> getCheckIns() {
+        return checkIns;
+    }
+
+    public void setCheckIns(ArrayList<String> checkIns) {
+        this.checkIns = checkIns;
+    }
     public String getEventId() {
         return eventId;
     }

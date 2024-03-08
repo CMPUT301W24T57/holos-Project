@@ -3,9 +3,15 @@ package com.example.holosproject;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -33,8 +39,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidmads.library.qrgenearator.QRGContents;
+import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * FileName: AttendeeDashboardActivity
@@ -108,12 +118,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
      * @param user: The user ID of the current user using the app
      */
     private void displayEvents(FirebaseUser user) {
-        // Get the current user
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         // Finds the user's profile
-        DocumentReference userProfileRef = db.collection("userProfiles").document(user.getUid());
-
+        DocumentReference userProfileRef = database.collection("userProfiles").document(user.getUid());
         userProfileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -142,13 +148,25 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     }
 
     /**
-     * Sends user to a (barebones) event details display screen where they can RSVP.
+     * Sends user to a (barebones) event details display screen where they can check in.
      * @param scanContents: the contents of a QR code scan, should be the ID of a valid event
      */
 
     private void goToEventDisplay(String scanContents) {
         Intent intent = new Intent(this, EventDisplay.class);
         intent.putExtra("contents", scanContents);
+        startActivity(intent);
+
+    }
+
+    /**
+     * Sends user to the event details on the all events screen (to differ from check in)
+     * @param scanContents: the contents of a QR code scan, should be the ID of a valid event
+     */
+
+    private void goToPromoDisplay(String scanContents) {
+        Intent intent = new Intent(this, ViewAllEventsActivity.class);
+        intent.putExtra("promo", scanContents);
         startActivity(intent);
     }
 
@@ -168,7 +186,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     }
 
     /**
-     * Adds an event to a user and adds the user to the event's attendees.
+     * Adds an event to a user if necessary and adds the user to the event's checkins.
      * @param eventID The ID of the event to be added.
      * @param document A document representing the event.
      */
@@ -177,13 +195,21 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
         builder.setTitle("Event Added");
         // add user to event:
-         ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
-         if (!attendees.contains(currentUser.getUid())) {
+        ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+        ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
+         if (!checkIns.contains(currentUser.getUid())) {
               addUserEvent(currentUser.getUid(), eventID);
               DocumentReference eventRef = database.collection("events").document(eventID);
-              eventRef.update("attendees", FieldValue.arrayUnion(currentUser.getUid()))
-                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to attendees"))
+              eventRef.update("checkIns", FieldValue.arrayUnion(currentUser.getUid()))
+                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                      .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+        }
+         // just in case?
+        if (!attendees.contains(currentUser.getUid())) {
+            DocumentReference eventRef = database.collection("events").document(eventID);
+            eventRef.update("attendees", FieldValue.arrayUnion(currentUser.getUid()))
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to attendees"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
         }
         addEvent(eventID);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
@@ -228,30 +254,41 @@ public class AttendeeDashboardActivity extends AppCompatActivity
      * @param scanContents: a string containing the contents of the scanned QR code
      */
     private void handleScan(String scanContents) {
-        DocumentReference docRef = eventsRef.document(scanContents);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        goToEventDisplay(scanContents);
+        // if this is a promo QR,
+        if (scanContents.contains("promo")) {
+            String strippedContents = scanContents.replace("promo", "");
+            DocumentReference docRef = eventsRef.document(strippedContents);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            goToPromoDisplay(scanContents);
+                        }
                     } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
-                        builder.setTitle("Result");
-                        builder.setMessage("Event Not Found in Firebase");
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).show();
+                        Log.d("Firestore", "Database Error");
                     }
-                } else {
-                    Log.d("Firestore", "Database Error");
                 }
-            }
-        });
+            });
+        }
+        // if this is just a check-in QR,
+        else {
+            DocumentReference docRef = eventsRef.document(scanContents);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            goToEventDisplay(scanContents);
+                        }
+                    } else {
+                        Log.d("Firestore", "Database Error");
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -263,7 +300,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // get the current user.
-
 
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);

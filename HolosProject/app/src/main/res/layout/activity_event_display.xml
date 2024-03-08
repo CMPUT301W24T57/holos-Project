@@ -49,7 +49,7 @@
         android:id="@+id/rsvpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="RSVP for Event"
+        android:text="Check In to Event"
         android:layout_below="@id/event_Date"
         android:layout_centerHorizontal="true"
         />
