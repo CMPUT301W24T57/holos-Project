@@ -24,7 +24,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.organizer_dashboard, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.organizer_dashboard_item_event, parent, false);
         return new EventViewHolder(view);
     }
 
@@ -32,8 +32,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
         holder.eventNameTextView.setText(event.getName());
-        holder.eventDateTextView.setText(event.getDate());
-
+        holder.eventDateTextView.setText(String.format("%s, %s", event.getDate(), event.getTime()));
     }
 
     @Override
