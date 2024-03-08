@@ -1,5 +1,6 @@
 package com.example.holosproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -58,7 +59,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         // Set onClickListeners for each button
         btnViewProfiles.setOnClickListener(v -> {
-            // Navigate to the View Profiles Activity
+            Intent intent = new Intent(this, AdminViewProfilesActivity.class);
+            startActivity(intent);
+            // Not using finish();, because we need to be able to get back to this screen.
+            // Maybe we add a back button to the view profiles screen?
         });
 
         btnViewEvents.setOnClickListener(v -> {
@@ -66,7 +70,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
 
         btnViewImages.setOnClickListener(v -> {
-            // Navigate to the View Images Activity
+            Intent intent = new Intent(this, AdminViewImagesActivity.class);
+            startActivity(intent);
         });
 
 

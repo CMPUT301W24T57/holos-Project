@@ -25,6 +25,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * FileName: OrganizerDashboardActivity
+ *
+ * layout files associated with this: organizer_dashboard.xml
+ **/
 
 public class OrganizerDashboardActivity extends AppCompatActivity
                              implements NavigationView.OnNavigationItemSelectedListener {
