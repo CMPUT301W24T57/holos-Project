@@ -1,6 +1,7 @@
 package com.example.holosproject;
 
 import android.app.Dialog;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -24,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.Inflater;
+
+import androidmads.library.qrgenearator.QRGContents;
+import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * FileName: AttendeeDashboardEventsAdapter
@@ -69,11 +74,21 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
+        ImageView qrDisplay = diagView.findViewById(R.id.QRView);
 
         textViewEventName.setText("EVENT NAME: " + event.getName());
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
         textViewEventTime.setText("EVENT TIME: " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
+        // QR DISPLAY:
+        QRGEncoder qrgEncoder = new QRGEncoder(event.getEventId(), null, QRGContents.Type.TEXT, 200);
+        try {
+            Bitmap bitmap = qrgEncoder.getBitmap(0);
+            qrDisplay.setImageBitmap(bitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         /*String attendeesStr = "Attendees: " + String.join(", ", event.getAttendees());
         textViewEventAttendeeList.setText(attendeesStr);*/
         List<String> attendeeIds1 = event.getAttendees();
@@ -89,6 +104,7 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
             } else {
                 // Remove the current user from the attendees list
                 event.getAttendees().remove(currentUserId);
+                removeUserEvent(currentUserId, event.getEventId());
             }
 
             // Update the attendees list in Firestore
@@ -131,6 +147,21 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         userRef.update("myEvents", FieldValue.arrayUnion(eventId))
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event added to user's list"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error adding event to user's list", e));
+    }
+
+    /**
+     * Removes an event from a user's myEvents list
+     * @param userId: the ID of the user we are deleting from
+     * @param eventId: the event ID to delete
+     */
+
+    private void removeUserEvent(String userId, String eventId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("userProfiles").document(userId);
+
+        userRef.update("myEvents", FieldValue.arrayRemove(eventId))
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event removed"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error removing event", e));
     }
 
     /*
