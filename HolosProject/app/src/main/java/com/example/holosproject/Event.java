@@ -80,4 +80,3 @@ public class Event {
         return creator;
     }
     }
-}
