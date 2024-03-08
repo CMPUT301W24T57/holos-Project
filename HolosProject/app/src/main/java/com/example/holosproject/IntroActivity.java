@@ -68,7 +68,7 @@ public class IntroActivity extends AppCompatActivity { // AppCombatActivity prov
         administratorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(IntroActivity.this, FirstTimeProfileCreationActivity.class);
+                Intent intent = new Intent(IntroActivity.this, Login.class);
                 startActivity(intent);
             }
         });

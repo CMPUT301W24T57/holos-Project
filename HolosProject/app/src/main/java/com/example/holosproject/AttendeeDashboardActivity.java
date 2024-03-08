@@ -1,10 +1,17 @@
 package com.example.holosproject;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -14,7 +21,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +43,9 @@ import java.util.List;
  * This dashboard shows all of the events the user is currently enrolled in. There is a different activity for all open events.
 
  * This file also contains first implementation of the drawer menu. This shit was really hard to set up to be honest, lots of different parts.
- * The XML files associated with the drawer are: hamburger_menu.xml, hamburger_menu_header.xml, and activity_attendee_dashboard.xml.
+ * The XML files associated with the drawer are: drawer_menu.xml, drawer_menu_header.xml, and activity_attendee_dashboard.xml.
 
- * Associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
+ * AttendeeDashboardActivity is associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
  **/
 
 public class AttendeeDashboardActivity extends AppCompatActivity
@@ -37,12 +53,23 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     // Using a RecyclerView to display all of the Events our user is currently enrolled in
     private RecyclerView eventsRecyclerView;
+    private final String TAG = "TestScreen";
+    private FirebaseUser currentUser;
     private AttendeeDashboardEventsAdapter eventsAdapter;
     private List<Event> eventList = new ArrayList<>(); // This is the data source
 
     // References to The drawer menu
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
+
+    // References for attendee QR scan:
+    private FloatingActionButton scanButton;
+    private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result->{ //basic popup after scanning to test things
+        if(result.getContents() != null) {
+            String scanContents = result.getContents();
+            handleScan(scanContents);
+        }
+    });
 
     // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
     @Override
@@ -57,14 +84,51 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         } else if (id == R.id.nav_view_all_events) {
             Intent intent = new Intent(this, ViewAllEventsActivity.class);
             startActivity(intent);
+            finish();
 
         }
         else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
             drawerLayout.closeDrawer(GravityCompat.START);
         }
 
+        else if (id == R.id.nav_view_organizer_dashboard) {
+            Intent intent = new Intent(this, OrganizerDashboardActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    /**
+     * scanQRCode
+     * Description: Sends user to a QR code scan screen when QR scan floating action button is tapped.
+     */
+    private void scanQRCode() { // basic QR code scan
+        ScanOptions options = new ScanOptions();
+        options.setBeepEnabled(false);
+        options.setOrientationLocked(true);
+        options.setCaptureActivity(CaptureAct.class);
+        barLauncher.launch(options);
+    }
+
+    /**
+     * handleScan
+     * Description: Handles the results of a QR scan. Barebones for now, need to figure out event
+     * implementation in the firebase before handling things in a more complicated manner.
+     *
+     */
+    private void handleScan(String scanContents) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
+        builder.setTitle("Result");
+        builder.setMessage(scanContents);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).show();
     }
 
     @Override
@@ -75,13 +139,15 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // get the current user.
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         // Sample data
-        eventList.add(new Event("Event 1", "January 1, 2024"));
-        eventList.add(new Event("Event 2", "November 3rd, 2024"));
 
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("");
 
         drawerLayout = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -96,10 +162,13 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventsAdapter = new AttendeeDashboardEventsAdapter(eventList);
         eventsRecyclerView.setAdapter(eventsAdapter);
-    }
 
-    // TODO: Create click listener for QR Code Button, change the icon to a QR code instead of a camera.
+        // TODO: Create click listener for QR Code Button, change the icon to a QR code instead of a camera.
+        scanButton = findViewById(R.id.fabQRCode);
+        scanButton.setOnClickListener(v-> {
+            scanQRCode();
+        });
 
-    // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
 
+}
 }

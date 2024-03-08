@@ -52,10 +52,17 @@ public class ViewAllEventsActivity extends AppCompatActivity
         else if (id == R.id.nav_view_registered_events) {
             Intent intent = new Intent(this, AttendeeDashboardActivity.class);
             startActivity(intent);
+            finish();
         }
         else if (id == R.id.nav_view_all_events) {    // if we try to navigate to current view, close the drawer
             drawerLayout.closeDrawer(GravityCompat.START);
         }
+        else if (id == R.id.nav_view_organizer_dashboard) {    // if we try to navigate to current view, close the drawer
+            Intent intent = new Intent(this, OrganizerDashboardActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;

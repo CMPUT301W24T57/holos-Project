@@ -14,6 +14,10 @@
         android:id="@+id/nav_view_registered_events"
         android:title="View My Events"
         />
+    <item
+        android:id="@+id/nav_view_organizer_dashboard"
+        android:title="Organizer Dashboard"
+        />
     <!-- Add more menu items here -->
     <!-- If the user is an Admin, we need an item that says "View Admin Panel -->
     <!-- If the user is an Organizer, we need an item that says "View Organizer Dashboard -->

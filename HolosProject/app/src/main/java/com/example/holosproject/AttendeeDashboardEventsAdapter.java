@@ -1,7 +1,11 @@
 package com.example.holosproject;
 
+import android.app.Dialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -9,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 /**
  * FileName: AttendeeDashboardEventsAdapter
@@ -30,7 +35,31 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
     @Override
     public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_attendee_dashboard_event, parent, false);
-        return new EventViewHolder(view);
+        return new EventViewHolder(view, this);
+    }
+
+    private void showEventDetailsDialog(Context context, Event event) {
+        AlertDialog.Builder dispbuilder = new AlertDialog.Builder(context);
+
+
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View diagView = inflater.inflate(R.layout.event_info, null);
+        dispbuilder.setView(diagView);
+
+        TextView textViewEventName = diagView.findViewById(R.id.textViewEventNameDiag);
+        TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
+        textViewEventName.setText("EVENT NAME: " + event.getName());
+        textViewEventDate.setText("EVENT DATE: " + event.getDate());
+        dispbuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface diagdisp, int i) {
+                diagdisp.dismiss();
+
+            }
+        });
+
+        AlertDialog diag = dispbuilder.create();
+        diag.show();
     }
 
     @Override
@@ -49,10 +78,21 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         TextView textViewEventName;
         TextView textViewEventDate;
 
-        EventViewHolder(View itemView) {
+        EventViewHolder(View itemView, AttendeeDashboardEventsAdapter adapter) {
             super(itemView);
             textViewEventName = itemView.findViewById(R.id.textViewEventName);
             textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int postn = getAdapterPosition();
+                    if (postn != RecyclerView.NO_POSITION) {
+                        Event event = adapter.eventList.get(postn);
+                        adapter.showEventDetailsDialog(itemView.getContext(), event);
+                    }
+                }
+            });
         }
     }
 }

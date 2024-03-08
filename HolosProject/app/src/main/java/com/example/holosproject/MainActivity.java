@@ -1,9 +1,9 @@
 package com.example.holosproject;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         // Initializing the Firestore database instance when the activity is created
         database = FirebaseFirestore.getInstance();
         // This next line initializes "userAccountNamesRef" by obtaining a reference to the "Profile Account Names" collection in the Firestore database.
-        // userAccountNamesRef holds a reference to the "Proifle Account Names" collection in our database.
+        // userAccountNamesRef holds a reference to the "Profile Account Names" collection in our database.
         userAccountNamesRef = database.collection("Profile Account Names");
     }
     @Override

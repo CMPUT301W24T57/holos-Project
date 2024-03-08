@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+# Currently working on:
+QR Code Implementation
+
+# Important Note:
+~~Don't know if the gitignore takes into account the changes I made to the gradle build files in the app, need to test later by pulling my repository and seeing if it works~~
+=======
 March 5th 3:30pm
 
 CURRENTLY WORKING ON:
@@ -35,3 +42,4 @@ Here are images that show what this build contains:
 
 Note: Last lab session Erquette informed us that all users must be able to attend events. So administrators and organizers must be able to attend events. The way we should think about it is that organizers and administrators are just special attendees, so everyone needs to be an attendee. So based on this, after a user selects their role this profile creation page should appear to everyone, considering they need to be able to attend events. So for first app runtime i imagine these will be the first two screens a user will see 
 
+>>>>>>> main
