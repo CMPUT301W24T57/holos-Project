@@ -20,17 +20,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * FileName: OrganizerDashboardActivity
- *
- * layout files associated with this: organizer_dashboard.xml
- **/
-
+ * OrganizerDashboardActivity: Represents the dashboard for organizers.
+ * Displays a list of events created by the organizer, allows adding new events,
+ * and provides navigation options via a navigation drawer.
+ */
 public class OrganizerDashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,7 +36,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
     private FloatingActionButton fabAddEvent;
     private OrganizerDashboardEventsAdapter eventsAdapter;
 
-    private List<Event> eventsList; // model class
+    private List<Event> eventsList; // List to hold event objects
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private FirebaseFirestore db;
@@ -46,28 +44,28 @@ public class OrganizerDashboardActivity extends AppCompatActivity
     private FirebaseUser currentUser;
     private final String TAG = "OrganizerDashboardActivity";
 
+    /**
+     * Handles navigation item selection from the navigation drawer.
+     * Opens corresponding activities based on the selected item.
+     * @param item The selected item from the navigation drawer.
+     * @return true if the event was handled successfully, false otherwise.
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // If the user selects one of the items in the drawer, what happens? (navigate to that respective activity)
         int id = item.getItemId();
 
         if (id == R.id.nav_edit_profile) {
             Intent intent = new Intent(this, EditProfileActivity.class);
             startActivity(intent);
-
         } else if (id == R.id.nav_view_all_events) {
             Intent intent = new Intent(this, ViewAllEventsActivity.class);
             startActivity(intent);
             finish();
-
-        }
-        else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
+        } else if (id == R.id.nav_view_registered_events) {
             Intent intent = new Intent(this, AttendeeDashboardActivity.class);
             startActivity(intent);
             finish();
-        }
-
-        else if (id == R.id.nav_view_organizer_dashboard) {
+        } else if (id == R.id.nav_view_organizer_dashboard) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
 
@@ -75,6 +73,10 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Initializes activity components and UI elements.
+     * @param savedInstanceState The saved instance state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,12 +91,10 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
 
-
-        // Setting up the recyclerview
-        eventsRecyclerView = findViewById(R.id.recycler_view_events); // Assuming this is the ID in your XML
+        // Setup the recyclerview
+        eventsRecyclerView = findViewById(R.id.recycler_view_events);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventsList = new ArrayList<>();
-        // TODO: Populate the ArrayList with the users created events
         eventsAdapter = new OrganizerDashboardEventsAdapter(eventsList);
         eventsRecyclerView.setAdapter(eventsAdapter);
 
@@ -108,20 +108,20 @@ public class OrganizerDashboardActivity extends AppCompatActivity
 
         // Setup NavigationView
         navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this); // This line sets up the listener
+        navigationView.setNavigationItemSelectedListener(this);
 
-        fabAddEvent = findViewById(R.id.fab_add_event); // Replace with the actual ID from your XML
+        fabAddEvent = findViewById(R.id.fab_add_event);
         fabAddEvent.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddEventActivity.class);
             startActivity(intent);
         });
 
-        // When eventList has been fixed uncomment
+        // Fetch events created by the user
         fetchUserEvents();
     }
 
-    /*
-        Finds the users events that are stored in createdEvents in userProfies/users
+    /**
+     * Fetches events created by the current user from Firestore.
      */
     private void fetchUserEvents() {
         if (currentUser != null) {
@@ -131,10 +131,8 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                         if (task.isSuccessful() && task.getResult() != null) {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
-                                Log.d(TAG, "document exists");
                                 List<String> myEvents = (List<String>) document.get("createdEvents");
                                 if (myEvents != null && !myEvents.isEmpty()) {
-                                    Log.d(TAG, "Created events have been found");
                                     fetchEventsFromCollection(myEvents);
                                 }
                             }
@@ -143,9 +141,9 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         }
     }
 
-    /*
-        Try's to find matches for a users myEvents if found append them to eventList.
-        Also appends the id of the object to event id for easier object access.
+    /**
+     * Fetches details of events from Firestore based on event IDs.
+     * @param myEvents List of event IDs.
      */
     private void fetchEventsFromCollection(List<String> myEvents) {
         for (String eventId : myEvents) {
@@ -153,7 +151,6 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            // Manual deserialization
                             String name = documentSnapshot.getString("name");
                             String date = documentSnapshot.getString("date");
                             String time = documentSnapshot.getString("time");
@@ -161,11 +158,9 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                             String creator = documentSnapshot.getString("creator");
                             ArrayList<String> attendees = (ArrayList<String>) documentSnapshot.get("attendees");
 
-                            // Assuming that your Event constructor sets the eventId as well
                             Event event = new Event(name, date, time, address, creator);
                             event.setEventId(eventId);
                             event.setAttendees(attendees);
-
                             eventsList.add(event);
                             eventsAdapter.notifyDataSetChanged();
                         } else {
@@ -177,8 +172,6 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                     });
         }
     }
-
-
-    // TODO: Fix the bug where events you create dont display until you leave the screen and come back
+    // TODO: Fix the bug where events you create don't display until you leave the screen and come back
 
 }

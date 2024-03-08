@@ -16,13 +16,10 @@ import com.google.android.material.navigation.NavigationView;
 
 /**
  * FileName: AdminDashboardActivity
- * Description: This is the Admin Dashboard, contains buttons that lead to viewing profiles, events, images. Also contains the drawer menu so we can attend events.
-
- * AdminDashboardActivity is associated with the activity_admin_dashboard.xml layout file.
+ * Description: This is the Admin Dashboard activity, which provides access to various functionalities for an admin user,
+ * such as viewing profiles, events, and images, as well as navigating to other dashboard screens. This activity includes
+ * a drawer menu for easy navigation.
  **/
-
-
-
 public class AdminDashboardActivity extends AppCompatActivity {
 
     // References to the toolbar and drawer
@@ -74,8 +71,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
             Intent intent = new Intent(this, AdminViewImagesActivity.class);
             startActivity(intent);
         });
-
-
     }
 
     @Override
@@ -86,6 +81,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Handles navigation item clicks.
+     *
+     * @param item The selected menu item.
+     * @return True if the item is handled successfully, false otherwise.
+     */
     private boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -106,16 +107,15 @@ public class AdminDashboardActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }  else if (id == R.id.nav_view_organizer_dashboard) {
-        // Navigate to View Images
-        Intent intent = new Intent(this, OrganizerDashboardActivity.class);
-        startActivity(intent);
-        finish();
-    }
+            // Navigate to View Images
+            Intent intent = new Intent(this, OrganizerDashboardActivity.class);
+            startActivity(intent);
+            finish();
+        }
         // Add more navigation items if needed
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 }

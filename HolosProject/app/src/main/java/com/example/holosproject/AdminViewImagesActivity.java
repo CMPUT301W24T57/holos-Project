@@ -11,11 +11,9 @@ import java.util.List;
 
 /**
  * FileName: AdminViewImagesActivity
- * The activity used to display all images uploaded to the app, as well as ability to delete them
- *
- * layout files associated with this: admin_view_images, image_border.xml (the borders and background around each image), admin_image_list_item.xml (each individual item)
+ * Description: The activity used to display all images uploaded to the app, as well as ability to delete them.
+ * AdminViewImagesActivity is associated with admin_view_images.xml, image_border.xml (the borders and background around each image), and admin_image_list_item.xml (each individual item).
  **/
-
 public class AdminViewImagesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -32,6 +30,11 @@ public class AdminViewImagesActivity extends AppCompatActivity {
         recyclerView.setAdapter(imagesAdapter);
     }
 
+    /**
+     * Provides a list of placeholder images.
+     *
+     * @return A list of placeholder image resource IDs.
+     */
     private List<Integer> getPlaceholderImages() {
         // This would actually be URLs or IDs of images from Firebase,
         // but for now, just return a list of the same placeholder image

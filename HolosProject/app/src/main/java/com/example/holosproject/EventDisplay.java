@@ -22,8 +22,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EventDisplay extends AppCompatActivity {
+
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference eventsRef = database.collection("events");
+
+    /**
+     * Retrieves and displays the details of the event specified by the eventID.
+     *
+     * @param eventID The ID of the event to be displayed.
+     */
     private void handleEvent(String eventID) {
         DocumentReference docRef = eventsRef.document(eventID);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -51,11 +58,15 @@ public class EventDisplay extends AppCompatActivity {
             }
         });
     }
-    // we are passing the same string back and forth and doing the same thing multiple times
-    // once we add an array of events to users this will be more efficient
+
+    /**
+     * Navigates back to the dashboard activity.
+     *
+     * @param eventID The ID of the event.
+     */
     private void backToDashboard(String eventID) {
         Intent intent = new Intent(this, AttendeeDashboardActivity.class);
-        intent.putExtra("title",eventID);
+        intent.putExtra("title", eventID);
         startActivity(intent);
     }
 

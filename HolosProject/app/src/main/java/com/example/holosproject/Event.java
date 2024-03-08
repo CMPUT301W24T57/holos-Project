@@ -18,6 +18,15 @@ public class Event {
     private ArrayList<String> checkIns;
     private String eventId;
 
+    /**
+     * Constructs an event with the given attributes.
+     *
+     * @param name    the name of the event
+     * @param date    the date of the event
+     * @param time    the time of the event
+     * @param address the address of the event
+     * @param creator the creator of the event
+     */
     public Event(String name, String date, String time, String address, String creator) {
         this.name = name;
         this.date = date;
@@ -27,66 +36,145 @@ public class Event {
         this.eventId = "";
         this.attendees = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
-
     }
-    // Getters and setters for the event attributes
+
+    /**
+     * Retrieves the list of attendees for this event.
+     *
+     * @return the list of attendees
+     */
     public ArrayList<String> getAttendees() {
         return attendees;
     }
 
+    /**
+     * Retrieves the list of check-ins for this event.
+     *
+     * @return the list of check-ins
+     */
     public ArrayList<String> getCheckIns() {
         return checkIns;
     }
 
+    /**
+     * Sets the list of check-ins for this event.
+     *
+     * @param checkIns the list of check-ins to set
+     */
     public void setCheckIns(ArrayList<String> checkIns) {
         this.checkIns = checkIns;
     }
+
+    /**
+     * Retrieves the event ID.
+     *
+     * @return the event ID
+     */
     public String getEventId() {
         return eventId;
     }
 
+    /**
+     * Sets the event ID.
+     *
+     * @param eventId the event ID to set
+     */
     public void setEventId(String eventId) {
         this.eventId = eventId;
     }
 
+    /**
+     * Sets the list of attendees for this event.
+     *
+     * @param attendees the list of attendees to set
+     */
     public void setAttendees(ArrayList<String> attendees) {
         this.attendees = attendees;
     }
 
+    /**
+     * Retrieves the name of the event.
+     *
+     * @return the name of the event
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name of the event.
+     *
+     * @param name the name of the event to set
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Retrieves the date of the event.
+     *
+     * @return the date of the event
+     */
     public String getDate() {
         return date;
     }
 
+    /**
+     * Sets the date of the event.
+     *
+     * @param date the date of the event to set
+     */
     public void setDate(String date) {
         this.date = date;
     }
 
+    /**
+     * Retrieves the time of the event.
+     *
+     * @return the time of the event
+     */
     public String getTime() {
         return time;
     }
 
+    /**
+     * Sets the time of the event.
+     *
+     * @param time the time of the event to set
+     */
     public void setTime(String time) {
         this.time = time;
     }
 
+    /**
+     * Retrieves the address of the event.
+     *
+     * @return the address of the event
+     */
     public String getAddress() {
         return address;
     }
 
+    /**
+     * Sets the address of the event.
+     *
+     * @param address the address of the event to set
+     */
     public void setAddress(String address) {
         this.address = address;
     }
 
+    /**
+     * Retrieves the creator of the event.
+     *
+     * @return the creator of the event
+     */
     public String getCreator() {
         return creator;
     }
-    }
+}
+
+
+
+
 

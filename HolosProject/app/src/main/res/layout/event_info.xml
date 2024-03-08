@@ -68,10 +68,20 @@
         android:layout_marginTop="7dp"
         android:layout_marginBottom="14dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="CHECK-IN CODE: "
+        android:layout_marginBottom="14dp"
+        />
+
     <ImageView
         android:id="@+id/QRView"
         android:layout_width="200sp"
         android:layout_height="200sp"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_marginTop="20dp">
     </ImageView>
 

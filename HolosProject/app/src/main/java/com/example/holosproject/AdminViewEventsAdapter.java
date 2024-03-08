@@ -19,16 +19,20 @@ import java.util.List;
 
 /**
  * FileName: AdminViewEventsAdapter
- * Description: Adapter for the RecylcerView used within the Admin View Events page, also has logic for deleting events from firebase
-
+ * Description: Adapter for the RecyclerView used within the Admin View Events page. It also contains logic for deleting events from Firebase.
  * AdminViewEventsAdapter is associated with admin_view_events.xml and admin_view_events_item_event.xml
  **/
-
 public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEventsAdapter.ViewHolder> {
 
     private List<Event> events;
     private LayoutInflater inflater;
 
+    /**
+     * Constructor for AdminViewEventsAdapter.
+     *
+     * @param context The context.
+     * @param events  The list of events.
+     */
     public AdminViewEventsAdapter(Context context, List<Event> events) {
         this.inflater = LayoutInflater.from(context);
         this.events = events;
@@ -53,6 +57,11 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
         holder.itemView.setOnClickListener(v -> showDeleteConfirmation(event));
     }
 
+    /**
+     * Shows a delete confirmation dialog.
+     *
+     * @param event The event to be deleted.
+     */
     private void showDeleteConfirmation(Event event) {
         new AlertDialog.Builder(inflater.getContext())
                 .setTitle("Delete Event")
@@ -64,6 +73,11 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
                 .show();
     }
 
+    /**
+     * Deletes an event from Firebase.
+     *
+     * @param eventId The ID of the event to be deleted.
+     */
     private void deleteEventFromFirebase(String eventId) {
         if (eventId == null || eventId.trim().isEmpty()) {
             Toast.makeText(inflater.getContext(), "Invalid event ID", Toast.LENGTH_SHORT).show();
@@ -87,6 +101,12 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
                 });
     }
 
+    /**
+     * Finds the position of an event in the list by its ID.
+     *
+     * @param eventId The ID of the event to find.
+     * @return The position of the event in the list, or -1 if not found.
+     */
     private int findPositionByEventId(String eventId) {
         for (int i = 0; i < events.size(); i++) {
             if (events.get(i).getEventId().equals(eventId)) {
