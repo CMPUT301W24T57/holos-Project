@@ -121,8 +121,8 @@ public class ViewAllEventsActivity extends AppCompatActivity
                     allEventsList.clear();
                     for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                         Event event = documentSnapshot.toObject(Event.class);
-                        //allEventsList.add(event);
-                        allEventsList.add(new Event(event.getName(), event.getId(), event.getLocation(), event.getTime(), event.getDate()));
+                        allEventsList.add(event);
+                        //allEventsList.add(new Event(event.getName(), event.getId(), event.getLocation(), event.getDate()));
                     }
                     eventsAdapter.notifyDataSetChanged();
                 })
