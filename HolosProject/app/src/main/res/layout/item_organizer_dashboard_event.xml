@@ -1,52 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:padding="16dp">
 
+    <!-- Event Name -->
+    <TextView
+        android:id="@+id/text_event_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
+        android:text="Event Name" />
+
+    <!-- Event Date -->
+    <TextView
+        android:id="@+id/text_event_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_below="@id/text_event_name"
+        android:text="Event Date" />
+
+    <!-- Event Time -->
+    <TextView
+        android:id="@+id/text_event_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_below="@id/text_event_date"
+        android:text="Event Time" />
+
+    <!-- Thumbnail Image -->
     <ImageView
         android:id="@+id/image_thumbnail"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/text_event_time"
+        android:layout_marginTop="16dp"
         android:scaleType="centerCrop"
         android:src="@drawable/placeholder_image" />
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center_vertical"
-        android:layout_marginStart="16dp">
+    <!-- QR Code -->
+    <ImageView
+        android:id="@+id/image_qr_code"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/text_event_time"
+        android:layout_toEndOf="@id/image_thumbnail"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/placeholder_qr_code" />
 
-        <TextView
-            android:id="@+id/text_event_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Event Name"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
-            android:id="@+id/text_event_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Event Date"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginBottom="2dp" />
-
-        <TextView
-            android:id="@+id/text_event_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Event Time"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginBottom="2dp" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
