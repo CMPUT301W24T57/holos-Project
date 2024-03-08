@@ -1,5 +1,8 @@
 package com.example.holosproject;
 
+import static com.example.holosproject.UserUtils.isAdminUser;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -74,12 +77,21 @@ public class EditProfileActivity  extends AppCompatActivity {
             }
         });
 
+        // The back button on the EditProfileActivity
         FloatingActionButton fabBack = findViewById(R.id.buttonEditProfileBack);
         fabBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Finish the activity to go back to the previous screen
-                finish();
+                UserUtils.isAdminUser(FirebaseAuth.getInstance().getCurrentUser(), isAdmin -> {
+                    if (isAdmin) {
+                        Intent intent = new Intent(EditProfileActivity.this, AdminDashboardActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        finish();
+                    }
+                });
             }
         });
     }
