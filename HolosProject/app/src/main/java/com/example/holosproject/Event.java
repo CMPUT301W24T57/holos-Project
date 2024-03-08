@@ -27,6 +27,16 @@ public class Event {
 
     }
 
+    public Event() {
+        this.name = "";
+        this.date = "";
+        this.time = "";
+        this.address = "";
+        this.creator = "";
+        this.eventId = "";
+        this.attendees = new ArrayList<String>();
+    }
+
     // Getters and setters for the event attributes
     public ArrayList<String> getAttendees() {
         return attendees;

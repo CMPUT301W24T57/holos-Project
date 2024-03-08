@@ -1,16 +1,11 @@
 package com.example.holosproject;
 
-import static android.app.PendingIntent.getActivity;
-
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -25,15 +20,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -43,7 +35,6 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * FileName: AttendeeDashboardActivity
@@ -64,7 +55,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     // Using a RecyclerView to display all of the Events our user is currently enrolled in
     private RecyclerView eventsRecyclerView;
     private final String TAG = "TestScreen";
-    private FirebaseUser currentUser;
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     private AttendeeDashboardEventsAdapter eventsAdapter;
     private List<Event> eventList = new ArrayList<>(); // This is the data source
 
@@ -75,7 +66,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     // References for attendee QR scan:
     private FloatingActionButton scanButton;
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
-    private CollectionReference eventRef = database.collection("eventTestNW");
     private CollectionReference eventsRef = database.collection("events");
 
     private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> { //basic popup after scanning to test things
@@ -113,10 +103,9 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
     /**
-     * Testing displaying the events associated with a user.
-     *
+     * Displays the events associated with a user by grabbing from the Firebase.
+     * @param user: The user ID of the current user using the app
      */
     private void displayEvents(FirebaseUser user) {
         // Get the current user
@@ -131,7 +120,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        ArrayList<String> userEvents = (ArrayList<String>) document.get("attendEvents");
+                        ArrayList<String> userEvents = (ArrayList<String>) document.get("myEvents");
                         for (String event : userEvents) {
                             addEvent(event);
                         }
@@ -152,20 +141,51 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         barLauncher.launch(options);
     }
 
+    /**
+     * Sends user to a (barebones) event details display screen where they can RSVP.
+     * @param scanContents: the contents of a QR code scan, should be the ID of a valid event
+     */
+
     private void goToEventDisplay(String scanContents) {
         Intent intent = new Intent(this, EventDisplay.class);
         intent.putExtra("contents", scanContents);
         startActivity(intent);
     }
 
-    private void rsvpEvent(String scanContents, DocumentSnapshot document) {
+    /**
+     * Adds an event ID to a user's list of events they are going to attend.
+     * @param userId the current user's ID
+     * @param eventId the ID of the event to be added
+     */
+
+    private void addUserEvent(String userId, String eventId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("userProfiles").document(userId);
+
+        userRef.update("myEvents", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event added to user's list"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error adding event to user's list", e));
+    }
+
+    /**
+     * Adds an event to a user and adds the user to the event's attendees.
+     * @param eventID The ID of the event to be added.
+     * @param document A document representing the event.
+     */
+
+    private void rsvpEvent(String eventID, DocumentSnapshot document) {
         AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
         builder.setTitle("Event Added");
-        Timestamp timestamp = (Timestamp) document.get("Test");
-        builder.setMessage(scanContents + " during " + timestamp.toDate());
-        // this should be changed to add to the database later
-        //eventList.add(new Event(scanContents, (String) document.get("Date")));
-        //eventsAdapter.notifyItemInserted(eventList.size());
+        // add user to event:
+         ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
+         if (!attendees.contains(currentUser.getUid())) {
+              addUserEvent(currentUser.getUid(), eventID);
+              DocumentReference eventRef = database.collection("events").document(eventID);
+              eventRef.update("attendees", FieldValue.arrayUnion(currentUser.getUid()))
+                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to attendees"))
+                     .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+        }
+        addEvent(eventID);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -174,16 +194,24 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }).show();
     }
 
-    private void addEvent(String eventName) {
-        DocumentReference docRef = eventsRef.document(eventName);
-        Map<String, Object> eventDoc;
+    /**
+     * Adds an event to the eventList so it can be displayed.
+     * @param eventID: the ID of the event to be added
+     */
+    private void addEvent(String eventID) {
+        DocumentReference docRef = eventsRef.document(eventID);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        eventList.add(new Event(eventName, (String) document.get("date"), (String) document.get("time"), (String) document.get("address"), (String) document.get("creator")));
+                        Event event = new Event((String) document.get("name"), (String) document.get("date"), (String) document.get("time"), (String) document.get("address"), (String) document.get("creator"));
+                        event.setEventId(eventID);
+                        ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
+                        event.setAttendees(attendees);
+                        eventList.add(event);
                         eventsAdapter.notifyDataSetChanged();
                     }
                 }
@@ -207,23 +235,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        //rsvpEvent(scanContents, document);
                         goToEventDisplay(scanContents);
-                        //setContentView(R.layout.activity_event_display);
-                        //TextView eventName = findViewById(R.id.event_Name);
-//                        eventName.setText(scanContents);
-//                        Button rsvpButton = findViewById(R.id.rsvpButton);
-//                        rsvpButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                Intent intent = new Intent(AttendeeDashboardActivity.this, AttendeeDashboardActivity.class);
-//                                startActivity(intent);
-//
-//                                //rsvpEvent(scanContents, document);
-//                                eventList.add(new Event(scanContents, (String) document.get("Date")));
-//                                eventsAdapter.notifyDataSetChanged();
-//                            }
-//                        });
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
                         builder.setTitle("Result");
@@ -251,9 +263,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // get the current user.
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Sample data
 
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -273,30 +283,32 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventsAdapter = new AttendeeDashboardEventsAdapter(eventList);
         eventsRecyclerView.setAdapter(eventsAdapter);
-        displayEvents(user);
 
         // TODO: Create click listener for QR Code Button, change the icon to a QR code instead of a camera.
         scanButton = findViewById(R.id.fabQRCode);
         scanButton.setOnClickListener(v -> {
             scanQRCode();
         });
+
+        // Handling someone who RSVPed an event that they QR scanned:
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            String eventTitle = bundle.getString("title");
-            DocumentReference docRef = eventRef.document(eventTitle);
+            String eventID = bundle.getString("title");
+            DocumentReference docRef = eventsRef.document(eventID);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            rsvpEvent(eventTitle, document);
+                            rsvpEvent(eventID, document);
                         }
                     }
                 }
                 // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
             });
         }
+        displayEvents(currentUser);
     }
 }
 

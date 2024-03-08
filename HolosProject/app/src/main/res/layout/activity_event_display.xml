@@ -14,20 +14,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_marginBottom="15dp"
         android:text=""
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/event_Creator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/event_Name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:text=""
+        android:textAlignment="viewEnd"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/event_Date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_marginBottom="15dp"
+        android:layout_below="@id/event_Creator"
         android:text=""
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        android:layout_below="@id/event_Name"
+        android:textSize="16sp"
+        android:layout_centerHorizontal="true"
         android:textStyle="bold" />
 
     <Button
