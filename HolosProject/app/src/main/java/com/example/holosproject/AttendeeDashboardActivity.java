@@ -25,6 +25,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -34,6 +36,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
@@ -111,6 +114,34 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     }
 
     /**
+     * Testing displaying the events associated with a user.
+     *
+     */
+    private void displayEvents(FirebaseUser user) {
+        // Get the current user
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Finds the user's profile
+        DocumentReference userProfileRef = db.collection("userProfiles").document(user.getUid());
+
+        userProfileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        ArrayList<String> userEvents = (ArrayList<String>) document.get("attendEvents");
+                        for (String event : userEvents) {
+                            eventList.add(new Event(event, "test", "test", "test", "test"));
+                        }
+                        eventsAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
+    }
+
+    /**
      * Sends user to a QR code scan screen when QR scan floating action button is tapped.
      */
     private void scanQRCode() { // basic QR code scan
@@ -133,8 +164,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         Timestamp timestamp = (Timestamp) document.get("Test");
         builder.setMessage(scanContents + " during " + timestamp.toDate());
         // this should be changed to add to the database later
-        eventList.add(new Event(scanContents, (String) document.get("Date")));
-        eventsAdapter.notifyItemInserted(eventList.size());
+        //eventList.add(new Event(scanContents, (String) document.get("Date")));
+        //eventsAdapter.notifyItemInserted(eventList.size());
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -225,6 +256,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventsAdapter = new AttendeeDashboardEventsAdapter(eventList);
         eventsRecyclerView.setAdapter(eventsAdapter);
+        displayEvents(user);
 
         // TODO: Create click listener for QR Code Button, change the icon to a QR code instead of a camera.
         scanButton = findViewById(R.id.fabQRCode);
