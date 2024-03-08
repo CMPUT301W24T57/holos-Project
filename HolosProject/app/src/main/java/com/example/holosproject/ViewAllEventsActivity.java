@@ -40,7 +40,7 @@ import java.util.List;
  **/
 
 public class ViewAllEventsActivity extends AppCompatActivity
-                    implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     // Using a RecyclerView to display all of the Events that exist within our app
     private RecyclerView allEventsRecyclerView;
@@ -52,7 +52,12 @@ public class ViewAllEventsActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
 
-    // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
+    /**
+     * When a user selects an item from the nav drawer menu, this method is called.
+     * @param item The selected menu item.
+     * @return True if the event was handled successfully, false otherwise.
+     */
+    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // If the user selects one of the items in the drawer, what happens? (navigate to that respective activity)
         int id = item.getItemId();
@@ -60,21 +65,17 @@ public class ViewAllEventsActivity extends AppCompatActivity
         if (id == R.id.nav_edit_profile) {
             Intent intent = new Intent(this, EditProfileActivity.class);
             startActivity(intent);
-        }
-        else if (id == R.id.nav_view_registered_events) {
+        } else if (id == R.id.nav_view_registered_events) {
             Intent intent = new Intent(this, AttendeeDashboardActivity.class);
             startActivity(intent);
             finish();
-        }
-        else if (id == R.id.nav_view_all_events) {    // if we try to navigate to current view, close the drawer
+        } else if (id == R.id.nav_view_all_events) {    // if we try to navigate to current view, close the drawer
             drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else if (id == R.id.nav_view_organizer_dashboard) {    // if we try to navigate to current view, close the drawer
+        } else if (id == R.id.nav_view_organizer_dashboard) {    // if we try to navigate to current view, close the drawer
             Intent intent = new Intent(this, OrganizerDashboardActivity.class);
             startActivity(intent);
             finish();
         }
-
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -87,11 +88,6 @@ public class ViewAllEventsActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        // Sample data
-        //allEventsList.add(new Event("Presidential Re-election", 43, "Brampton", "8:00", "January 1, 2024"));
-        //allEventsList.add(new Event("Coronation Day", 56, "Ohio", "6:00", "November 3rd, 2024"));
-
 
         // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -107,7 +103,6 @@ public class ViewAllEventsActivity extends AppCompatActivity
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-
         allEventsRecyclerView = findViewById(R.id.allEventsRecyclerView);
         allEventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventsAdapter = new AttendeeDashboardEventsAdapter(allEventsList);
@@ -116,12 +111,11 @@ public class ViewAllEventsActivity extends AppCompatActivity
         fetchEvents();
 
         // TODO: Fetch all events from Firestore and update the RecyclerView
-
-
-
-
     }
 
+    /**
+     * Fetches events from the database and updates the RecyclerView.
+     */
     private void fetchEvents() {
         // Fetches events from database, and does manual serialization :-(
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -151,7 +145,5 @@ public class ViewAllEventsActivity extends AppCompatActivity
                         // Handle the error properly
                     }
                 });
-
-
-}
+    }
 }

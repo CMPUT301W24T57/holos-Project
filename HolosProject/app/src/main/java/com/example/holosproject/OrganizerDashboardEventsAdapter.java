@@ -26,14 +26,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<OrganizerDashboardEventsAdapter.EventViewHolder>  {
+public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<OrganizerDashboardEventsAdapter.EventViewHolder> {
     private List<Event> eventList;
     private final String TAG = "o";
 
+    /**
+     * Constructor for the OrganizerDashboardEventsAdapter class.
+     *
+     * @param eventList List of events to be displayed.
+     */
     public OrganizerDashboardEventsAdapter(List<Event> eventList) {
         this.eventList = eventList;
     }
 
+    /**
+     * Called when RecyclerView needs a new ViewHolder of the given type to represent an item.
+     *
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
+     * @param viewType The view type of the new View.
+     * @return A new ViewHolder that holds a View of the given view type.
+     */
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -41,18 +53,29 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         return new EventViewHolder(view, this);
     }
 
-
-
+    /**
+     * Returns the total number of items in the data set held by the adapter.
+     *
+     * @return The total number of items in this adapter.
+     */
     @Override
     public int getItemCount() {
-
         return eventList.size();
     }
 
+    /**
+     * ViewHolder class for individual event items.
+     */
     static class EventViewHolder extends RecyclerView.ViewHolder {
         TextView textViewEventName;
         TextView textViewEventDate;
 
+        /**
+         * Constructor for the EventViewHolder class.
+         *
+         * @param itemView The item view.
+         * @param adapter  The adapter instance.
+         */
         EventViewHolder(View itemView, OrganizerDashboardEventsAdapter adapter) {
             super(itemView);
             textViewEventName = itemView.findViewById(R.id.textViewEventName);
@@ -70,20 +93,32 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             });
         }
     }
+
+    /**
+     * Called by RecyclerView to display the data at the specified position.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
         holder.textViewEventName.setText(event.getName());
         holder.textViewEventDate.setText(String.format("%s, %s", event.getDate(), event.getTime()));
     }
+
+    /**
+     * Displays the details of an event in a dialog.
+     *
+     * @param context The context.
+     * @param event   The event to display.
+     */
     private void showEventDetailsDial(Context context, Event event) {
         AlertDialog.Builder dispbuilder = new AlertDialog.Builder(context);
-
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View diagView = inflater.inflate(R.layout.event_info, null);
         dispbuilder.setView(diagView);
-
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -130,17 +165,24 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
 //                        Log.e(TAG, "Error updating attendees list", e);
                     });
         });
+
         dispbuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface diagdisp, int i) {
                 diagdisp.dismiss();
-
             }
         });
 
         AlertDialog diag = dispbuilder.create();
         diag.show();
     }
+
+    /**
+     * Adds an event to a user's list of events.
+     *
+     * @param userId  The ID of the user.
+     * @param eventId The ID of the event.
+     */
     private void addUserEvent(String userId, String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("userProfiles").document(userId);
@@ -149,6 +191,14 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event added to user's list"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error adding event to user's list", e));
     }
+
+    /**
+     * Displays the names of attendees for an event.
+     *
+     * @param attendeeIds           The IDs of the attendees.
+     * @param textViewEventAttendeeList The TextView to display the attendee names.
+     * @param db                    The instance of FirebaseFirestore.
+     */
     private void displayAttendeeNames(List<String> attendeeIds, TextView textViewEventAttendeeList, FirebaseFirestore db) {
         List<String> attendeeNames = new ArrayList<>();
 
@@ -180,5 +230,4 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                     });
         }
     }
-
 }

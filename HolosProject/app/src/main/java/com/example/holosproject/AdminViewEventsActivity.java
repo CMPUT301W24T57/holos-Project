@@ -20,10 +20,8 @@ import java.util.Map;
 /**
  * FileName: AdminViewEventsActivity
  * Description: Admin can view all events on Firebase, and can delete them.
-
  * AdminViewEventsActivity is associated with admin_view_events.xml and admin_view_events_item_event.xml
  **/
-
 public class AdminViewEventsActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -44,8 +42,10 @@ public class AdminViewEventsActivity extends AppCompatActivity {
         fetchEvents();
     }
 
+    /**
+     * Fetches events from the Firestore database.
+     */
     private void fetchEvents() {
-        // Fetches events from database, and does manual serialization :-(
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("events")
                 .get()

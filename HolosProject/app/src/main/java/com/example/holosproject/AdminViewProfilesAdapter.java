@@ -25,21 +25,37 @@ public class AdminViewProfilesAdapter extends RecyclerView.Adapter<AdminViewProf
     private LayoutInflater inflater;
     private ItemClickListener clickListener;
 
-    // Data is passed into the constructor
+    /**
+     * Constructor for the AdminViewProfilesAdapter.
+     *
+     * @param context  The context of the calling activity or fragment.
+     * @param profiles List of user profiles to be displayed.
+     */
     AdminViewProfilesAdapter(Context context, List<UserProfile> profiles) {
         this.inflater = LayoutInflater.from(context);
         this.profiles = profiles;
     }
 
-    // Inflates the cell layout from XML when needed
-    @Override
+    /**
+     * Inflates the cell layout from XML when needed.
+     *
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
+     * @param viewType The view type of the new View.
+     * @return A new ViewHolder that holds a View of the given view type.
+     */
     @NonNull
+    @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.admin_view_profiles_list_item, parent, false);
         return new ViewHolder(view);
     }
 
-    // Binds the data to the TextView in each cell
+    /**
+     * Binds the data to the TextView and ImageView in each cell.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UserProfile profile = profiles.get(position);
@@ -50,13 +66,19 @@ public class AdminViewProfilesAdapter extends RecyclerView.Adapter<AdminViewProf
         holder.imageView.setImageResource(R.drawable.ic_launcher_foreground);
     }
 
-    // Total number of cells
+    /**
+     * Returns the total number of cells in the data set held by the adapter.
+     *
+     * @return The total number of cells in the data set.
+     */
     @Override
     public int getItemCount() {
         return profiles.size();
     }
 
-    // Stores and recycles views as they are scrolled off screen
+    /**
+     * Stores and recycles views as they are scrolled off screen.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView usernameTextView;
         TextView contactTextView;
@@ -78,12 +100,24 @@ public class AdminViewProfilesAdapter extends RecyclerView.Adapter<AdminViewProf
         }
     }
 
-    // Parent activity will implement this method to respond to click events
+    /**
+     * Interface for defining click listener for RecyclerView items.
+     */
     public interface ItemClickListener {
+        /**
+         * Called when a view has been clicked.
+         *
+         * @param view     The view that was clicked.
+         * @param position The position of the view in the RecyclerView.
+         */
         void onItemClick(View view, int position);
     }
 
-    // Method that allows clicks events to be caught
+    /**
+     * Sets the click listener for RecyclerView items.
+     *
+     * @param itemClickListener The click listener to be set.
+     */
     void setClickListener(ItemClickListener itemClickListener) {
         this.clickListener = itemClickListener;
     }
