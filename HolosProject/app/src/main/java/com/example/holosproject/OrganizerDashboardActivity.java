@@ -32,7 +32,7 @@ import java.util.List;
  **/
 
 public class OrganizerDashboardActivity extends AppCompatActivity
-                             implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView eventsRecyclerView;
     private FloatingActionButton fabAddEvent;
