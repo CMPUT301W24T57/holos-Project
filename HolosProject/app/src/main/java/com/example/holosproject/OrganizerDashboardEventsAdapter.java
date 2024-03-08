@@ -3,10 +3,13 @@ package com.example.holosproject;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -28,8 +31,9 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
-        holder.eventTitleTextView.setText(event.getName());
-        holder.eventDateTimeTextView.setText(event.getDate());
+        holder.eventNameTextView.setText(event.getName());
+        holder.eventDateTextView.setText(event.getDate());
+
     }
 
     @Override
@@ -39,13 +43,15 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
     }
 
     static class EventViewHolder extends RecyclerView.ViewHolder {
-        TextView eventTitleTextView;
-        TextView eventDateTimeTextView;
+        TextView eventNameTextView;
+        TextView eventDateTextView;
+
 
         EventViewHolder(View itemView) {
             super(itemView);
-            eventTitleTextView = itemView.findViewById(R.id.textViewEventName);
-            eventDateTimeTextView = itemView.findViewById(R.id.textViewEventDate);
+            eventNameTextView = itemView.findViewById(R.id.textViewEventName);
+            eventDateTextView = itemView.findViewById(R.id.textViewEventDate);
+
         }
     }
 }
