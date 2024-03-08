@@ -9,11 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
 /**
-        * FileName: OrganizerDashboardEventsAdapter
-        * Description: This is the adapter for the RecyclerView that we use to display Events within the Organizer Dashboard. It will display all events the User is currently enrolled in.
-        * Associated with the organizer_dashboard_item_event.xml layout.
-        **/
+ * Adapter for the RecyclerView used to display events within the Organizer Dashboard.
+ * This adapter is responsible for binding event data to the ViewHolder and creating ViewHolders as needed.
+ * Associated with the organizer_dashboard_item_event.xml layout.
+ */
 public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<OrganizerDashboardEventsAdapter.EventViewHolder> {
     private List<Event> eventList;
 
