@@ -178,6 +178,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         }
     }
 
+
     // TODO: Fix the bug where events you create dont display until you leave the screen and come back
 
 }
