@@ -66,7 +66,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
 
         btnViewEvents.setOnClickListener(v -> {
-            // Navigate to the View Events Activity
+            Intent intent = new Intent(this, AdminViewEventsActivity.class);
+            startActivity(intent);
         });
 
         btnViewImages.setOnClickListener(v -> {
@@ -88,9 +89,32 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        // Handle different item clicks here
 
-        drawerLayout.closeDrawer(GravityCompat.START);
+        if (id == R.id.nav_edit_profile) {
+            // Navigate to View Profiles
+            Intent intent = new Intent(this, EditProfileActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_view_all_events) {
+            // Navigate to View Events
+            Intent intent = new Intent(this, ViewAllEventsActivity.class);
+            startActivity(intent);
+            finish();
+
+        } else if (id == R.id.nav_view_registered_events) {
+            // Navigate to View Images
+            Intent intent = new Intent(this, AttendeeDashboardActivity.class);
+            startActivity(intent);
+            finish();
+        }  else if (id == R.id.nav_view_organizer_dashboard) {
+        // Navigate to View Images
+        Intent intent = new Intent(this, OrganizerDashboardActivity.class);
+        startActivity(intent);
+        finish();
+    }
+        // Add more navigation items if needed
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

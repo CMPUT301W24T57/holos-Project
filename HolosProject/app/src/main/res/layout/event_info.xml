@@ -34,4 +34,20 @@
         android:text="Event Date:"
         android:layout_marginBottom="14dp"/>
 
+    <TextView
+        android:id="@+id/textViewEventTimeDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Event Time:"
+        android:layout_marginBottom="14dp"/>
+
+    <TextView
+        android:id="@+id/textViewEventLocationDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Event Location:"
+        android:layout_marginBottom="14dp"/>
+
 </LinearLayout>

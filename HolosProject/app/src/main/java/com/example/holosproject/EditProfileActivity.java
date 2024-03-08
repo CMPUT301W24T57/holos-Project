@@ -74,6 +74,7 @@ public class EditProfileActivity  extends AppCompatActivity {
             }
         });
 
+        // The back button on the EditProfileActivity
         FloatingActionButton fabBack = findViewById(R.id.buttonEditProfileBack);
         fabBack.setOnClickListener(new View.OnClickListener() {
             @Override
