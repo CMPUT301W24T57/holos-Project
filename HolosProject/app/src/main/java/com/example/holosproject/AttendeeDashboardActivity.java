@@ -43,6 +43,7 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * FileName: AttendeeDashboardActivity
@@ -74,8 +75,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     // References for attendee QR scan:
     private FloatingActionButton scanButton;
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
-
     private CollectionReference eventRef = database.collection("eventTestNW");
+    private CollectionReference eventsRef = database.collection("events");
 
     private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> { //basic popup after scanning to test things
         if (result.getContents() != null) {
@@ -132,9 +133,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                     if (document.exists()) {
                         ArrayList<String> userEvents = (ArrayList<String>) document.get("attendEvents");
                         for (String event : userEvents) {
-                            eventList.add(new Event(event, "test", "test", "test", "test"));
+                            addEvent(event);
                         }
-                        eventsAdapter.notifyDataSetChanged();
                     }
                 }
             }
@@ -174,6 +174,23 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }).show();
     }
 
+    private void addEvent(String eventName) {
+        DocumentReference docRef = eventsRef.document(eventName);
+        Map<String, Object> eventDoc;
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        eventList.add(new Event(eventName, (String) document.get("date"), (String) document.get("time"), (String) document.get("address"), (String) document.get("creator")));
+                        eventsAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * Handles what happens when a valid QR code is scanned.
      * Given the text contained in the QR code, attempts to match the text with the title of a document
@@ -183,7 +200,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
      * @param scanContents: a string containing the contents of the scanned QR code
      */
     private void handleScan(String scanContents) {
-        DocumentReference docRef = eventRef.document(scanContents);
+        DocumentReference docRef = eventsRef.document(scanContents);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
