@@ -149,13 +149,23 @@ public class OrganizerDashboardActivity extends AppCompatActivity
      */
     private void fetchEventsFromCollection(List<String> myEvents) {
         for (String eventId : myEvents) {
-            Log.d(TAG, "Your events");
             db.collection("events").document(eventId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            Event event = documentSnapshot.toObject(Event.class);
-                            event.setEventId(documentSnapshot.getId());// adds event id so we can more easily access it later
+                            // Manual deserialization
+                            String name = documentSnapshot.getString("name");
+                            String date = documentSnapshot.getString("date");
+                            String time = documentSnapshot.getString("time");
+                            String address = documentSnapshot.getString("address");
+                            String creator = documentSnapshot.getString("creator");
+                            ArrayList<String> attendees = (ArrayList<String>) documentSnapshot.get("attendees");
+
+                            // Assuming that your Event constructor sets the eventId as well
+                            Event event = new Event(name, date, time, address, creator);
+                            event.setEventId(eventId);
+                            event.setAttendees(attendees);
+
                             eventsList.add(event);
                             eventsAdapter.notifyDataSetChanged();
                         } else {
@@ -167,4 +177,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                     });
         }
     }
+
+    // TODO: Fix the bug where 
+
 }
