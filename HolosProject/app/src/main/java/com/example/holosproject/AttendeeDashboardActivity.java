@@ -1,16 +1,17 @@
 package com.example.holosproject;
 
-import static android.app.PendingIntent.getActivity;
-
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -28,16 +29,22 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidmads.library.qrgenearator.QRGContents;
+import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * FileName: AttendeeDashboardActivity
@@ -47,9 +54,9 @@ import java.util.List;
  * This dashboard shows all of the events the user is currently enrolled in. There is a different activity for all open events.
 
  * This file also contains first implementation of the drawer menu. This shit was really hard to set up to be honest, lots of different parts.
- * The XML files associated with the drawer are: hamburger_menu.xml, hamburger_menu_header.xml, and activity_attendee_dashboard.xml.
+ * The XML files associated with the drawer are: drawer_menu.xml, drawer_menu_header.xml, and activity_attendee_dashboard.xml.
 
- * Associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
+ * AttendeeDashboardActivity is associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
  **/
 
 public class AttendeeDashboardActivity extends AppCompatActivity
@@ -57,6 +64,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     // Using a RecyclerView to display all of the Events our user is currently enrolled in
     private RecyclerView eventsRecyclerView;
+    private final String TAG = "TestScreen";
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     private AttendeeDashboardEventsAdapter eventsAdapter;
     private List<Event> eventList = new ArrayList<>(); // This is the data source
 
@@ -67,11 +76,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     // References for attendee QR scan:
     private FloatingActionButton scanButton;
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private CollectionReference eventsRef = database.collection("events");
 
-    private CollectionReference eventRef = database.collection("eventTestNW");
-
-    private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result->{ //basic popup after scanning to test things
-        if(result.getContents() != null) {
+    private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> { //basic popup after scanning to test things
+        if (result.getContents() != null) {
             String scanContents = result.getContents();
             handleScan(scanContents);
         }
@@ -90,14 +98,42 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         } else if (id == R.id.nav_view_all_events) {
             Intent intent = new Intent(this, ViewAllEventsActivity.class);
             startActivity(intent);
+            finish();
 
-        }
-        else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
+        } else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
             drawerLayout.closeDrawer(GravityCompat.START);
+        }
+
+        else if (id == R.id.nav_view_organizer_dashboard) {
+            Intent intent = new Intent(this, OrganizerDashboardActivity.class);
+            startActivity(intent);
+            finish();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+    /**
+     * Displays the events associated with a user by grabbing from the Firebase.
+     * @param user: The user ID of the current user using the app
+     */
+    private void displayEvents(FirebaseUser user) {
+        // Finds the user's profile
+        DocumentReference userProfileRef = database.collection("userProfiles").document(user.getUid());
+        userProfileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        ArrayList<String> userEvents = (ArrayList<String>) document.get("myEvents");
+                        for (String event : userEvents) {
+                            addEvent(event);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -111,19 +147,71 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         barLauncher.launch(options);
     }
 
-    private void goToEventDisplay() {
+    /**
+     * Sends user to a (barebones) event details display screen where they can check in.
+     * @param scanContents: the contents of a QR code scan, should be the ID of a valid event
+     */
+
+    private void goToEventDisplay(String scanContents) {
         Intent intent = new Intent(this, EventDisplay.class);
+        intent.putExtra("contents", scanContents);
+        startActivity(intent);
+
+    }
+
+    /**
+     * Sends user to the event details on the all events screen (to differ from check in)
+     * @param scanContents: the contents of a QR code scan, should be the ID of a valid event
+     */
+
+    private void goToPromoDisplay(String scanContents) {
+        Intent intent = new Intent(this, ViewAllEventsActivity.class);
+        intent.putExtra("promo", scanContents);
         startActivity(intent);
     }
 
-    private void rsvpEvent(String scanContents, DocumentSnapshot document) {
+    /**
+     * Adds an event ID to a user's list of events they are going to attend.
+     * @param userId the current user's ID
+     * @param eventId the ID of the event to be added
+     */
+
+    private void addUserEvent(String userId, String eventId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("userProfiles").document(userId);
+
+        userRef.update("myEvents", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event added to user's list"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error adding event to user's list", e));
+    }
+
+    /**
+     * Adds an event to a user if necessary and adds the user to the event's checkins.
+     * @param eventID The ID of the event to be added.
+     * @param document A document representing the event.
+     */
+
+    private void rsvpEvent(String eventID, DocumentSnapshot document) {
         AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
         builder.setTitle("Event Added");
-        Timestamp timestamp = (Timestamp) document.get("Test");
-        builder.setMessage(scanContents + " during " + timestamp.toDate());
-        // this should be changed to add to the database later
-        eventList.add(new Event(scanContents, (String) document.get("Date")));
-        eventsAdapter.notifyItemInserted(eventList.size());
+        // add user to event:
+        ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+        ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
+         if (!checkIns.contains(currentUser.getUid())) {
+              addUserEvent(currentUser.getUid(), eventID);
+              DocumentReference eventRef = database.collection("events").document(eventID);
+              eventRef.update("checkIns", FieldValue.arrayUnion(currentUser.getUid()))
+                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
+                     .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+        }
+         // just in case?
+        if (!attendees.contains(currentUser.getUid())) {
+            DocumentReference eventRef = database.collection("events").document(eventID);
+            eventRef.update("attendees", FieldValue.arrayUnion(currentUser.getUid()))
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to attendees"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+        }
+        addEvent(eventID);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -133,54 +221,76 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     }
 
     /**
-     * Handles what happens when a valid QR code is scanned.
-     * Given the text contained in the QR code, attempts to match the text with the title of a document
-     * In the events collection in the database. Given it finds a match, it takes the title of the event
-     * and its date and adds it to the user's visible event list. (Does not add to anything in database yet)
-     * @param scanContents: a string containing the contents of the scanned QR code
-     *
+     * Adds an event to the eventList so it can be displayed.
+     * @param eventID: the ID of the event to be added
      */
-    private void handleScan(String scanContents) {
-        DocumentReference docRef = eventRef.document(scanContents);
+    private void addEvent(String eventID) {
+        DocumentReference docRef = eventsRef.document(eventID);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        rsvpEvent(scanContents, document);
-//                        setContentView(R.layout.activity_event_display);
-//                        TextView eventName = findViewById(R.id.event_Name);
-//                        eventName.setText(scanContents);
-//                        Button rsvpButton = findViewById(R.id.rsvpButton);
-//                        rsvpButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                Intent intent = new Intent(AttendeeDashboardActivity.this, AttendeeDashboardActivity.class);
-//                                startActivity(intent);
-//
-//                                //rsvpEvent(scanContents, document);
-//                                eventList.add(new Event(scanContents, (String) document.get("Date")));
-//                                eventsAdapter.notifyDataSetChanged();
-//                            }
-//                        });
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
-                        builder.setTitle("Result");
-                        builder.setMessage("Event Not Found in Firebase");
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).show();
+                        Event event = new Event((String) document.get("name"), (String) document.get("date"), (String) document.get("time"), (String) document.get("address"), (String) document.get("creator"));
+                        event.setEventId(eventID);
+                        ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
+                        event.setAttendees(attendees);
+                        eventList.add(event);
+                        eventsAdapter.notifyDataSetChanged();
                     }
-                } else {
-                    Log.d("Firestore", "Database Error");
                 }
             }
-    });
+        });
     }
+
+    /**
+     * Handles what happens when a valid QR code is scanned.
+     * Given the text contained in the QR code, attempts to match the text with the title of a document
+     * In the events collection in the database. Given it finds a match, it takes the title of the event
+     * and its date and adds it to the user's visible event list. (Does not add to anything in database yet)
+     *
+     * @param scanContents: a string containing the contents of the scanned QR code
+     */
+    private void handleScan(String scanContents) {
+        // if this is a promo QR,
+        if (scanContents.contains("promo")) {
+            String strippedContents = scanContents.replace("promo", "");
+            DocumentReference docRef = eventsRef.document(strippedContents);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            goToPromoDisplay(scanContents);
+                        }
+                    } else {
+                        Log.d("Firestore", "Database Error");
+                    }
+                }
+            });
+        }
+        // if this is just a check-in QR,
+        else {
+            DocumentReference docRef = eventsRef.document(scanContents);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            goToEventDisplay(scanContents);
+                        }
+                    } else {
+                        Log.d("Firestore", "Database Error");
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -189,13 +299,12 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Sample data
-        eventList.add(new Event("Event 1", "January 1, 2024"));
-        eventList.add(new Event("Event 2", "November 3rd, 2024"));
+        // get the current user.
 
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("");
 
         drawerLayout = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -213,9 +322,29 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
         // TODO: Create click listener for QR Code Button, change the icon to a QR code instead of a camera.
         scanButton = findViewById(R.id.fabQRCode);
-        scanButton.setOnClickListener(v-> {
+        scanButton.setOnClickListener(v -> {
             scanQRCode();
         });
-    // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
+
+        // Handling someone who RSVPed an event that they QR scanned:
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            String eventID = bundle.getString("title");
+            DocumentReference docRef = eventsRef.document(eventID);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            rsvpEvent(eventID, document);
+                        }
+                    }
+                }
+                // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
+            });
+        }
+        displayEvents(currentUser);
+    }
 }
-}
+

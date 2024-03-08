@@ -1,16 +1,13 @@
 package com.example.holosproject;
 
-import android.app.Dialog;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -23,39 +20,63 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.zip.Inflater;
 
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
-
-/**
- * FileName: AttendeeDashboardEventsAdapter
- * Description: This is the adapter for the RecyclerView that we use to display Events within the Attendee Dashboard. It will display all events the User is currently enrolled in.
- * To be honest, I don't understand how most of it works myself, i copied most of the logic from when I used it for the solo project.
- *  RecyclerView is nice because we can customize it lots, but its a bit of a pain to set up. Luckily I already did that :)
-
- * Associated with the tem_attendee_dashboard.xml layout.
- **/
-
-public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<AttendeeDashboardEventsAdapter.EventViewHolder>  {
+public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<OrganizerDashboardEventsAdapter.EventViewHolder>  {
     private List<Event> eventList;
-    private final String TAG = "Event_details";
+    private final String TAG = "o";
 
-    public AttendeeDashboardEventsAdapter(List<Event> eventList) {
+    public OrganizerDashboardEventsAdapter(List<Event> eventList) {
         this.eventList = eventList;
     }
 
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_attendee_dashboard_event, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.organizer_dashboard_item_event, parent, false);
         return new EventViewHolder(view, this);
     }
 
-    private void showEventDetailsDialog(Context context, Event event) {
+
+
+    @Override
+    public int getItemCount() {
+
+        return eventList.size();
+    }
+
+    static class EventViewHolder extends RecyclerView.ViewHolder {
+        TextView textViewEventName;
+        TextView textViewEventDate;
+
+        EventViewHolder(View itemView, OrganizerDashboardEventsAdapter adapter) {
+            super(itemView);
+            textViewEventName = itemView.findViewById(R.id.textViewEventName);
+            textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int postn = getAdapterPosition();
+                    if (postn != RecyclerView.NO_POSITION) {
+                        Event event = adapter.eventList.get(postn);
+                        adapter.showEventDetailsDial(itemView.getContext(), event);
+                    }
+                }
+            });
+        }
+    }
+    @Override
+    public void onBindViewHolder(EventViewHolder holder, int position) {
+        Event event = eventList.get(position);
+        holder.textViewEventName.setText(event.getName());
+        holder.textViewEventDate.setText(String.format("%s, %s", event.getDate(), event.getTime()));
+    }
+    private void showEventDetailsDial(Context context, Event event) {
         AlertDialog.Builder dispbuilder = new AlertDialog.Builder(context);
 
 
@@ -75,21 +96,11 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
-        ImageView qrDisplay = diagView.findViewById(R.id.QRView);
 
         textViewEventName.setText("EVENT NAME: " + event.getName());
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
         textViewEventTime.setText("EVENT TIME: " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
-        // QR DISPLAY:
-        QRGEncoder qrgEncoder = new QRGEncoder(event.getEventId(), null, QRGContents.Type.TEXT, 200);
-        try {
-            Bitmap bitmap = qrgEncoder.getBitmap(0);
-            qrDisplay.setImageBitmap(bitmap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         /*String attendeesStr = "Attendees: " + String.join(", ", event.getAttendees());
         textViewEventAttendeeList.setText(attendeesStr);*/
         List<String> attendeeIds1 = event.getAttendees();
@@ -105,7 +116,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
             } else {
                 // Remove the current user from the attendees list
                 event.getAttendees().remove(currentUserId);
-                removeUserEvent(currentUserId, event.getEventId());
             }
 
             // Update the attendees list in Firestore
@@ -117,7 +127,7 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                         displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error updating attendees list", e);
+//                        Log.e(TAG, "Error updating attendees list", e);
                     });
         });
         dispbuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -131,16 +141,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         AlertDialog diag = dispbuilder.create();
         diag.show();
     }
-
-    @Override
-    public void onBindViewHolder(EventViewHolder holder, int position) {
-        Event event = eventList.get(position);
-        holder.textViewEventName.setText(event.getName());
-        holder.textViewEventDate.setText(event.getDate());
-    }
-    /*
-    Adds event to the users myEvents
-     */
     private void addUserEvent(String userId, String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("userProfiles").document(userId);
@@ -149,25 +149,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event added to user's list"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error adding event to user's list", e));
     }
-
-    /**
-     * Removes an event from a user's myEvents list
-     * @param userId: the ID of the user we are deleting from
-     * @param eventId: the event ID to delete
-     */
-
-    private void removeUserEvent(String userId, String eventId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection("userProfiles").document(userId);
-
-        userRef.update("myEvents", FieldValue.arrayRemove(eventId))
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event removed"))
-                .addOnFailureListener(e -> Log.e(TAG, "Error removing event", e));
-    }
-
-    /*
-    since names are passed in to event as a uid use the uid to find every string
-     */
     private void displayAttendeeNames(List<String> attendeeIds, TextView textViewEventAttendeeList, FirebaseFirestore db) {
         List<String> attendeeNames = new ArrayList<>();
 
@@ -199,30 +180,5 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                     });
         }
     }
-    @Override
-    public int getItemCount() {
-        return eventList.size();
-    }
 
-    static class EventViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewEventName;
-        TextView textViewEventDate;
-
-        EventViewHolder(View itemView, AttendeeDashboardEventsAdapter adapter) {
-            super(itemView);
-            textViewEventName = itemView.findViewById(R.id.textViewEventName);
-            textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int postn = getAdapterPosition();
-                    if (postn != RecyclerView.NO_POSITION) {
-                        Event event = adapter.eventList.get(postn);
-                        adapter.showEventDetailsDialog(itemView.getContext(), event);
-                    }
-                }
-            });
-        }
-    }
 }

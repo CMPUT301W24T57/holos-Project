@@ -3,11 +3,15 @@ package com.example.holosproject;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -15,6 +19,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * FileName: EditProfileActivity
@@ -29,7 +36,11 @@ public class EditProfileActivity  extends AppCompatActivity {
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
 
+    private Button finishEditProfileButton;
+
     // TODO: Populate the ImageView with users Profile Image
+
+    // TODO: Change the FloatingButton Back button to have a "Go Back" Arrow icon instead (currently has a placeholder)
 
     // TODO: Populate Notification and Geolocation switch with corresponding setting (This currently isn't stored within Firebase)
 
@@ -54,9 +65,16 @@ public class EditProfileActivity  extends AppCompatActivity {
             Log.d(TAG, "No user logged in");
         }
 
-        // Set up listeners and handlers for saving the edited profile
-        // ...
+        // Set up the button for finishing the edits to the profile
+        finishEditProfileButton = findViewById(R.id.buttonFinishProfileCreation);
+        finishEditProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateProfile();
+            }
+        });
 
+        // The back button on the EditProfileActivity
         FloatingActionButton fabBack = findViewById(R.id.buttonEditProfileBack);
         fabBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +85,7 @@ public class EditProfileActivity  extends AppCompatActivity {
         });
     }
 
-    // Fetches User Profile, and populates our fields with the data
+    // Gets the current User Profile, and populates our fields with their profile data
     private void fetchUserProfile(String uid) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userProfileRef = db.collection("userProfiles").document(uid);
@@ -93,7 +111,51 @@ public class EditProfileActivity  extends AppCompatActivity {
                 }
             }
         });
+    }
 
-        // TODO: If all fields are filled, and user selects finish editing, update that document in firebase with the new information. Then decide where to navigate the user
+        // This method takes the text in the text fields, validates them, and them updates the proper document in
+        // Firebase with this data.
+        private void updateProfile() {
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Get the current user's ID
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            // Collect data from input fields
+            String newName = ((EditText)findViewById(R.id.editTextName)).getText().toString();
+            String newContact = ((EditText)findViewById(R.id.editTextContact)).getText().toString();
+            String newHomepage = ((EditText)findViewById(R.id.editTextHomepage)).getText().toString();
+
+            // Add more fields as necessary here
+
+            // Validate input data
+            if(newName.isEmpty() || newContact.isEmpty() || newHomepage.isEmpty()) {
+                // Show error message
+                return;
+            }
+
+            // Create a map of the data to update
+            Map<String, Object> updatedUserData = new HashMap<>();
+            updatedUserData.put("name", newName);
+            updatedUserData.put("contact", newContact);
+            updatedUserData.put("homepage", newHomepage);
+            // Add more fields to update here
+
+            // Update the user's profile document in Firestore
+            db.collection("userProfiles").document(userId)
+                    .update(updatedUserData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Handle success
+                            Toast.makeText(EditProfileActivity.this, "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(Exception e) {
+                            // Handle failure
+                            Toast.makeText(EditProfileActivity.this, "Profile Update Failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
     }
 }

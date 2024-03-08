@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:textStyle="bold"
+    android:textSize="22sp"
+    android:padding="12dp"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:text="EVENT DETAILS"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="30dp"/>
+
+    <TextView
+        android:id="@+id/textViewEventNameDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Event Name:"
+        android:layout_marginBottom="14dp"/>
+
+    <TextView
+        android:id="@+id/textViewEventDateDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Event Date:"
+        android:layout_marginBottom="14dp"/>
+
+    <TextView
+        android:id="@+id/textViewEventTimeDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Event Time:"
+        android:layout_marginBottom="14dp"/>
+
+    <TextView
+        android:id="@+id/textViewEventLocationDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Event Location:"
+        android:layout_marginBottom="14dp"/>
+
+
+    <Switch
+        android:id="@+id/plan_to_attend_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:layout_marginTop="7dp"
+        android:text="Would you like to attend?" />
+
+    <TextView
+        android:id="@+id/event_attendee_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Attendees: "
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="14dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="CHECK-IN CODE: "
+        android:layout_marginBottom="14dp"
+        />
+
+    <ImageView
+        android:id="@+id/QRView"
+        android:layout_width="200sp"
+        android:layout_height="200sp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="20dp">
+    </ImageView>
+
+    <TextView
+        android:id="@+id/textViewEventAnnouncementsDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="50dp"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:text="RECENT ANNOUNCEMENTS"
+        android:textSize="22sp" />
+
+
+    <TextView
+        android:id="@+id/textViewEventNullAnnouncementsDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="-40dp"
+        android:text="No announcements have been made for this event yet. Check back later!"
+        android:textSize="17sp" />
+
+
+</LinearLayout>
