@@ -34,4 +34,36 @@
         android:text="Event Date:"
         android:layout_marginBottom="14dp"/>
 
+    <TextView
+        android:id="@+id/textViewEventTimeDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Event Time:"
+        android:layout_marginBottom="14dp"/>
+
+    <TextView
+        android:id="@+id/textViewEventLocationDiag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Event Location:"
+        android:layout_marginBottom="14dp"/>
+
+    <Switch
+        android:id="@+id/plan_to_attend_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Would you like to attend?" />
+    <TextView
+        android:id="@+id/event_attendee_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Attendees: "
+        android:layout_marginBottom="14dp"/>
+
+
+
 </LinearLayout>

@@ -1,10 +1,14 @@
 package com.example.holosproject;
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.widget.Toolbar;
 
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -15,6 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +80,14 @@ public class ViewAllEventsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_view_all_events);
 
+        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Sample data
+        //allEventsList.add(new Event("Presidential Re-election", 43, "Brampton", "8:00", "January 1, 2024"));
+        //allEventsList.add(new Event("Coronation Day", 56, "Ohio", "6:00", "November 3rd, 2024"));
+
+
         // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,8 +103,49 @@ public class ViewAllEventsActivity extends AppCompatActivity
         toggle.syncState();
 
 
+        allEventsRecyclerView = findViewById(R.id.allEventsRecyclerView);
+        allEventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        eventsAdapter = new AttendeeDashboardEventsAdapter(allEventsList);
+        allEventsRecyclerView.setAdapter(eventsAdapter);
+
+        fetchEvents();
 
         // TODO: Fetch all events from Firestore and update the RecyclerView
+
+
+
+
     }
 
-}
+    private void fetchEvents() {
+        // Fetches events from database, and does manual serialization :-(
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        allEventsList.clear(); // Clear the list before adding new items
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Manual deserialization
+                            String name = document.getString("name");
+                            String date = document.getString("date");
+                            String time = document.getString("time");
+                            String address = document.getString("address");
+                            String creator = document.getString("creator");
+                            String eventId = document.getId();
+                            ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
+
+                            Event event = new Event(name, date, time, address, creator);
+                            event.setEventId(eventId);
+                            event.setAttendees(attendees); // Assuming you have a setter for attendees
+                            allEventsList.add(event);
+                        }
+                        eventsAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.w(TAG, "Error getting documents: ", task.getException());
+                        // Handle the error properly
+                    }
+                });
+
+
+}}
