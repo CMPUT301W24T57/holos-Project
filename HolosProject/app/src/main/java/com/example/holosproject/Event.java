@@ -31,15 +31,19 @@ public class Event {
     public ArrayList<String> getAttendees() {
         return attendees;
     }
-    public String getEventId(){
+
+    public String getEventId() {
         return eventId;
     }
+
     public void setEventId(String eventId) {
         this.eventId = eventId;
     }
+
     public void setAttendees(ArrayList<String> attendees) {
         this.attendees = attendees;
     }
+
     public String getName() {
         return name;
     }
@@ -75,6 +79,4 @@ public class Event {
     public String getCreator() {
         return creator;
     }
-
-
 }
