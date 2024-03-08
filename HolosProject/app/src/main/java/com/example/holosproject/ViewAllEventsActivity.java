@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +76,14 @@ public class ViewAllEventsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_view_all_events);
 
+        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Sample data
+        //allEventsList.add(new Event("Presidential Re-election", 43, "Brampton", "8:00", "January 1, 2024"));
+        //allEventsList.add(new Event("Coronation Day", 56, "Ohio", "6:00", "November 3rd, 2024"));
+
+
         // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,8 +99,37 @@ public class ViewAllEventsActivity extends AppCompatActivity
         toggle.syncState();
 
 
+        allEventsRecyclerView = findViewById(R.id.allEventsRecyclerView);
+        allEventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        eventsAdapter = new AttendeeDashboardEventsAdapter(allEventsList);
+        allEventsRecyclerView.setAdapter(eventsAdapter);
+
+        fetchEvents();
 
         // TODO: Fetch all events from Firestore and update the RecyclerView
+
+
+
+
     }
+
+    private void fetchEvents() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    allEventsList.clear();
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        Event event = documentSnapshot.toObject(Event.class);
+                        //allEventsList.add(event);
+                        allEventsList.add(new Event(event.getName(), event.getId(), event.getLocation(), event.getTime(), event.getDate()));
+                    }
+                    eventsAdapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error fetching events", Toast.LENGTH_SHORT).show();
+                });
+    }
+
 
 }

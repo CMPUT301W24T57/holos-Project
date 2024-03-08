@@ -136,8 +136,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Sample data
-        eventList.add(new Event("Event 1", "January 1, 2024"));
-        eventList.add(new Event("Event 2", "November 3rd, 2024"));
+        eventList.add(new Event("Presidential Re-election", 43, "Brampton", "8:00", "January 1, 2024"));
+        eventList.add(new Event("Coronation Day", 56, "Ohio", "6:00", "November 3rd, 2024"));
 
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -157,6 +157,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventsAdapter = new AttendeeDashboardEventsAdapter(eventList);
         eventsRecyclerView.setAdapter(eventsAdapter);
+
+
 
         // TODO: Create click listener for QR Code Button, change the icon to a QR code instead of a camera.
         scanButton = findViewById(R.id.fabQRCode);
