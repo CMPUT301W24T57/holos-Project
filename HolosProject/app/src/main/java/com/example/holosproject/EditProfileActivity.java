@@ -1,8 +1,5 @@
 package com.example.holosproject;
 
-import static com.example.holosproject.UserUtils.isAdminUser;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -83,15 +80,7 @@ public class EditProfileActivity  extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Finish the activity to go back to the previous screen
-                UserUtils.isAdminUser(FirebaseAuth.getInstance().getCurrentUser(), isAdmin -> {
-                    if (isAdmin) {
-                        Intent intent = new Intent(EditProfileActivity.this, AdminDashboardActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        finish();
-                    }
-                });
+                finish();
             }
         });
     }
