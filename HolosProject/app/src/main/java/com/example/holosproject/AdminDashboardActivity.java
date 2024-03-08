@@ -66,7 +66,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
 
         btnViewEvents.setOnClickListener(v -> {
-            // Navigate to the View Events Activity
+            Intent intent = new Intent(this, AdminViewEventsActivity.class);
+            startActivity(intent);
         });
 
         btnViewImages.setOnClickListener(v -> {
