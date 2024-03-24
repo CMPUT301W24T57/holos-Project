@@ -98,7 +98,7 @@ public class QRGen extends AppCompatActivity {
                 fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 Objects.requireNonNull(fos);
-                Toast.makeText(QRGen.this, "Image saved", Toast.LENGTH_LONG).show();
+                Toast.makeText(QRGen.this, "Image saved to" + imageUri.getPath(), Toast.LENGTH_LONG).show();
                 editText.setText(null);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -123,6 +123,8 @@ public class QRGen extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.setType("image/png");
                 startActivity(intent);
+                // Delete the image after sharing (maybe unneeded)
+                resolver.delete(imageUri, null, null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
