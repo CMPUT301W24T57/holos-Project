@@ -42,6 +42,15 @@
         android:layout_below="@id/qr_btn"
         android:text="Save QR Code" />
 
+    <Button
+        android:id="@+id/share_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/save_btn"
+        android:text="Share QR Code" />
+
     <ImageView
         android:id="@+id/QRView"
         android:layout_width="250sp"

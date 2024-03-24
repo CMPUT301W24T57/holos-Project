@@ -2,6 +2,7 @@ package com.example.holosproject;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -52,10 +53,17 @@ public class QRGen extends AppCompatActivity {
             return insets;
         });
 
+        Bundle bundle = getIntent().getExtras();
+        String eventID = "Input event ID...";
+        if (bundle != null) {
+            eventID = bundle.getString("contents");
+        }
+
         Button genButton = findViewById(R.id.qr_btn);
         Button saveButton = findViewById(R.id.save_btn);
         ImageView QRView = findViewById(R.id.QRView);
         TextInputEditText editText = findViewById(R.id.qrText);
+        editText.setText(eventID);
 
         // GENERATE QR CODE FUNCTIONALITY
         genButton.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +100,29 @@ public class QRGen extends AppCompatActivity {
                 Objects.requireNonNull(fos);
                 Toast.makeText(QRGen.this, "Image saved", Toast.LENGTH_LONG).show();
                 editText.setText(null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        findViewById(R.id.share_btn).setOnClickListener(v -> {
+            OutputStream fos;
+            try {
+                QRGEncoder qrgEncoder = new QRGEncoder(editText.getText().toString(), null, QRGContents.Type.TEXT, 200);
+                Bitmap bitmap = qrgEncoder.getBitmap(0);
+                ContentResolver resolver = getContentResolver();
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, editText.getText().toString() + "Code" + ".jpg");
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
+                Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                Objects.requireNonNull(fos);
+                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setType("image/png");
+                startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();
             }
