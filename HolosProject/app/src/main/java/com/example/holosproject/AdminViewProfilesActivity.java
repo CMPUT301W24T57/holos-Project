@@ -29,6 +29,9 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
     private AdminViewProfilesAdapter adapter;
     private List<UserProfile> profiles; // Declare profiles as a member variable
 
+    // Static variable to control test mode
+    public static boolean isTestMode = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,29 +40,36 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewProfiles);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Initialize the adapter and set it to the RecyclerView
-        recyclerView.setAdapter(adapter);
 
-        // Fetch user profiles from Firebase
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("userProfiles")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        profiles = new ArrayList<>(); // Use the class member variable
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            UserProfile profile = document.toObject(UserProfile.class);
-                            profile.setUid(document.getId()); // Save the document ID for deletion
-                            profiles.add(profile);
+        if (isTestMode) {
+            // If we are in test mode, set the recyclerview to contain our mock data.
+            profiles = MockDataProvider.getMockProfiles();
+
+            adapter = new AdminViewProfilesAdapter(AdminViewProfilesActivity.this, profiles);
+            adapter.setClickListener(this::onItemClick);
+            recyclerView.setAdapter(adapter);
+
+        } else {
+            // Fetch user profiles from Firebase
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("userProfiles")
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            profiles = new ArrayList<>(); // Use the class member variable
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                UserProfile profile = document.toObject(UserProfile.class);
+                                profile.setUid(document.getId()); // Save the document ID for deletion
+                                profiles.add(profile);
+                            }
+                            adapter = new AdminViewProfilesAdapter(AdminViewProfilesActivity.this, profiles);
+                            adapter.setClickListener(this::onItemClick);
+                            recyclerView.setAdapter(adapter);
+                        } else {
+                            // Handle the error
                         }
-                        adapter = new AdminViewProfilesAdapter(AdminViewProfilesActivity.this, profiles);
-                        adapter.setClickListener(this::onItemClick);
-                        recyclerView.setAdapter(adapter);
-                    } else {
-                        // Handle the error
-                    }
-                });
-
+                    });
+        }
     }
 
     /**
@@ -84,18 +94,27 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
      * @param profile The profile to be deleted.
      */
     private void deleteProfile(UserProfile profile) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("userProfiles").document(profile.getUid())
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    // Remove the profile from the list and notify the adapter
-                    profiles.remove(profile);
-                    adapter.notifyDataSetChanged();
-                    showToast("Profile Deleted");
-                })
-                .addOnFailureListener(e -> {
-                    showToast("Error: Did not delete profile");
-                });
+        if (isTestMode) {
+            // If we are in test mode, remove the profile from the local list and update the adapter in test mode.
+            profiles.remove(profile);
+            adapter.notifyDataSetChanged();
+            showToast("Profile Deleted (Test Mode)");
+
+            // If we are not in test mode, load the profiles from firebase.
+        } else {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("userProfiles").document(profile.getUid())
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        // Remove the profile from the list and notify the adapter
+                        profiles.remove(profile);
+                        adapter.notifyDataSetChanged();
+                        showToast("Profile Deleted");
+                    })
+                    .addOnFailureListener(e -> {
+                        showToast("Error: Did not delete profile");
+                    });
+        }
     }
 
     /**
@@ -105,6 +124,21 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
      */
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+
+    /**
+     * Enables test mode, used when running app tests.
+     */
+    // Static method to enable test mode
+    public static void enableTestMode() {
+        isTestMode = true;
+    }
+    /**
+     * Disables test mode, used when running app tests.
+     */
+    public static void disableTestMode() {
+        isTestMode = false;
     }
 
 }
