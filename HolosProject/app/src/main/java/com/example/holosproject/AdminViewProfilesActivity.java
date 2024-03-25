@@ -1,7 +1,9 @@
 package com.example.holosproject;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -39,6 +41,13 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerViewProfiles);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Back button
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> {
+            // Finish this activity and go back to the previous one in the stack
+            finish();
+        });
 
 
         if (isTestMode) {
@@ -139,6 +148,15 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
      */
     public static void disableTestMode() {
         isTestMode = false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {// Respond to the action bar's Up/Home button
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }
