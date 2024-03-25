@@ -3,15 +3,10 @@ package com.example.holosproject;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.Switch;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -39,12 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * FileName: AttendeeDashboardActivity
@@ -85,6 +76,25 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }
     });
 
+    // Grabs users role. Used to determine if user can access the admin dashboard or not.
+    private void fetchUserProfile(String userId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("userProfiles").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String role = documentSnapshot.getString("role");
+                if ("admin".equals(role)) {
+                    // Show the admin dashboard option in the navigation drawer.
+                    NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+                    Menu menu = navigationView.getMenu();
+                    MenuItem adminDashboardMenuItem = menu.findItem(R.id.nav_admin_dashboard);
+                    adminDashboardMenuItem.setVisible(true);
+                }
+            }
+        }).addOnFailureListener(e -> {
+            // Handle error, e.g., show a message to the user.
+        });
+    }
+
     // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -109,7 +119,12 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             startActivity(intent);
             finish();
         }
-
+        else if (id == R.id.nav_admin_dashboard) {
+            // start the admin dashboard activity
+            Intent intent = new Intent(this, AdminDashboardActivity.class);
+            startActivity(intent);
+            finish();
+        }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -312,6 +327,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // calling fetchUserProfile to see if the user is an admin, if they are, allow them to access the Admin Dashboard through the Drawer.
+        fetchUserProfile(currentUser.getUid());
 
         // Setting up the RecyclerView
         // Most of the code for this is found within the AttendeeDashboardEventsActivity file
@@ -341,7 +358,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                         }
                     }
                 }
-                // TODO: Create the Hamburger Menu pop out on the top right (refer to UI Mockups)
             });
         }
         displayEvents(currentUser);

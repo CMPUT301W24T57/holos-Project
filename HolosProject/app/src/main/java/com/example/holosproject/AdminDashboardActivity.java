@@ -92,22 +92,22 @@ public class AdminDashboardActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.nav_edit_profile) {
-            // Navigate to View Profiles
+            // Navigate to Edit your profile
             Intent intent = new Intent(this, EditProfileActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_view_all_events) {
-            // Navigate to View Events
+            // Navigate to Viewing all Events
             Intent intent = new Intent(this, ViewAllEventsActivity.class);
             startActivity(intent);
             finish();
 
         } else if (id == R.id.nav_view_registered_events) {
-            // Navigate to View Images
+            // Navigate to Viewing your signed up evetns
             Intent intent = new Intent(this, AttendeeDashboardActivity.class);
             startActivity(intent);
             finish();
         }  else if (id == R.id.nav_view_organizer_dashboard) {
-            // Navigate to View Images
+            // Navigate to Organizer Dashboard
             Intent intent = new Intent(this, OrganizerDashboardActivity.class);
             startActivity(intent);
             finish();
