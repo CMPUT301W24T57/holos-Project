@@ -6,59 +6,85 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".QRGen">
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20sp"
-        style="@style/Widget.Material3.TextInputEditText.FilledBox.Dense"
-        android:id="@+id/inputLayout"
-        android:hint="Enter text:"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:translationY="-100dp">
-        <com.google.android.material.textfield.TextInputEditText
+    <ScrollView
+        android:layout_marginTop="50dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/qrText">
-        </com.google.android.material.textfield.TextInputEditText>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="250sp"
+                android:layout_height="250sp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/checkInDisplay">
+            </ImageView>
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="20sp"-->
+<!--                style="@style/Widget.Material3.TextInputEditText.FilledBox.Dense"-->
+<!--                android:id="@+id/inputLayout"-->
+<!--                android:hint="Enter text:"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:layout_centerHorizontal="true"-->
+<!--                android:translationY="-100dp">-->
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/qrText">-->
+<!--                </com.google.android.material.textfield.TextInputEditText>-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
 
-    <Button
-        android:id="@+id/qr_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:text="Generate QR Code" />
+            <Button
+                android:id="@+id/save_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/checkInDisplay"
+                android:text="Save QR Code to Device" />
 
-    <Button
-        android:id="@+id/save_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/qr_btn"
-        android:text="Save QR Code" />
+            <Button
+                android:id="@+id/share_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/save_btn"
+                android:text="Share Promotional QR Code" />
 
-    <Button
-        android:id="@+id/share_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/save_btn"
-        android:text="Share QR Code" />
+            <ImageView
+                android:id="@+id/promoQRDisplay"
+                android:layout_width="250sp"
+                android:layout_height="250sp"
+                android:layout_below="@id/save_btn"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp">
+            </ImageView>
 
-    <ImageView
-        android:id="@+id/QRView"
-        android:layout_width="250sp"
-        android:layout_height="250sp"
-        android:layout_below="@id/save_btn"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp">
+            <Button
+                android:id="@+id/save_btn2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/promoQRDisplay"
+                android:text="Save to Device" />
 
-    </ImageView>
+            <Button
+                android:id="@+id/share_btn2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/save_btn2"
+                android:text="Share Promotional QR Code" />
+        </RelativeLayout>
+    </ScrollView>
+
+
+
 
 </RelativeLayout>

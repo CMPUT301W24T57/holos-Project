@@ -119,7 +119,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         AlertDialog.Builder dispbuilder = new AlertDialog.Builder(context);
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        View diagView = inflater.inflate(R.layout.event_info, null);
+        View diagView = inflater.inflate(R.layout.organizer_event_info, null);
         dispbuilder.setView(diagView);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
