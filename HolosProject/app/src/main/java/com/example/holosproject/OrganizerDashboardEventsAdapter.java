@@ -3,10 +3,12 @@ package com.example.holosproject;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -117,7 +119,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         AlertDialog.Builder dispbuilder = new AlertDialog.Builder(context);
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        View diagView = inflater.inflate(R.layout.event_info, null);
+        View diagView = inflater.inflate(R.layout.organizer_event_info, null);
         dispbuilder.setView(diagView);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -131,6 +133,15 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
+        Button qrNavButton = diagView.findViewById(R.id.qrNav);
+        qrNavButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, QRGen.class);
+                intent.putExtra("contents", event.getEventId());
+                v.getContext().startActivity(intent);
+            }
+        });
 
         textViewEventName.setText("EVENT NAME: " + event.getName());
         textViewEventDate.setText("EVENT DATE: " + event.getDate());

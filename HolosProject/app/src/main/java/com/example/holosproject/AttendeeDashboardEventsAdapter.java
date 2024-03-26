@@ -82,21 +82,11 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
-        ImageView qrDisplay = diagView.findViewById(R.id.QRView);
 
         textViewEventName.setText("EVENT NAME: " + event.getName());
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
         textViewEventTime.setText("EVENT TIME: " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
-
-        // QR DISPLAY:
-        QRGEncoder qrgEncoder = new QRGEncoder(event.getEventId(), null, QRGContents.Type.TEXT, 200);
-        try {
-            Bitmap bitmap = qrgEncoder.getBitmap(0);
-            qrDisplay.setImageBitmap(bitmap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         List<String> attendeeIds1 = event.getAttendees();
         displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
