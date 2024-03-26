@@ -4,12 +4,14 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,67 +19,70 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class) // Added dependency for this AndroidJUnit4
 @LargeTest
 
+/**
+ * FileName: AdminDashboardTest
+ * Description: Runs tests relating to the admin dashboard. Viewing/Deleting events, profiles and images.
+ *
+ * How does the test work? It first enables "Test Mode" for the AdminViewProfiles, Events, and Images activity.
+ * When test mode is enabled in those activites, it will load mock data from MockDataProvider, instead of data from
+ * firebase. We then view and delete this mock data through this test.
+ **/
+
 public class AdminDashboardTest {
 
     @Rule
     public ActivityScenarioRule<AdminDashboardActivity> scenario = new
             ActivityScenarioRule<AdminDashboardActivity>(AdminDashboardActivity.class);
 
+    @Before
+    public void setUp() {
+        // Enable test mode before starting the activity
+        // Enabling test mode loads these activities with mock data, instead of data from firebase.
+        AdminViewProfilesActivity.enableTestMode();
+        AdminViewEventsActivity.enableTestMode();
+    }
+
     @Test
+    // Test for Viewing/Deleting profiles as an admin
     public void ViewAndDeleteProfileTest() throws InterruptedException {
-        // WHY WHY WHY DO THE USER PROFILES NOT DISPLAY IN THE TEST! BUT THEY DO IN THE APP!!!!
-        // The user profiles dont appear in the test. but they do normally within the app. I don't know why. T
-        // The test does not work because of this. If the profiles did appear, it would work.
 
         // Tap on the View Profiles Button
         onView(withId(R.id.btnViewProfiles)).perform(click());
 
-        // Wait for the data from Firebase to appear
-        // Wait for 5 seconds
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         // Tap the profile at the top using RecyclerViewActions
-        RecyclerView ourView = (RecyclerView) withId(R.id.recyclerViewProfiles);
-        ourView.findViewHolderForAdapterPosition(0).itemView.performClick();
-
+        onView(withId(R.id.recyclerViewProfiles))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         // Click on the 'Yes' deletion confirmation dialog
         onView(ViewMatchers.withText("Yes")).perform(click());
     }
 
     @Test
-    public void ViewAndDeleteEventTest() throws InterruptedException {
-        // Same story. THE EVENTS ARE NOT APPEARING. ONLY IN THE TEST!!! NOT IN THE ACTUAL ENVIRONMENT.
-        // I HAVE NO EARTHLY IDEA AS TO WHY.
+    // Test for Viewing/Deleting events as an admin
+    public void ViewAndDeleteEventTest()  {
 
         // Tap on the View Events Button
         onView(withId(R.id.btnViewEvents)).perform(click());
 
-        // Wait for the data from Firebase to appear
-        // Wait for 5 seconds
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        // Tap the profile at the top using RecyclerViewActions
-        RecyclerView ourView = (RecyclerView) withId(R.id.recyclerViewEvents);
-        ourView.findViewHolderForAdapterPosition(0).itemView.performClick();
-
+        // Tap the event at the top using RecyclerViewActions
+        onView(withId(R.id.recyclerViewEvents))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         // Click on the 'Yes' deletion confirmation dialog
-        onView(ViewMatchers.withText("Yes")).perform(click());
+        onView(ViewMatchers.withText("OK")).perform(click());
     }
 
     @Test
     public void ViewImages() throws InterruptedException {
         onView(withId(R.id.btnViewImages)).perform(click());
 
+    }
+
+    @After
+    public void tearDown() {
+        // Disable test mode after each test
+        AdminViewProfilesActivity.disableTestMode();
+        AdminViewEventsActivity.disableTestMode();
     }
 
 }

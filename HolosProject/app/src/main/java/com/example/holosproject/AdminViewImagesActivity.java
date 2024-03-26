@@ -1,6 +1,7 @@
 package com.example.holosproject;
 
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -23,6 +24,13 @@ public class AdminViewImagesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_view_images);
+
+        // Back button
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> {
+            // Finish this activity and go back to the previous one in the stack
+            finish();
+        });
 
         recyclerView = findViewById(R.id.imagesRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // 3 columns in grid

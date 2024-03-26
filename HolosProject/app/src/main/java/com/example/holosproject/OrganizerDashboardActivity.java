@@ -3,17 +3,18 @@ package com.example.holosproject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,34 +45,6 @@ public class OrganizerDashboardActivity extends AppCompatActivity
     private FirebaseUser currentUser;
     private final String TAG = "OrganizerDashboardActivity";
 
-    /**
-     * Handles navigation item selection from the navigation drawer.
-     * Opens corresponding activities based on the selected item.
-     * @param item The selected item from the navigation drawer.
-     * @return true if the event was handled successfully, false otherwise.
-     */
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.nav_edit_profile) {
-            Intent intent = new Intent(this, EditProfileActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_view_all_events) {
-            Intent intent = new Intent(this, ViewAllEventsActivity.class);
-            startActivity(intent);
-            finish();
-        } else if (id == R.id.nav_view_registered_events) {
-            Intent intent = new Intent(this, AttendeeDashboardActivity.class);
-            startActivity(intent);
-            finish();
-        } else if (id == R.id.nav_view_organizer_dashboard) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }
-
-        drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     /**
      * Initializes activity components and UI elements.
@@ -90,6 +63,8 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
+
+        CheckDisplayAdminDashboard(currentUser.getUid());
 
         // Setup the recyclerview
         eventsRecyclerView = findViewById(R.id.recycler_view_events);
@@ -173,5 +148,59 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         }
     }
     // TODO: Fix the bug where events you create don't display until you leave the screen and come back
+
+    /**
+     * Determines if the drawer should display "Admin Dashboard" based on if the users role is "admin".
+     * @param userId: the users ID
+     */
+    // Grabs users role. Used to determine if user can access the admin dashboard or not.
+    private void CheckDisplayAdminDashboard(String userId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("userProfiles").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String role = documentSnapshot.getString("role");
+                if ("admin".equals(role)) {
+                    // Show the admin dashboard option in the navigation drawer.
+                    Menu menu = navigationView.getMenu();
+                    MenuItem adminDashboardMenuItem = menu.findItem(R.id.nav_admin_dashboard);
+                    adminDashboardMenuItem.setVisible(true);
+                }
+            }
+        }).addOnFailureListener(e -> {
+            // Handle error, e.g., show a message to the user.
+        });
+    }
+    /**
+     * Handles navigation item selection from the navigation drawer.
+     * Opens corresponding activities based on the selected item.
+     * @param item The selected item from the navigation drawer.
+     * @return true if the event was handled successfully, false otherwise.
+     */
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.nav_edit_profile) {
+            Intent intent = new Intent(this, EditProfileActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_view_all_events) {
+            Intent intent = new Intent(this, ViewAllEventsActivity.class);
+            startActivity(intent);
+            finish();
+        } else if (id == R.id.nav_view_registered_events) {
+            Intent intent = new Intent(this, AttendeeDashboardActivity.class);
+            startActivity(intent);
+            finish();
+        } else if (id == R.id.nav_view_organizer_dashboard) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+        else if (id == R.id.nav_admin_dashboard) {
+            Intent intent = new Intent(this, AdminDashboardActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
 
 }

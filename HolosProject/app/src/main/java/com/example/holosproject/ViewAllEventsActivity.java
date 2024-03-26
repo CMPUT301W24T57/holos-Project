@@ -1,9 +1,6 @@
 package com.example.holosproject;
+
 import static android.content.ContentValues.TAG;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,16 +11,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,7 +41,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import androidmads.library.qrgenearator.QRGContents;
@@ -64,6 +61,7 @@ public class ViewAllEventsActivity extends AppCompatActivity
     private RecyclerView allEventsRecyclerView;
     private AttendeeDashboardEventsAdapter eventsAdapter;
     private List<Event> allEventsList = new ArrayList<>(); // This is the data source
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser(); // The current user
 
     // References to The drawer menu
     private DrawerLayout drawerLayout;
@@ -95,6 +93,11 @@ public class ViewAllEventsActivity extends AppCompatActivity
             startActivity(intent);
             finish();
         }
+        else if (id == R.id.nav_admin_dashboard) {    // if we try to navigate to current view, close the drawer
+        Intent intent = new Intent(this, AdminDashboardActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -111,6 +114,8 @@ public class ViewAllEventsActivity extends AppCompatActivity
         // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        fetchUserProfile(currentUser.getUid());
 
         // Set up the DrawerLayout and NavigationView
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -354,4 +359,29 @@ public class ViewAllEventsActivity extends AppCompatActivity
                     });
         }
     }
+
+
+    /**
+     * Grabs the users profile, to determine if their current role. (admin or attendee)
+     * @param userId: the users ID
+     */
+    // Grabs users role. Used to determine if user can access the admin dashboard or not.
+    private void fetchUserProfile(String userId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("userProfiles").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String role = documentSnapshot.getString("role");
+                if ("admin".equals(role)) {
+                    // Show the admin dashboard option in the navigation drawer.
+                    NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+                    Menu menu = navigationView.getMenu();
+                    MenuItem adminDashboardMenuItem = menu.findItem(R.id.nav_admin_dashboard);
+                    adminDashboardMenuItem.setVisible(true);
+                }
+            }
+        }).addOnFailureListener(e -> {
+            // Handle error, e.g., show a message to the user.
+        });
+    }
+
 }

@@ -74,11 +74,33 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
     }
 
     /**
-     * Deletes an event from Firebase.
+     * Deletes an event from Firebase. If inside test mode, deletes the mock provided events.
      *
      * @param eventId The ID of the event to be deleted.
      */
     private void deleteEventFromFirebase(String eventId) {
+        // If we are in test mode: Find and delete the mock event from the local list.
+        if (AdminViewEventsActivity.isTestMode) {
+            // Locate the event to delete by its ID in test mode
+            int position = -1;
+            for (int i = 0; i < events.size(); i++) {
+                if (events.get(i).getEventId().equals(eventId)) {
+                    position = i;
+                    break;
+                }
+            }
+            if (position != -1) {
+                events.remove(position);
+                notifyItemRemoved(position);
+                Toast.makeText(inflater.getContext(), "Event deleted (test mode)", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(inflater.getContext(), "Event not found (test mode)", Toast.LENGTH_SHORT).show();
+            }
+            return; // Exit the method to avoid attempting to delete from Firebase in test mode
+        }
+
+        // Else, if we are not in test mode, delete the event from Firebase.
+        // If the EventID is not valid, report this issue.
         if (eventId == null || eventId.trim().isEmpty()) {
             Toast.makeText(inflater.getContext(), "Invalid event ID", Toast.LENGTH_SHORT).show();
             return; // Stop if the eventId is not valid
