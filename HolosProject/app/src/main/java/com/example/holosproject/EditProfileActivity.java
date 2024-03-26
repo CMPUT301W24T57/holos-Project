@@ -1,19 +1,23 @@
 package com.example.holosproject;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -36,6 +40,9 @@ public class EditProfileActivity extends AppCompatActivity {
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
     private Button finishEditProfileButton;
+    private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
+    private ImageUploader imageUploader; // Instance variable for the ImageUploader
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +74,29 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
-        // The back button on the EditProfileActivity
-        FloatingActionButton fabBack = findViewById(R.id.buttonEditProfileBack);
-        fabBack.setOnClickListener(new View.OnClickListener() {
+        // Initialize the ImageUploader with a listener
+        imageUploader = new ImageUploader(new ImageUploader.ImageUploadListener() {
             @Override
-            public void onClick(View view) {
-                // Finish the activity to go back to the previous screen
-                finish();
+            public void onImageUploadSuccess(String downloadUrl) {
+                // Image uploaded successfully
+                Toast.makeText(EditProfileActivity.this, "Image Uploaded!", Toast.LENGTH_SHORT).show();
+                // Set the image URL in the user's profile here if needed
+            }
+            @Override
+            public void onImageUploadFailure(Exception e) {
+                // Image upload failed
+                Toast.makeText(EditProfileActivity.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Set up the button for editing the profile image
+        ImageView profileImage = findViewById(R.id.imageViewProfile);
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Intent to pick an image
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, PICK_IMAGE_REQUEST);
             }
         });
     }
@@ -97,7 +120,13 @@ public class EditProfileActivity extends AppCompatActivity {
                         editTextName.setText(document.getString("name"));
                         editTextContact.setText(document.getString("contact"));
                         editTextHomepage.setText(document.getString("homepage"));
-                        // Populate other fields similarly
+
+                        // Populate the image view with profile image (if it exists)
+                        String imageUrl = document.getString("profileImageUrl");
+                        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                            ImageView profileImage = findViewById(R.id.imageViewProfile);
+                            Glide.with(EditProfileActivity.this).load(imageUrl).into(profileImage);     // Using Glide to load images
+                        }
                     } else {
                         Log.d(TAG, "No such document");
                         // Handle case where the document doesn't exist
@@ -153,5 +182,17 @@ public class EditProfileActivity extends AppCompatActivity {
                         Toast.makeText(EditProfileActivity.this, "Profile Update Failed", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+    //  handle image selection from user
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri imageUri = data.getData();
+            // Set the image URI to the ImageView and start uploading
+            ImageView profileImage = findViewById(R.id.imageViewProfile);
+            profileImage.setImageURI(imageUri);
+            imageUploader.uploadProfileImage(imageUri); // Upload the image
+        }
     }
 }
