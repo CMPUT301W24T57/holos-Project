@@ -208,7 +208,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     private void rsvpEvent(String eventID, DocumentSnapshot document) {
         AlertDialog.Builder builder = new AlertDialog.Builder(AttendeeDashboardActivity.this);
-        builder.setTitle("Event Added");
+        builder.setTitle("Checked in to event.");
         // add user to event:
         ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
         ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
@@ -218,7 +218,16 @@ public class AttendeeDashboardActivity extends AppCompatActivity
               eventRef.update("checkIns", FieldValue.arrayUnion(currentUser.getUid()))
                      .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                      .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
-        }
+             addEvent(eventID);
+
+         }
+         else if (checkIns.contains(currentUser.getUid())){
+             // TODO: ADD SOME SORT OF PREFIX / POSTFIX TO KEEP TRACK OF NUMBER OF TIMES USER HAS CHECKED IN
+             DocumentReference eventRef = database.collection("events").document(eventID);
+             eventRef.update("checkIns", FieldValue.arrayUnion(currentUser.getUid()))
+                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
+                     .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+         }
          // just in case?
         if (!attendees.contains(currentUser.getUid())) {
             DocumentReference eventRef = database.collection("events").document(eventID);
@@ -226,7 +235,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to attendees"))
                     .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
         }
-        addEvent(eventID);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // dismisses the popup
             @Override
             public void onClick(DialogInterface dialog, int which) {

@@ -45,6 +45,7 @@ public class EventDisplay extends AppCompatActivity {
                         String time = document.getString("time");
                         String address = document.getString("address");
                         String creator = document.getString("creator");
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
                         String eventId = document.getId();
 
                         TextView titleDisplay = findViewById(R.id.event_Name);
@@ -52,7 +53,15 @@ public class EventDisplay extends AppCompatActivity {
                         TextView creatorDisplay = findViewById(R.id.event_Creator);
                         titleDisplay.setText(getString(R.string.prefixName, name));
                         dateDisplay.setText(getString(R.string.prefixDate, date));
-                        creatorDisplay.setText(getString(R.string.prefixOrganizer, creator));
+                        db.collection("userProfiles").document(creator).get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        String creatorName = documentSnapshot.getString("name");
+                                        if (name != null) {
+                                            creatorDisplay.setText(getString(R.string.prefixOrganizer, creatorName));
+                                        }
+                                    }
+                                });
                     }
                 }
             }

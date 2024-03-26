@@ -68,6 +68,22 @@
         android:layout_marginTop="7dp"
         android:layout_marginBottom="14dp"/>
 
+<!--    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="CHECK-IN CODE: "
+        android:layout_marginBottom="14dp"
+        />-->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Go to QR View"
+        android:layout_marginBottom="14dp"
+        android:id="@+id/qrNav">
+    </Button>
+
     <TextView
         android:id="@+id/textViewEventAnnouncementsDiag"
         android:layout_width="match_parent"
