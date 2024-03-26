@@ -1,8 +1,9 @@
 package com.example.holosproject;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,7 +13,6 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,8 +23,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +54,11 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
     private Switch switchGeolocation;
     private Button buttonFinishProfileCreation;
     private static final String TAG = "EmailPasswordActivity";
+    private static final int PICK_IMAGE_REQUEST = 1; // Define a request code for image picking
+    private ImageUploader imageUploader; // Instance variable for the ImageUploader
+    private String uploadedImageUrl = null; // This will store the uploaded image URL
+    private Uri imageUriToUpload = null; // This will temporarily store the selected image URI
+
 
     // Firestore database reference
     private FirebaseFirestore database;
@@ -73,8 +79,6 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
         switchGeolocation = findViewById(R.id.switchGeolocation);
         buttonFinishProfileCreation = findViewById(R.id.buttonFinishProfileCreation);
 
-        // TODO: image support
-
 
         buttonFinishProfileCreation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +89,36 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                 createAccount(name, contact, homepage);
             }
         });
+
+        imageUploader = new ImageUploader(new ImageUploader.ImageUploadListener() {
+            @Override
+            public void onImageUploadSuccess(String downloadUrl) {
+                // Store the image URL to add it to the profile later
+                uploadedImageUrl = downloadUrl;
+                Toast.makeText(FirstTimeProfileCreationActivity.this, "Image uploaded!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onImageUploadFailure(Exception e) {
+                // Handle the failure, e.g., show a message
+                Toast.makeText(FirstTimeProfileCreationActivity.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        imageViewProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectImage();
+            }
+        });
+    }
+
+    /**
+     * Method for selecting an image to be uploaded as a profile image
+     */
+    private void selectImage() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
     /**
@@ -105,6 +139,7 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
+                            // TODO: Add data validation
                             // The user information that will be stored
                             Map<String, Object> userProfile = new HashMap<>();
                             userProfile.put("role", "attendee");
@@ -113,7 +148,11 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                             userProfile.put("homepage", homepage);
                             userProfile.put("myEvents", new ArrayList<String>());
                             userProfile.put("createdEvents", new ArrayList<String>());
-                            // TODO: Add the image name or image reference to userProfile map
+
+                            // Check if the image has been uploaded and set the URL
+                            if (uploadedImageUrl != null && !uploadedImageUrl.isEmpty()) {
+                                userProfile.put("profileImageUrl", uploadedImageUrl);
+                            }
 
                             // Store the user profile in Firestore
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -123,6 +162,10 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(Void aVoid) {
                                             Log.d(TAG, "DocumentSnapshot successfully written!");
+                                            if (imageUriToUpload != null) {
+                                                // Upload users profile image after creating the profile
+                                                uploadProfileImage(imageUriToUpload, user.getUid());
+                                            }
                                             updateUI(user);
                                         }
                                     })
@@ -153,4 +196,38 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
             Toast.makeText(FirstTimeProfileCreationActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUriToUpload = data.getData(); // Save the selected image URI
+            imageViewProfile.setImageURI(imageUriToUpload); // Update the ImageView
+        }
+    }
+
+    // method to upload the image
+    private void uploadProfileImage(Uri imageUri, String userId) {
+        StorageReference profileImageRef = FirebaseStorage.getInstance().getReference("profileImages/" + userId + ".jpg");
+
+        profileImageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> profileImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    String downloadUrl = uri.toString();
+
+                    // Directly update the Firestore document with the download URL
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("userProfiles").document(userId)
+                            .update("profileImageUrl", downloadUrl)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(FirstTimeProfileCreationActivity.this, "Profile image updated.", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(FirstTimeProfileCreationActivity.this, "Failed to update profile image URL.", Toast.LENGTH_SHORT).show();
+                            });
+                }))
+                .addOnFailureListener(e -> {
+                    Toast.makeText(FirstTimeProfileCreationActivity.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
 }

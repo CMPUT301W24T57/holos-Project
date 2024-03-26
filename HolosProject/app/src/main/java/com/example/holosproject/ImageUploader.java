@@ -7,6 +7,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+
+/**
+ * FileName: ImageUploader
+ * Description: Handles uploading images to firebase
+ **/
+
 public class ImageUploader {
 
     public interface ImageUploadListener {
