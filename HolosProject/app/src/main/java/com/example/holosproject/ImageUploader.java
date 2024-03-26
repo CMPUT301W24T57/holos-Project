@@ -11,6 +11,7 @@ import com.google.firebase.storage.StorageReference;
 /**
  * FileName: ImageUploader
  * Description: Handles uploading images to firebase
+ * Note: As of 2024-03-26 Only works for profile images. Will work on implementing with other types of photos as well.
  **/
 
 public class ImageUploader {

@@ -206,7 +206,8 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
         }
     }
 
-    // method to upload the image
+    // Method to upload profile image.
+    // We call this method AFTER the profile was successfully created.
     private void uploadProfileImage(Uri imageUri, String userId) {
         StorageReference profileImageRef = FirebaseStorage.getInstance().getReference("profileImages/" + userId + ".jpg");
 
