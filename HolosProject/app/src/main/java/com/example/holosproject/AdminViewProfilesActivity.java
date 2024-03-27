@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,6 +114,13 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
             // If we are not in test mode, load the profiles from firebase.
         } else {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            // Before we delete the profile, check if they have a profile image, delete their uploaded image
+            if (profile.getProfileImageUrl() != null && !profile.getProfileImageUrl().isEmpty()) {
+                StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profile.getProfileImageUrl());
+                imageRef.delete();
+            }
+
             db.collection("userProfiles").document(profile.getUid())
                     .delete()
                     .addOnSuccessListener(aVoid -> {
