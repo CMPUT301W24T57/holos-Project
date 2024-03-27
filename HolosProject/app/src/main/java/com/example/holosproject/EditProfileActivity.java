@@ -22,7 +22,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +42,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
-    private Button finishEditProfileButton;
+    private Button finishEditProfileButton, removeProfileImageButton;
     private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
     private ImageUploader imageUploader; // Instance variable for the ImageUploader
 
@@ -57,6 +60,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editTextHomepage = findViewById(R.id.editTextHomepage);
         editTextContact = findViewById(R.id.editTextContact);
 
+
         if (currentUser != null) {
             String uid = currentUser.getUid();
             fetchUserProfile(uid);
@@ -65,8 +69,10 @@ public class EditProfileActivity extends AppCompatActivity {
             Log.d(TAG, "No user logged in");
         }
 
-        // Set up the button for finishing the edits to the profile
+        // Initialize buttons for finishing edits to profile, and for removing uploaded profile image
         finishEditProfileButton = findViewById(R.id.buttonFinishProfileCreation);
+        removeProfileImageButton = findViewById(R.id.buttonRemoveProfileImage);
+
         finishEditProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,6 +86,7 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onImageUploadSuccess(String downloadUrl) {
                 // Image uploaded successfully
                 Toast.makeText(EditProfileActivity.this, "Image Uploaded!", Toast.LENGTH_SHORT).show();
+                removeProfileImageButton.setVisibility(View.VISIBLE); // Make the remove button visible
                 // Set the image URL in the user's profile here if needed
             }
             @Override
@@ -97,6 +104,14 @@ public class EditProfileActivity extends AppCompatActivity {
                 // Intent to pick an image
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, PICK_IMAGE_REQUEST);
+            }
+        });
+
+        // Set up the remove image button click listener
+        removeProfileImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeProfileImage(currentUser.getUid());
             }
         });
     }
@@ -126,9 +141,11 @@ public class EditProfileActivity extends AppCompatActivity {
                         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
                             ImageView profileImage = findViewById(R.id.imageViewProfile);
                             Glide.with(EditProfileActivity.this).load(imageUrl).into(profileImage);     // Using Glide to load images
+                            removeProfileImageButton.setVisibility(View.VISIBLE);   // If the user does have a profile image, then we can set the "remove profile image" button to visible
                         }
                     } else {
                         Log.d(TAG, "No such document");
+                        removeProfileImageButton.setVisibility(View.GONE); // Hide removeImageButton if no profile image exists
                         // Handle case where the document doesn't exist
                     }
                 } else {
@@ -195,4 +212,23 @@ public class EditProfileActivity extends AppCompatActivity {
             imageUploader.uploadProfileImage(imageUri); // Upload the image
         }
     }
+
+    // Method to remove the profile image (activated when user presses "Remove Profile Image" button)
+    private void removeProfileImage(String userId) {
+        // Remove image from Firebase Storage
+        StorageReference profileImageRef = FirebaseStorage.getInstance().getReference("profileImages/" + userId + ".jpg");
+        profileImageRef.delete().addOnSuccessListener(aVoid -> {
+            // Image removed from Storage, now remove the URL from Firestore
+            FirebaseFirestore.getInstance().collection("userProfiles").document(userId)
+                    .update("profileImageUrl", FieldValue.delete())
+                    .addOnSuccessListener(aVoid1 -> {
+                        Toast.makeText(EditProfileActivity.this, "Profile image removed.", Toast.LENGTH_SHORT).show();
+                        ImageView profileImage = findViewById(R.id.imageViewProfile);
+                        profileImage.setImageResource(R.drawable.ic_launcher_foreground); // Set default image
+                        removeProfileImageButton.setVisibility(View.GONE); // Hide the remove button
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Failed to remove profile image.", Toast.LENGTH_SHORT).show());
+        }).addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Failed to remove profile image from storage.", Toast.LENGTH_SHORT).show());
+    }
+
 }
