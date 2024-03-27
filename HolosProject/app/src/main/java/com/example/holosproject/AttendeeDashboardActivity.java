@@ -82,13 +82,12 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        // If there is a change continue on with the code
+        // If there is a change continue on with the code.
         eventsRef.addSnapshotListener(this, (value, error) -> {
             if (error != null) {
                 Log.e(TAG, "Listen failed.", error);
                 return;
             }
-
             eventList.clear();
             displayEvents(currentUser);
             eventsAdapter.notifyDataSetChanged();
