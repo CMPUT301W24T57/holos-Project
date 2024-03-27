@@ -31,6 +31,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -68,6 +69,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private FloatingActionButton scanButton;
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference eventsRef = database.collection("events");
+    private ListenerRegistration eventsListener;
+
 
     private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> { //basic popup after scanning to test things
         if (result.getContents() != null) {
@@ -75,7 +78,29 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             handleScan(scanContents);
         }
     });
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        // If there is a change continue on with the code
+        eventsRef.addSnapshotListener(this, (value, error) -> {
+            if (error != null) {
+                Log.e(TAG, "Listen failed.", error);
+                return;
+            }
+
+            eventList.clear();
+            displayEvents(currentUser);
+            eventsAdapter.notifyDataSetChanged();
+        });
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (eventsListener != null) {
+            eventsListener.remove();
+        }
+    }
     // Grabs users role. Used to determine if user can access the admin dashboard or not.
     private void fetchUserProfile(String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -368,7 +393,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 }
             });
         }
-        displayEvents(currentUser);
+        //commented out because it had a conflict with on resume
+        //displayEvents(currentUser);
     }
 }
 
