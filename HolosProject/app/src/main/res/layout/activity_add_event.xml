@@ -80,7 +80,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="5dp"
-        android:text="Poster Preivew:" />
+        android:text="Poster Preview:" />
 
     <!-- ImageView for the event poster-->
     <ImageView
@@ -94,35 +94,52 @@
         android:src="@drawable/ic_launcher_foreground" />
 
     <!-- Button to upload QR & poster image -->
+
+    <!-- Button to cancel -->
+
+    <!-- Button to save -->
+
     <Button
         android:id="@+id/buttonUploadImage"
-        android:text="Upload Image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/edit_text_event_address"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="16dp"
+        android:translationX="60dp"
+        android:layout_marginTop="15dp"
+        android:text="Upload Poster" />
 
-    <!-- Button to cancel -->
+    <Button
+        android:id="@+id/button_upload_qr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:translationX="60dp"
+        android:layout_toLeftOf="@id/buttonUploadImage"
+        android:layout_below="@id/edit_text_event_address"
+        android:layout_marginTop="15dp"
+        android:text="Upload QR" />
+
     <Button
         android:id="@+id/button_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancel"
         android:layout_below="@id/buttonUploadImage"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="106dp"
+        android:text="Cancel" />
 
-    <!-- Button to save -->
     <Button
         android:id="@+id/button_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="17dp"
         android:text="Save"
         android:layout_below="@id/buttonUploadImage"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_toStartOf="@id/button_cancel"/>
 
 </RelativeLayout>

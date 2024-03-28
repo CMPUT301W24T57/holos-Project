@@ -37,6 +37,7 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * FileName: AttendeeDashboardActivity
@@ -69,6 +70,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private FloatingActionButton scanButton;
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference eventsRef = database.collection("events");
+
+    private CollectionReference customRef = database.collection("Custom QR Data");
     private ListenerRegistration eventsListener;
 
 
@@ -322,17 +325,31 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }
         // if this is just a check-in QR,
         else {
-            DocumentReference docRef = eventsRef.document(scanContents);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            DocumentReference qrRef = customRef.document(Integer.toString(Objects.hashCode(scanContents)));
+            qrRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            goToEventDisplay(scanContents);
+                            goToEventDisplay(document.getString("linkedEvent"));
                         }
                     } else {
                         Log.d("Firestore", "Database Error");
+                        DocumentReference docRef = eventsRef.document(scanContents);
+                        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if (document.exists()) {
+                                        goToEventDisplay(scanContents);
+                                    }
+                                } else {
+                                    Log.d("Firestore", "Database Error");
+                                }
+                            }
+                        });
                     }
                 }
             });
