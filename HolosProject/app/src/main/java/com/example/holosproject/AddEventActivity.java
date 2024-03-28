@@ -5,11 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -35,6 +37,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 /**
  * Activity for adding new events.
@@ -46,8 +50,10 @@ public class AddEventActivity extends AppCompatActivity {
     private EditText eventAddress;
     private final String TAG = "addEventActivityScreen";
     private FirebaseUser currentUser;
-    private Button save;
-    private Button cancel;
+    private Button save, cancel, buttonUploadImage;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri eventImageUri;
+    private ImageView imageViewEventPoster;
 
     private Button uploadQR;
     private ActivityResultLauncher<String> mGetContent;
@@ -118,6 +124,8 @@ public class AddEventActivity extends AppCompatActivity {
                 pickQRImage();
             }
         });
+        imageViewEventPoster = findViewById(R.id.imageViewEventPoster);
+        buttonUploadImage = findViewById(R.id.buttonUploadImage);
 
         // Set click listener for the cancel button
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +142,12 @@ public class AddEventActivity extends AppCompatActivity {
                 // Call method to save event details
                 saveEvent(eventName.getText().toString(), eventDate.getText().toString(), eventTime.getText().toString(), eventAddress.getText().toString());
             }
+        });
+
+        // Set click listener for the Upload Event Poster button
+        buttonUploadImage.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });
     }
 
@@ -173,6 +187,12 @@ public class AddEventActivity extends AppCompatActivity {
                             handleCustomQR(customQR, eventID);
                         }
                         addToMyEvents(eventID);
+
+                        // Now upload the image, if one was chosen
+                        if (eventImageUri != null) {
+                            uploadEventImage(eventImageUri, eventID);
+                        }
+
                         finish();
                     }
                 })
@@ -245,5 +265,28 @@ public class AddEventActivity extends AppCompatActivity {
                         // Handle the failure to add the event ID to the createdEvents array
                     }
                 });
+    }
+
+    // Stores the users uploaded event image on Firebase
+    private void uploadEventImage(Uri imageUri, String eventId) {
+        StorageReference eventImageRef = FirebaseStorage.getInstance().getReference("eventImages/" + eventId);
+        eventImageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+            taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
+                FirebaseFirestore.getInstance().collection("events").document(eventId)
+                        .update("imageUrl", uri.toString()); // Update event with image URL
+            });
+        }).addOnFailureListener(e -> {
+            // Handle upload errors here
+        });
+    }
+
+    // The result of getting the image from the image upload, we save it and set it as the new preview
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            eventImageUri = data.getData();
+            imageViewEventPoster.setImageURI(eventImageUri); // Show the chosen image as a preview
+        }
     }
 }

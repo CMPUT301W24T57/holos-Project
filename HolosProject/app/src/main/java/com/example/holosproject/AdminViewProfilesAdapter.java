@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 
@@ -24,6 +26,7 @@ public class AdminViewProfilesAdapter extends RecyclerView.Adapter<AdminViewProf
     private List<UserProfile> profiles;
     private LayoutInflater inflater;
     private ItemClickListener clickListener;
+    private Context context;
 
     /**
      * Constructor for the AdminViewProfilesAdapter.
@@ -34,6 +37,7 @@ public class AdminViewProfilesAdapter extends RecyclerView.Adapter<AdminViewProf
     AdminViewProfilesAdapter(Context context, List<UserProfile> profiles) {
         this.inflater = LayoutInflater.from(context);
         this.profiles = profiles;
+        this.context = context;
     }
 
     /**
@@ -62,8 +66,20 @@ public class AdminViewProfilesAdapter extends RecyclerView.Adapter<AdminViewProf
         holder.usernameTextView.setText(profile.getName());
         holder.contactTextView.setText(profile.getContact());
         holder.homepageTextView.setText(profile.getHomepage());
-        // Use a placeholder image for now
-        holder.imageView.setImageResource(R.drawable.ic_launcher_foreground);
+
+        // Load profile image if URL is available, otherwise load default
+        if (profile.getProfileImageUrl() != null && !profile.getProfileImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(profile.getProfileImageUrl())
+                    //.circleCrop() // Makes the image circular (i think it looks better disabled)
+                    .placeholder(R.drawable.ic_launcher_foreground) // Placeholder image
+                    .into(holder.imageView);
+        } else {
+            Glide.with(context)
+                    .load(R.drawable.ic_launcher_foreground) // Load default image if no URL
+                    //.circleCrop() // Makes the image circular (i think it looks better disabled)
+                    .into(holder.imageView);
+        }
     }
 
     /**
