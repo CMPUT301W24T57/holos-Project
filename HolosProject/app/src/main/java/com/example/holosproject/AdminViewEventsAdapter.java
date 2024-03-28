@@ -7,13 +7,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -44,6 +48,22 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
         return new ViewHolder(view);
     }
 
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView textViewEventName, textViewEventDate, textViewEventTime, textViewEventAddress, textViewEventCreator, textViewEventId;
+        ImageView eventPosterImageView;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            textViewEventName = itemView.findViewById(R.id.textViewEventName);
+            textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
+            textViewEventTime = itemView.findViewById(R.id.textViewEventTime);
+            textViewEventAddress = itemView.findViewById(R.id.textViewEventAddress);
+            textViewEventCreator = itemView.findViewById(R.id.textViewEventCreator);
+            textViewEventId = itemView.findViewById(R.id.textViewEventId);
+            eventPosterImageView = itemView.findViewById(R.id.eventPosterImageViewAdmin);
+        }
+    }
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Event event = events.get(position);
@@ -53,6 +73,14 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
         holder.textViewEventAddress.setText(event.getAddress());
         holder.textViewEventCreator.setText(event.getCreator());
         holder.textViewEventId.setText(event.getEventId());
+
+        // Load the event poster image
+        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(event.getImageUrl())
+                    .placeholder(R.drawable.ic_launcher_background) // Use a placeholder
+                    .into(holder.eventPosterImageView);
+        }
 
         holder.itemView.setOnClickListener(v -> showDeleteConfirmation(event));
     }
@@ -99,13 +127,37 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
             return; // Exit the method to avoid attempting to delete from Firebase in test mode
         }
 
-        // Else, if we are not in test mode, delete the event from Firebase.
-        // If the EventID is not valid, report this issue.
-        if (eventId == null || eventId.trim().isEmpty()) {
-            Toast.makeText(inflater.getContext(), "Invalid event ID", Toast.LENGTH_SHORT).show();
-            return; // Stop if the eventId is not valid
+        else {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            // Retrieve the event to get the imageUrl
+            db.collection("events").document(eventId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        String imageUrl = documentSnapshot.getString("imageUrl");
+                        if (imageUrl != null && !imageUrl.isEmpty()) {
+                            // Delete the image from Firebase Storage
+                            StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+                            imageRef.delete().addOnSuccessListener(aVoid -> {
+                                // Image successfully deleted
+                                // Now delete the event document from Firestore
+                                deleteFirestoreEvent(eventId);
+                            }).addOnFailureListener(e -> {
+                                Log.e(TAG, "Error deleting event image: ", e);
+                                Toast.makeText(inflater.getContext(), "Error deleting event image", Toast.LENGTH_SHORT).show();
+                            });
+                        } else {
+                            // If there's no image, just delete the event document
+                            deleteFirestoreEvent(eventId);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error fetching event for deletion: ", e);
+                        Toast.makeText(inflater.getContext(), "Error fetching event for deletion", Toast.LENGTH_SHORT).show();
+                    });
         }
+    }
 
+    private void deleteFirestoreEvent(String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("events").document(eventId)
                 .delete()
@@ -114,6 +166,7 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
                     if (position != -1) {
                         events.remove(position);
                         notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, events.size());
                         Toast.makeText(inflater.getContext(), "Event deleted successfully", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -122,6 +175,8 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
                     Toast.makeText(inflater.getContext(), "Error deleting event", Toast.LENGTH_SHORT).show();
                 });
     }
+
+
 
     /**
      * Finds the position of an event in the list by its ID.
@@ -143,17 +198,5 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
         return events.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewEventName, textViewEventDate, textViewEventTime, textViewEventAddress, textViewEventCreator, textViewEventId;
 
-        ViewHolder(View itemView) {
-            super(itemView);
-            textViewEventName = itemView.findViewById(R.id.textViewEventName);
-            textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
-            textViewEventTime = itemView.findViewById(R.id.textViewEventTime);
-            textViewEventAddress = itemView.findViewById(R.id.textViewEventAddress);
-            textViewEventCreator = itemView.findViewById(R.id.textViewEventCreator);
-            textViewEventId = itemView.findViewById(R.id.textViewEventId);
-        }
-    }
 }
