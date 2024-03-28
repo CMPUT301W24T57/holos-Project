@@ -169,10 +169,12 @@ public class ViewAllEventsActivity extends AppCompatActivity
                             String address = document.getString("address");
                             String creator = document.getString("creator");
                             String eventId = document.getId();
+                            String imageUrl = document.getString("imageUrl");
                             ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
 
                             Event event = new Event(name, date, time, address, creator);
                             event.setEventId(eventId);
+                            event.setImageUrl(imageUrl);
                             event.setAttendees(attendees); // Assuming you have a setter for attendees
                             allEventsList.add(event);
                         }
