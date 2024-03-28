@@ -115,7 +115,7 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
         } else {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            // Before we delete the profile, check if they have a profile image, delete their uploaded image
+            // Before we delete the profile, check if they have a profile image, if they do, delete their uploaded image
             if (profile.getProfileImageUrl() != null && !profile.getProfileImageUrl().isEmpty()) {
                 StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profile.getProfileImageUrl());
                 imageRef.delete();
