@@ -287,6 +287,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                         Event event = new Event((String) document.get("name"), (String) document.get("date"), (String) document.get("time"), (String) document.get("address"), (String) document.get("creator"));
                         event.setEventId(eventID);
                         ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
+                        event.setImageUrl((String) document.get("imageUrl"));
                         event.setAttendees(attendees);
                         eventList.add(event);
                         eventsAdapter.notifyDataSetChanged();

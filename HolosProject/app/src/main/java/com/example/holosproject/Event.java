@@ -35,6 +35,7 @@ public class Event {
         this.address = address;
         this.creator = creator;
         this.eventId = "";
+        this.imageUrl = null;
         this.attendees = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
     }
