@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/AttendeeCheckinsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Attendee Checkins"
+        android:textSize="27sp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/AttendeeCheckins"
+        android:layout_width="match_parent"
+        android:layout_height="580dp"
+        android:layout_below="@+id/AttendeeCheckinsTitle"
+        android:layout_marginTop="18dp"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="2dp" />
+
+
+    <Button
+        android:id="@+id/BackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/AttendeeCheckins"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="BACK" />
+
+</RelativeLayout>
