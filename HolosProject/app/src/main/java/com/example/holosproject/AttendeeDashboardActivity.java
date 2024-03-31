@@ -96,8 +96,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 Log.e(TAG, "Listen failed.", error);
                 return;
             }
-            eventsAdapter.notifyDataSetChanged();
-            displayEvents(currentUser);
+            else {
+                fetchEvents();
+                eventsAdapter.notifyDataSetChanged();
+            }
         });
     }
     @Override
@@ -219,6 +221,42 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    private void fetchEvents() {
+        // Fetches events from database, and does manual serialization :-(
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        eventList.clear(); // Clear the list before adding new items
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Manual deserialization
+                            String name = document.getString("name");
+                            String date = document.getString("date");
+                            String time = document.getString("time");
+                            String address = document.getString("address");
+                            String creator = document.getString("creator");
+                            String eventId = document.getId();
+                            String imageUrl = document.getString("imageUrl");
+                            ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
+
+                            Event event = new Event(name, date, time, address, creator);
+                            event.setEventId(eventId);
+                            event.setImageUrl(imageUrl);
+                            event.setAttendees(attendees); // Assuming you have a setter for attendees
+                            if (attendees.contains(currentUser.getUid())) {
+                                System.out.println("Event: "+ event.getName());
+                                eventList.add(event);
+                            }
+                        }
+                        eventsAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.w(TAG, "Error getting documents: ", task.getException());
+                        // Handle the error properly
+                    }
+                });
     }
 
     /**
@@ -401,7 +439,25 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         scanButton.setOnClickListener(v -> {
             scanQRCode();
         });
-
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            String eventID = bundle.getString("title");
+            DocumentReference docRef = eventsRef.document(eventID);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            rsvpEvent(eventID, document);
+                            fetchEvents();
+                            eventsAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            });
+        }
+        //fetchEvents();
         // Handling someone who RSVPed an event that they QR scanned:
         //commented out because it had a conflict with on resume
         //displayEvents(currentUser);
