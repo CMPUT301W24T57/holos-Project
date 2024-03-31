@@ -18,6 +18,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="#FF1744"
             app:title="Organizer Dashboard"
+            app:titleTextColor="@android:color/white"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
         <!-- Header for the Events section -->
