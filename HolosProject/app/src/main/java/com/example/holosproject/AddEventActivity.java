@@ -1,5 +1,6 @@
 package com.example.holosproject;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -187,12 +188,10 @@ public class AddEventActivity extends AppCompatActivity {
                             handleCustomQR(customQR, eventID);
                         }
                         addToMyEvents(eventID);
-
                         // Now upload the image, if one was chosen
                         if (eventImageUri != null) {
                             uploadEventImage(eventImageUri, eventID);
                         }
-
                         finish();
                     }
                 })
