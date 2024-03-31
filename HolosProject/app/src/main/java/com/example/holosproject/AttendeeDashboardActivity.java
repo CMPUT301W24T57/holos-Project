@@ -88,8 +88,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("RESUME CALLED");
-
         // If there is a change continue on with the code
         eventsRef.addSnapshotListener(this, (value, error) -> {
             if (error != null) {
@@ -161,67 +159,11 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
     /**
-     * Displays the events associated with a user by grabbing from the Firebase.
-     * @param user: The user ID of the current user using the app
+     * Fetches all events from the database, and if the user is attending them, displays them.
+     * Inefficient (?) but the other way was way too buggy for some reason...
      */
-    private void displayEvents(FirebaseUser user) {
-        System.out.println("DISPLAYEVENTS CALLED");
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            String eventID = bundle.getString("title");
-            DocumentReference docRef = eventsRef.document(eventID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            rsvpEvent(eventID, document);
-                        }
-                    }
-                }
-            });
-        }
-        // Finds the user's profile
-        DocumentReference userProfileRef = database.collection("userProfiles").document(user.getUid());
-        userProfileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        eventList.clear();
-                        eventsAdapter.notifyDataSetChanged();
-                        System.out.println("CLEARED");
-                        ArrayList<String> userEvents = (ArrayList<String>) document.get("myEvents");
-                        for (String eventID : userEvents) {
-                            System.out.println("Adding " + eventID);
-                            DocumentReference docRef = eventsRef.document(eventID);
-                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @SuppressLint("NotifyDataSetChanged")
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        DocumentSnapshot document = task.getResult();
-                                        if (document.exists()) {
-                                            Event event = new Event((String) document.get("name"), (String) document.get("date"), (String) document.get("time"), (String) document.get("address"), (String) document.get("creator"));
-                                            event.setEventId(eventID);
-                                            ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
-                                            event.setImageUrl((String) document.get("imageUrl"));
-                                            event.setAttendees(attendees);
-                                            eventList.add(event);
-                                            eventsAdapter.notifyDataSetChanged();
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        });
-    }
 
     private void fetchEvents() {
         // Fetches events from database, and does manual serialization :-(
@@ -457,7 +399,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 }
             });
         }
-        //fetchEvents();
         // Handling someone who RSVPed an event that they QR scanned:
         //commented out because it had a conflict with on resume
         //displayEvents(currentUser);
