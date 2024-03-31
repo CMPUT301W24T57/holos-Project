@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -20,6 +21,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
 
 public class EventDisplay extends AppCompatActivity {
 
@@ -47,12 +49,16 @@ public class EventDisplay extends AppCompatActivity {
                         String creator = document.getString("creator");
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
                         String eventId = document.getId();
+                        String posterUrl = document.getString("imageUrl");
 
-                        TextView titleDisplay = findViewById(R.id.event_Name);
                         TextView dateDisplay = findViewById(R.id.event_Date);
                         TextView creatorDisplay = findViewById(R.id.event_Creator);
-                        titleDisplay.setText(getString(R.string.prefixName, name));
+                        TextView eventDisplay = findViewById(R.id.eventTitle);
+                        ImageView posterDisplay = findViewById(R.id.eventPoster);
+                        Picasso.get().load(posterUrl).into(posterDisplay);
+
                         dateDisplay.setText(getString(R.string.prefixDate, date));
+                        eventDisplay.setText(name);
                         db.collection("userProfiles").document(creator).get()
                                 .addOnSuccessListener(documentSnapshot -> {
                                     if (documentSnapshot.exists()) {

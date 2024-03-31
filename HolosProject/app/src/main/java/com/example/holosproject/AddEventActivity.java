@@ -101,7 +101,7 @@ public class AddEventActivity extends AppCompatActivity {
                             try
                             {
                                 Result qrResult = reader.decode(bBitmap);
-                                Toast.makeText(this, "The content of the QR image is: " + qrResult.getText(), Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(this, "The content of the QR image is: " + qrResult.getText(), Toast.LENGTH_SHORT).show();
                                 // Handle the custom QR code...
                                 customQR = qrResult.getText();
                             }
