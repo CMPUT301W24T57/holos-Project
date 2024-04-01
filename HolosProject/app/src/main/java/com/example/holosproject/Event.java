@@ -1,6 +1,7 @@
 package com.example.holosproject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * FileName: Event
@@ -15,7 +16,7 @@ public class Event {
     private final String creator;
     private ArrayList<String> attendees;
 
-    private ArrayList<String> checkIns;
+    private HashMap<String, Integer> checkIns;
     private String eventId;
     private String imageUrl; // Field to store the image URL
 
@@ -37,7 +38,7 @@ public class Event {
         this.eventId = "";
         this.imageUrl = null;
         this.attendees = new ArrayList<String>();
-        this.checkIns = new ArrayList<String>();
+        this.checkIns = new HashMap<String, Integer>();
     }
 
     /**
@@ -49,29 +50,14 @@ public class Event {
         return attendees;
     }
 
-    /**
-     * Retrieves the list of check-ins for this event.
-     *
-     * @return the list of check-ins
-     */
-    public ArrayList<String> getCheckIns() {
+    public HashMap<String, Integer> getCheckIns() {
         return checkIns;
     }
 
-    /**
-     * Sets the list of check-ins for this event.
-     *
-     * @param checkIns the list of check-ins to set
-     */
-    public void setCheckIns(ArrayList<String> checkIns) {
+    public void setCheckIns(HashMap<String, Integer> checkIns) {
         this.checkIns = checkIns;
     }
 
-    /**
-     * Retrieves the event ID.
-     *
-     * @return the event ID
-     */
     public String getEventId() {
         return eventId;
     }
