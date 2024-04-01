@@ -1,15 +1,21 @@
 package com.example.holosproject;
 
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ImageView;
 
@@ -69,7 +75,40 @@ public class AddEventActivity extends AppCompatActivity {
         // Initialize UI components
         eventName = findViewById(R.id.edit_text_event_name);
         eventTime = findViewById(R.id.edit_text_event_time);
+
+        eventTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePickerDialog();
+            }
+        });
+
+        eventTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    showTimePickerDialog();
+                }
+            }
+        });
         eventDate = findViewById(R.id.edit_text_event_date);
+
+        eventDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog();
+            }
+        });
+
+        eventDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    showDatePickerDialog();
+                }
+            }
+        });
+
         eventAddress = findViewById(R.id.edit_text_event_address);
         cancel = findViewById(R.id.button_cancel);
         save = findViewById(R.id.button_save);
@@ -100,7 +139,7 @@ public class AddEventActivity extends AppCompatActivity {
                             try
                             {
                                 Result qrResult = reader.decode(bBitmap);
-                                Toast.makeText(this, "The content of the QR image is: " + qrResult.getText(), Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(this, "The content of the QR image is: " + qrResult.getText(), Toast.LENGTH_SHORT).show();
                                 // Handle the custom QR code...
                                 customQR = qrResult.getText();
                             }
@@ -187,12 +226,10 @@ public class AddEventActivity extends AppCompatActivity {
                             handleCustomQR(customQR, eventID);
                         }
                         addToMyEvents(eventID);
-
                         // Now upload the image, if one was chosen
                         if (eventImageUri != null) {
                             uploadEventImage(eventImageUri, eventID);
                         }
-
                         finish();
                     }
                 })
@@ -288,5 +325,48 @@ public class AddEventActivity extends AppCompatActivity {
             eventImageUri = data.getData();
             imageViewEventPoster.setImageURI(eventImageUri); // Show the chosen image as a preview
         }
+    }
+
+    private void showDatePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        eventDate.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+                    }
+                }, year, month, day);
+
+        // Show DatePickerDialog
+        datePickerDialog.show();
+    }
+
+    private void showTimePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        // Set the selected time to the EditText
+                        String AM_PM;
+                        if(hourOfDay < 12) {
+                            AM_PM = "AM";
+                        } else {
+                            AM_PM = "PM";
+                        }
+
+                        eventTime.setText(String.format("%02d:%02d", hourOfDay, minute) + " " + AM_PM);
+                    }
+                }, hour, minute, true);
+
+        // Show TimePickerDialog
+        timePickerDialog.show();
     }
 }

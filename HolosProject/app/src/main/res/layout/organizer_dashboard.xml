@@ -16,20 +16,9 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="#FF1744"
+            app:title="Organizer Dashboard"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-        <!-- Organizer Dashboard title -->
-        <TextView
-            android:id="@+id/text_dashboard_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Organizer Dashboard"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:layout_marginTop="16dp"
-            android:layout_centerHorizontal="true"/>
 
         <!-- Header for the Events section -->
         <TextView
@@ -39,7 +28,7 @@
             android:text="Events"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_below="@id/text_dashboard_title"
+            android:layout_below="@id/toolbar"
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"/>
 
@@ -62,7 +51,9 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/baseline_add_24" />
+            android:background="#00E676"
+            android:src="@drawable/baseline_add_24"
+            app:backgroundTint="#00E676" />
 
     </RelativeLayout>
 
