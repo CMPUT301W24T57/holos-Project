@@ -92,8 +92,16 @@ public class OrganizerDashboardActivity extends AppCompatActivity
             startActivity(intent);
             recreate();
         });
+    }
 
-        // Fetch events created by the user
+    /**
+     * After returning from a fragment, we fetch user events again
+     */
+    protected void onResume() {
+        super.onResume();
+        // Clear the events list before fetching to avoid duplicates
+        eventsList.clear();
+        // Fetch the events again when coming back to this activity
         fetchUserEvents();
     }
 
@@ -112,6 +120,11 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                                 if (myEvents != null && !myEvents.isEmpty()) {
                                     fetchEventsFromCollection(myEvents);
                                 }
+                                else {
+                                    // Important to clear the list and update adapter if there are no events
+                                    eventsList.clear();
+                                    eventsAdapter.notifyDataSetChanged();
+                                }
                             }
                         }
                     });
@@ -123,6 +136,9 @@ public class OrganizerDashboardActivity extends AppCompatActivity
      * @param myEvents List of event IDs.
      */
     private void fetchEventsFromCollection(List<String> myEvents) {
+        // Clear the events list before adding new events to avoid duplicates
+        eventsList.clear();
+
         for (String eventId : myEvents) {
             db.collection("events").document(eventId)
                     .get()
