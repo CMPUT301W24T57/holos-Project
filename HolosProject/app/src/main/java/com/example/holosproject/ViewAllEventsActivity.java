@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,10 +171,12 @@ public class ViewAllEventsActivity extends AppCompatActivity
                             String address = document.getString("address");
                             String creator = document.getString("creator");
                             String eventId = document.getId();
+                            String imageUrl = document.getString("imageUrl");
                             ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
 
                             Event event = new Event(name, date, time, address, creator);
                             event.setEventId(eventId);
+                            event.setImageUrl(imageUrl);
                             event.setAttendees(attendees); // Assuming you have a setter for attendees
                             allEventsList.add(event);
                         }
@@ -218,11 +222,9 @@ public class ViewAllEventsActivity extends AppCompatActivity
     private void showEventDetailsDialog(Context context, Event event) {
         AlertDialog.Builder dispbuilder = new AlertDialog.Builder(context);
 
-
         LayoutInflater inflater = LayoutInflater.from(context);
         View diagView = inflater.inflate(R.layout.event_info, null);
         dispbuilder.setView(diagView);
-
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -235,14 +237,15 @@ public class ViewAllEventsActivity extends AppCompatActivity
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
+        ImageView eventPoster = diagView.findViewById(R.id.event_poster);
 
         textViewEventName.setText("EVENT NAME: " + event.getName());
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
         textViewEventTime.setText("EVENT TIME: " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
+        System.out.println(event.getImageUrl());
+        Picasso.get().load(event.getImageUrl()).into(eventPoster);
 
-        /*String attendeesStr = "Attendees: " + String.join(", ", event.getAttendees());
-        textViewEventAttendeeList.setText(attendeesStr);*/
         List<String> attendeeIds1 = event.getAttendees();
         displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
 
@@ -275,7 +278,6 @@ public class ViewAllEventsActivity extends AppCompatActivity
             @Override
             public void onClick(DialogInterface diagdisp, int i) {
                 diagdisp.dismiss();
-
             }
         });
 

@@ -36,18 +36,17 @@
         android:text="Tap the photo to edit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewProfile">
-    </TextView>
+        app:layout_constraintTop_toBottomOf="@+id/imageViewProfile"></TextView>
 
     <EditText
         android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:hint="Users name should be here:"
-        android:layout_marginTop="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_photo_subtext" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonRemoveProfileImage" />
 
     <EditText
         android:id="@+id/editTextContact"
@@ -101,5 +100,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/switchGeolocation"
         />
+
+    <Button
+        android:id="@+id/buttonRemoveProfileImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remove Profile Picture"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_photo_subtext"
+        android:visibility="gone">
+    </Button>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

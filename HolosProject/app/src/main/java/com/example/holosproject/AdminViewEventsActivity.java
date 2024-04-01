@@ -73,12 +73,14 @@ public class AdminViewEventsActivity extends AppCompatActivity {
                             String time = document.getString("time");
                             String address = document.getString("address");
                             String creator = document.getString("creator");
+                            String imageUrl = document.getString("imageUrl"); // Retrieve the imageUrl
                             String eventId = document.getId();
                             ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
 
                             Event event = new Event(name, date, time, address, creator);
                             event.setEventId(eventId);
-                            event.setAttendees(attendees); // Assuming you have a setter for attendees
+                            event.setImageUrl(imageUrl);
+                            event.setAttendees(attendees);
                             eventList.add(event);
                         }
                         adapter.notifyDataSetChanged();

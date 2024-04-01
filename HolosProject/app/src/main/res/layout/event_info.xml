@@ -68,6 +68,13 @@
         android:layout_marginTop="7dp"
         android:layout_marginBottom="14dp"/>
 
+    <ImageView
+        android:layout_width="400sp"
+        android:layout_height="400sp"
+        android:id="@+id/event_poster"
+        android:layout_marginTop="25dp"
+        />
+
     <TextView
         android:id="@+id/textViewEventAnnouncementsDiag"
         android:layout_width="match_parent"

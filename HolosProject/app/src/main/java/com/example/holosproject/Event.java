@@ -17,6 +17,7 @@ public class Event {
 
     private ArrayList<String> checkIns;
     private String eventId;
+    private String imageUrl; // Field to store the image URL
 
     /**
      * Constructs an event with the given attributes.
@@ -34,6 +35,7 @@ public class Event {
         this.address = address;
         this.creator = creator;
         this.eventId = "";
+        this.imageUrl = null;
         this.attendees = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
     }
@@ -171,6 +173,21 @@ public class Event {
      */
     public String getCreator() {
         return creator;
+    }
+
+    /**
+     * Retrieves the image URL for the poster of the event
+     */
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    /**
+     * Sets the image URL for the poster of the event
+     * @param imageUrl the URL of the poster image associated with this event
+     */
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
 

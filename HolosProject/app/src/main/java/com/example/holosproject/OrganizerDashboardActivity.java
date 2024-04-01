@@ -46,6 +46,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
     private final String TAG = "OrganizerDashboardActivity";
 
 
+
     /**
      * Initializes activity components and UI elements.
      * @param savedInstanceState The saved instance state.
@@ -89,6 +90,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         fabAddEvent.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddEventActivity.class);
             startActivity(intent);
+            recreate();
         });
 
         // Fetch events created by the user
@@ -202,5 +204,4 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
 }

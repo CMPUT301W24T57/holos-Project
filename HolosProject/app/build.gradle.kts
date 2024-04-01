@@ -56,5 +56,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.3.0")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.github.androidmads:QRGenerator:1.0.1")
+    implementation("com.squareup.picasso:picasso:2.71828")
     // implementation(files("C:\\Users\\Nicolas\\AppData\\Local\\Android\\Sdk\\platforms\\android-34\\android.jar"))
 }

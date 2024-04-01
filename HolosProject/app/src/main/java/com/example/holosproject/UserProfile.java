@@ -5,6 +5,7 @@ public class UserProfile {
     private String contact;
     private String homepage;
     private String uid; // Unique ID for Firebase operations
+    private String profileImageUrl; // The url which is used to access the users profile image (if they have one)
 
     /**
      * Retrieves the contact details of the user.
@@ -68,5 +69,20 @@ public class UserProfile {
      */
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    /**
+     * Retrieves the URL of the users profile image
+     */
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    /**
+     * Sets the URL of the users profile image to be a different image URL
+     * @param profileImageUrl The URL of the new profile image to be set
+     */
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }
