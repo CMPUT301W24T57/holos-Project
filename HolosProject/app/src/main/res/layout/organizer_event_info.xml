@@ -84,6 +84,15 @@
         android:id="@+id/qrNav">
     </Button>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Attendee Checkins"
+        android:layout_marginBottom="18dp"
+        android:id="@+id/attendeeCheckins">
+    </Button>
+
     <TextView
         android:id="@+id/textViewEventAnnouncementsDiag"
         android:layout_width="match_parent"
