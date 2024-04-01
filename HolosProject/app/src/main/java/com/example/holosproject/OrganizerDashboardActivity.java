@@ -86,6 +86,9 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Update the navigation drawer header with user info
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
+
         fabAddEvent = findViewById(R.id.fab_add_event);
         fabAddEvent.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddEventActivity.class);
@@ -103,6 +106,9 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         eventsList.clear();
         // Fetch the events again when coming back to this activity
         fetchUserEvents();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
     }
 
     /**
