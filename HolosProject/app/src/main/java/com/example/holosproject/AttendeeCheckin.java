@@ -16,4 +16,14 @@ public class AttendeeCheckin {
     public int getCheckinCount() {
         return checkinCount;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCheckinCount(int checkinCount) {
+        this.checkinCount = checkinCount;
+    }
+
+
 }
