@@ -18,6 +18,7 @@ public class Event {
     private ArrayList<String> checkIns;
     private String eventId;
     private String imageUrl; // Field to store the image URL
+    private int limit;
 
     /**
      * Constructs an event with the given attributes.
@@ -38,6 +39,7 @@ public class Event {
         this.imageUrl = null;
         this.attendees = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
+        this.limit = Integer.MAX_VALUE;
     }
 
     /**
@@ -147,7 +149,12 @@ public class Event {
     public void setTime(String time) {
         this.time = time;
     }
-
+    public void setLimit(int limit){
+        this.limit = limit;
+    }
+    public int getLimit(){
+        return this.limit;
+    }
     /**
      * Retrieves the address of the event.
      *
