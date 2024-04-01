@@ -151,7 +151,9 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                             String creator = documentSnapshot.getString("creator");
                             ArrayList<String> attendees = (ArrayList<String>) documentSnapshot.get("attendees");
 
+                            String imageUrl = documentSnapshot.getString("imageUrl"); // Get the image URL from the document
                             Event event = new Event(name, date, time, address, creator);
+                            event.setImageUrl(imageUrl);
                             event.setEventId(eventId);
                             event.setAttendees(attendees);
                             eventsList.add(event);
@@ -165,7 +167,6 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                     });
         }
     }
-    // TODO: Fix the bug where events you create don't display until you leave the screen and come back
 
     /**
      * Determines if the drawer should display "Admin Dashboard" based on if the users role is "admin".
