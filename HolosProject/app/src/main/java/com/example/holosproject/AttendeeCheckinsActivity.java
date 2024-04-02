@@ -74,7 +74,7 @@ public class AttendeeCheckinsActivity extends AppCompatActivity {
                     Log.w("AttendeeCheckinsActivity", "Could not get check-ins", e);
                 });
     }
-    
+
     private void fetchAttendeeName(String attendeeId, AttendeeCheckin attendeeCheckin) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("userProfiles").document(attendeeId).get()
