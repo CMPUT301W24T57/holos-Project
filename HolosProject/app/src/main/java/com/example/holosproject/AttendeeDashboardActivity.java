@@ -1,6 +1,8 @@
 package com.example.holosproject;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,12 +14,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -28,6 +34,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.journeyapps.barcodescanner.ScanContract;
@@ -43,22 +50,22 @@ import java.util.Objects;
  * FileName: AttendeeDashboardActivity
  * Description: This is the logic for the AttendeeDashboard activity. It contains the logic for displaying the RecyclerView, which is the current implemented view for the
  * list of events. This is where the click listeners for the different sections of this screen will go. (The QR Code, Each Event, the drawer pop out menu, etc.)
-
  * This dashboard shows all of the events the user is currently enrolled in. There is a different activity for all open events.
-
  * This file also contains first implementation of the drawer menu. This shit was really hard to set up to be honest, lots of different parts.
  * The XML files associated with the drawer are: drawer_menu.xml, drawer_menu_header.xml, and activity_attendee_dashboard.xml.
-
  * AttendeeDashboardActivity is associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
- **/
+ *
+ * @noinspection ALL
+ */
 
 public class AttendeeDashboardActivity extends AppCompatActivity
-                                       implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
-    // Using a RecyclerView to display all of the Events our user is currently enrolled in
-    private RecyclerView eventsRecyclerView;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private final String TAG = "TestScreen";
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    // Using a RecyclerView to display all of the Events our user is currently enrolled in
+    private RecyclerView eventsRecyclerView;
     private AttendeeDashboardEventsAdapter eventsAdapter;
     private List<Event> eventList = new ArrayList<>(); // This is the data source
 
@@ -72,14 +79,16 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private CollectionReference eventsRef = database.collection("events");
 
     private CollectionReference customRef = database.collection("Custom QR Data");
-    private ListenerRegistration eventsListener;
-
     private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> { //basic popup after scanning to test things
         if (result.getContents() != null) {
             String scanContents = result.getContents();
             handleScan(scanContents);
         }
     });
+    private ListenerRegistration eventsListener;
+    private FusedLocationProviderClient fusedLocationClient;
+    private String locationID;
+
 
     @Override
     protected void onResume() {
@@ -94,13 +103,13 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             if (error != null) {
                 Log.e(TAG, "Listen failed.", error);
                 return;
-            }
-            else {
+            } else {
                 fetchEvents();
                 eventsAdapter.notifyDataSetChanged();
             }
         });
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -108,6 +117,67 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             eventsListener.remove();
         }
     }
+
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_attendee_dashboard);
+
+        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Update the navigation drawer header with user info
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
+
+        // Toolbar is the section at the top of screen.
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        setTitle("");
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // calling fetchUserProfile to see if the user is an admin, if they are, allow them to access the Admin Dashboard through the Drawer.
+        fetchUserProfile(currentUser.getUid());
+
+        // Setting up the RecyclerView
+        // Most of the code for this is found within the AttendeeDashboardEventsActivity file
+        eventsRecyclerView = findViewById(R.id.eventsRecyclerView);
+        eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        eventsAdapter = new AttendeeDashboardEventsAdapter(eventList);
+        eventsRecyclerView.setAdapter(eventsAdapter);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        scanButton = findViewById(R.id.fabQRCode);
+        scanButton.setOnClickListener(v -> {
+            scanQRCode();
+        });
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            String eventID = bundle.getString("title");
+            DocumentReference docRef = eventsRef.document(eventID);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            rsvpEvent(eventID, document);
+                            fetchEvents();
+                            eventsAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+
     // Grabs users role. Used to determine if user can access the admin dashboard or not.
     private void fetchUserProfile(String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -144,14 +214,11 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_view_registered_events) {   // If we want to navigate to the view we are already in, just close the drawer
             drawerLayout.closeDrawer(GravityCompat.START);
-        }
-
-        else if (id == R.id.nav_view_organizer_dashboard) {
+        } else if (id == R.id.nav_view_organizer_dashboard) {
             Intent intent = new Intent(this, OrganizerDashboardActivity.class);
             startActivity(intent);
             finish();
-        }
-        else if (id == R.id.nav_admin_dashboard) {
+        } else if (id == R.id.nav_admin_dashboard) {
             // start the admin dashboard activity
             Intent intent = new Intent(this, AdminDashboardActivity.class);
             startActivity(intent);
@@ -188,9 +255,9 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                             Event event = new Event(name, date, time, address, creator);
                             event.setEventId(eventId);
                             event.setImageUrl(imageUrl);
-                            event.setAttendees(attendees); // Assuming you have a setter for attendees
+                            event.setAttendees(attendees);
                             if (attendees.contains(currentUser.getUid())) {
-                                System.out.println("Event: "+ event.getName());
+                                System.out.println("Event: " + event.getName());
                                 eventList.add(event);
                             }
                         }
@@ -215,6 +282,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     /**
      * Sends user to a (barebones) event details display screen where they can check in.
+     *
      * @param scanContents: the contents of a QR code scan, should be the ID of a valid event
      */
 
@@ -227,6 +295,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     /**
      * Sends user to the event details on the all events screen (to differ from check in)
+     *
      * @param scanContents: the contents of a QR code scan, should be the ID of a valid event
      */
 
@@ -238,7 +307,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     /**
      * Adds an event ID to a user's list of events they are going to attend.
-     * @param userId the current user's ID
+     *
+     * @param userId  the current user's ID
      * @param eventId the ID of the event to be added
      */
 
@@ -253,34 +323,52 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     /**
      * Adds an event to a user if necessary and adds the user to the event's checkins.
-     * @param eventID The ID of the event to be added.
+     *
+     * @param eventID  The ID of the event to be added.
      * @param document A document representing the event.
      */
 
     private void rsvpEvent(String eventID, DocumentSnapshot document) {
         //Toast.makeText(this, "You have successfully checked in.", Toast.LENGTH_SHORT).show();
         // add user to event:
-        HashMap<String, String>  checkIns = (HashMap<String, String>) document.get("checkIns");
+        locationID = eventID;
+        HashMap<String, String> checkIns = (HashMap<String, String>) document.get("checkIns");
         ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
-         if (!checkIns.containsKey(currentUser.getUid())) {
-              addUserEvent(currentUser.getUid(), eventID);
-              DocumentReference eventRef = database.collection("events").document(eventID);
-              checkIns.put(currentUser.getUid(), "0");
-              eventRef.update("checkIns", checkIns)
-                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
-                     .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
-         }
-         else if (checkIns.containsKey(currentUser.getUid())){
-             // TODO: ADD SOME SORT OF PREFIX / POSTFIX TO KEEP TRACK OF NUMBER OF TIMES USER HAS CHECKED IN
-             DocumentReference eventRef = database.collection("events").document(eventID);
-             Integer parsedInt = Integer.valueOf(checkIns.get(currentUser.getUid()));
-             parsedInt++;
-             checkIns.put(currentUser.getUid(), String.valueOf(parsedInt));
-             eventRef.update("checkIns", checkIns)
-                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
-                     .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
-         }
-         // just in case?
+        ArrayList<GeoPoint> locations = (ArrayList<GeoPoint>) document.get("locations");
+        if (!checkIns.containsKey(currentUser.getUid())) {
+            addUserEvent(currentUser.getUid(), eventID);
+            DocumentReference eventRef = database.collection("events").document(eventID);
+            checkIns.put(currentUser.getUid(), "1");
+            eventRef.update("checkIns", checkIns)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            } else {
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    double latitude = location.getLatitude();
+                                    double longitude = location.getLongitude();
+                                    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+                                    eventRef.update("locations", FieldValue.arrayUnion(geoPoint));
+                                }
+                            }
+                        });
+            }
+        } else if (checkIns.containsKey(currentUser.getUid())) {
+            DocumentReference eventRef = database.collection("events").document(eventID);
+            Integer parsedInt = Integer.valueOf(checkIns.get(currentUser.getUid()));
+            parsedInt++;
+            checkIns.put(currentUser.getUid(), String.valueOf(parsedInt));
+            eventRef.update("checkIns", checkIns)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+        }
         if (!attendees.contains(currentUser.getUid())) {
             DocumentReference eventRef = database.collection("events").document(eventID);
             eventRef.update("attendees", FieldValue.arrayUnion(currentUser.getUid()))
@@ -288,7 +376,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                     .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
         }
     }
-
 
     /**
      * Handles what happens when a valid QR code is scanned.
@@ -327,9 +414,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             goToEventDisplay(document.getString("linkedEvent"));
-                        }
-                        else {
-                            Log.d("Firestore", "Database Error");
+                        } else {
                             DocumentReference docRef = eventsRef.document(scanContents);
                             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
@@ -352,59 +437,25 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_attendee_dashboard);
-
-        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        // Update the navigation drawer header with user info
-        NavigationDrawerUtils.updateNavigationHeader(navigationView);
-
-        // Toolbar is the section at the top of screen.
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setTitle("");
-
-        drawerLayout = findViewById(R.id.drawer_layout);
-        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        // calling fetchUserProfile to see if the user is an admin, if they are, allow them to access the Admin Dashboard through the Drawer.
-        fetchUserProfile(currentUser.getUid());
-
-        // Setting up the RecyclerView
-        // Most of the code for this is found within the AttendeeDashboardEventsActivity file
-        eventsRecyclerView = findViewById(R.id.eventsRecyclerView);
-        eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        eventsAdapter = new AttendeeDashboardEventsAdapter(eventList);
-        eventsRecyclerView.setAdapter(eventsAdapter);
-
-        scanButton = findViewById(R.id.fabQRCode);
-        scanButton.setOnClickListener(v -> {
-            scanQRCode();
-        });
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            String eventID = bundle.getString("title");
-            DocumentReference docRef = eventsRef.document(eventID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            rsvpEvent(eventID, document);
-                            fetchEvents();
-                            eventsAdapter.notifyDataSetChanged();
-                        }
-                    }
-                }
-            });
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    double latitude = location.getLatitude();
+                                    double longitude = location.getLongitude();
+                                    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+                                    DocumentReference eventRef = database.collection("events").document(locationID);
+                                    eventRef.update("locations", FieldValue.arrayUnion(geoPoint));
+                                }
+                            }
+                        });
+            }
         }
     }
 }
-
