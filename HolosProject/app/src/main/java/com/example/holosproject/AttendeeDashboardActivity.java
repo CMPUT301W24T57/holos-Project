@@ -257,7 +257,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                             event.setImageUrl(imageUrl);
                             event.setAttendees(attendees);
                             if (attendees.contains(currentUser.getUid())) {
-                                System.out.println("Event: " + event.getName());
                                 eventList.add(event);
                             }
                         }
