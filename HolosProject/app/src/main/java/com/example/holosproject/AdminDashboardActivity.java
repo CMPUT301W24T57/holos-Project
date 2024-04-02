@@ -73,6 +73,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
     }
 
+    protected void onResume() {
+        super.onResume();
+
+        NavigationView navigationView = findViewById(R.id.admin_nav_view);
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
+
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (toggle.onOptionsItemSelected(item)) {

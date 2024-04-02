@@ -113,6 +113,9 @@ public class ViewAllEventsActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Update the navigation drawer header with user info
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
+
         // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -150,6 +153,14 @@ public class ViewAllEventsActivity extends AppCompatActivity
             }, 1000);
         }
         // TODO: Fetch all events from Firestore and update the RecyclerView
+    }
+
+    @Override
+    protected void onResume() {
+        // After resuming, updates user profile and username (needed for the case we came back from editprofile)
+        super.onResume();
+        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
     }
 
     /**

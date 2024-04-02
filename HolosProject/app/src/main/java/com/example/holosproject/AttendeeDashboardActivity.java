@@ -1,21 +1,15 @@
 package com.example.holosproject;
 
-import static android.content.ContentValues.TAG;
-
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -90,6 +84,11 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Updating the drawer header with potentially new name/profile image
+        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
+
         // If there is a change continue on with the code
         eventsRef.addSnapshotListener(this, (value, error) -> {
             if (error != null) {
@@ -360,7 +359,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // get the current user.
+        // Update the navigation drawer header with user info
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
 
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);
