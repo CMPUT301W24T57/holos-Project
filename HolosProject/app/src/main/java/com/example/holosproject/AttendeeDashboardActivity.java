@@ -34,7 +34,9 @@ import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -258,19 +260,23 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private void rsvpEvent(String eventID, DocumentSnapshot document) {
         //Toast.makeText(this, "You have successfully checked in.", Toast.LENGTH_SHORT).show();
         // add user to event:
-        ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+        HashMap<String, String>  checkIns = (HashMap<String, String>) document.get("checkIns");
         ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
-         if (!checkIns.contains(currentUser.getUid())) {
+         if (!checkIns.containsKey(currentUser.getUid())) {
               addUserEvent(currentUser.getUid(), eventID);
               DocumentReference eventRef = database.collection("events").document(eventID);
-              eventRef.update("checkIns", FieldValue.arrayUnion(currentUser.getUid()))
+              checkIns.put(currentUser.getUid(), "0");
+              eventRef.update("checkIns", checkIns)
                      .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                      .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
          }
-         else if (checkIns.contains(currentUser.getUid())){
+         else if (checkIns.containsKey(currentUser.getUid())){
              // TODO: ADD SOME SORT OF PREFIX / POSTFIX TO KEEP TRACK OF NUMBER OF TIMES USER HAS CHECKED IN
              DocumentReference eventRef = database.collection("events").document(eventID);
-             eventRef.update("checkIns", FieldValue.arrayUnion(currentUser.getUid()))
+             Integer parsedInt = Integer.valueOf(checkIns.get(currentUser.getUid()));
+             parsedInt++;
+             checkIns.put(currentUser.getUid(), String.valueOf(parsedInt));
+             eventRef.update("checkIns", checkIns)
                      .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                      .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
          }

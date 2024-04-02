@@ -145,12 +145,21 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         Button qrNavButton = diagView.findViewById(R.id.qrNav);
+        Button AttendeeCheckins = diagView.findViewById(R.id.attendeeCheckins);
         qrNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, QRGen.class);
                 intent.putExtra("contents", event.getEventId());
                 v.getContext().startActivity(intent);
+            }
+        });
+        AttendeeCheckins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, AttendeeCheckinsActivity.class);
+                intent.putExtra("checkins", event.getEventId());
+                context.startActivity(intent);
             }
         });
 

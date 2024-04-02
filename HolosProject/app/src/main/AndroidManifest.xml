@@ -64,6 +64,7 @@
         <activity android:name=".AdminViewProfilesActivity" />
         <activity android:name=".AdminViewImagesActivity" />
         <activity android:name=".AdminViewEventsActivity" />
+        <activity android:name=".AttendeeCheckinsActivity"></activity>
     </application>
 
     <instrumentation
