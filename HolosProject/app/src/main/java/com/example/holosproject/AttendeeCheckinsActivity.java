@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,12 +21,18 @@ public class AttendeeCheckinsActivity extends AppCompatActivity {
     private ListView AttendeeCheckins;
     private AttendeeCheckinsAdapter adapter;
     private List<AttendeeCheckin> attendeeCheckins;
+
+    private TextView checkInCount;
+
+    private Integer totalCheckins = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.attendee_checkin_act);
         String eventId = getIntent().getStringExtra("checkins");
         AttendeeCheckins = findViewById(R.id.AttendeeCheckins);
+        checkInCount = findViewById(R.id.checkInsNum);
         attendeeCheckins = new ArrayList<>();
         // Tessssstttt
         //attendeeCheckins.add(new AttendeeCheckin("Michael", 2));
@@ -54,6 +62,7 @@ public class AttendeeCheckinsActivity extends AppCompatActivity {
                        HashMap<String, String> checkIns = (HashMap<String, String>) documentSnapshot.get("checkIns");
                         if (checkIns != null) {
                             Map<String, AttendeeCheckin> checkinMap = new HashMap<>();
+                            totalCheckins = checkIns.size();
                             for (Map.Entry<String, String> entry : checkIns.entrySet()) {
                                 String attendeeID = entry.getKey();
                                 String checkInCount = entry.getValue();
@@ -63,6 +72,7 @@ public class AttendeeCheckinsActivity extends AppCompatActivity {
                             attendeeCheckins.clear();
                             attendeeCheckins.addAll(checkinMap.values());
                             adapter.notifyDataSetChanged();
+                            checkInCount.setText("Total Checkins: " + totalCheckins);
                         }
                     }
                 })
