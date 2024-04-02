@@ -15,7 +15,7 @@ There are a couple known bugs, for example, on the organizer dashboard. When you
    - ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/87889479/d0bb839b-ddab-4e52-a6ef-100d0f7834ad)
 2. LAUNCH THE EMULATOR
 3. CLICK ON THE THREE DOTS (EXTENDED CONTROLS), ADD A QR CODE IMAGE
-   - ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/87889479/e21d0c43-19c8-40d9-a8ed-6abc75886426)
+   - ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/87889479/51c2d897-d9d2-4cf3-86ab-f9181d455fc8)
 4. GO TO MY EVENTS AND LAUNCH THE QR SCAN IN THE APP
 5. TURN AROUND AND WALK INTO THE DOOR BEHIND YOU
 6. SCAN THE QR CODE ON THE WALL
