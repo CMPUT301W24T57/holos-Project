@@ -1,21 +1,15 @@
 package com.example.holosproject;
 
-import static android.content.ContentValues.TAG;
-
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -40,7 +34,9 @@ import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -88,6 +84,11 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Updating the drawer header with potentially new name/profile image
+        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
+
         // If there is a change continue on with the code
         eventsRef.addSnapshotListener(this, (value, error) -> {
             if (error != null) {
@@ -259,19 +260,23 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private void rsvpEvent(String eventID, DocumentSnapshot document) {
         //Toast.makeText(this, "You have successfully checked in.", Toast.LENGTH_SHORT).show();
         // add user to event:
-        ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+        HashMap<String, String>  checkIns = (HashMap<String, String>) document.get("checkIns");
         ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
-         if (!checkIns.contains(currentUser.getUid())) {
+         if (!checkIns.containsKey(currentUser.getUid())) {
               addUserEvent(currentUser.getUid(), eventID);
               DocumentReference eventRef = database.collection("events").document(eventID);
-              eventRef.update("checkIns", FieldValue.arrayUnion(currentUser.getUid()))
+              checkIns.put(currentUser.getUid(), "0");
+              eventRef.update("checkIns", checkIns)
                      .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                      .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
          }
-         else if (checkIns.contains(currentUser.getUid())){
+         else if (checkIns.containsKey(currentUser.getUid())){
              // TODO: ADD SOME SORT OF PREFIX / POSTFIX TO KEEP TRACK OF NUMBER OF TIMES USER HAS CHECKED IN
              DocumentReference eventRef = database.collection("events").document(eventID);
-             eventRef.update("checkIns", FieldValue.arrayUnion(currentUser.getUid()))
+             Integer parsedInt = Integer.valueOf(checkIns.get(currentUser.getUid()));
+             parsedInt++;
+             checkIns.put(currentUser.getUid(), String.valueOf(parsedInt));
+             eventRef.update("checkIns", checkIns)
                      .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                      .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
          }
@@ -354,7 +359,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // get the current user.
+        // Update the navigation drawer header with user info
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
 
         // Toolbar is the section at the top of screen.
         Toolbar toolbar = findViewById(R.id.toolbar);

@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -169,8 +170,16 @@ public class EditProfileActivity extends AppCompatActivity {
         String newHomepage = editTextHomepage.getText().toString();
 
         // Validate input data
-        if (newName.isEmpty() || newContact.isEmpty() || newHomepage.isEmpty()) {
-            // Show error message
+        if (newName.isEmpty() || !isValidName(newName)) {
+            editTextName.setError("Please enter a valid name.");
+            return;
+        }
+        if (newContact.isEmpty() || !isValidEmail(newContact)) {
+            editTextContact.setError("Please enter a valid email address.");
+            return;
+        }
+        if (newHomepage.isEmpty() || !isValidUrl(newHomepage)) {
+            editTextHomepage.setError("Please enter a valid URL.");
             return;
         }
 
@@ -229,6 +238,28 @@ public class EditProfileActivity extends AppCompatActivity {
                     })
                     .addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Failed to remove profile image.", Toast.LENGTH_SHORT).show());
         }).addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Failed to remove profile image from storage.", Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Check if the name is valid.
+     * For example, it can't be empty and it can't contain digits or special characters.
+     */
+    private boolean isValidName(String name) {
+        return name.matches("[a-zA-Z\\s]+"); // This regex makes it so name only has alphabetic characters and whitespace
+    }
+
+    /**
+     * Check if the email is valid.
+     */
+    private boolean isValidEmail(CharSequence email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    /**
+     * Check if the URL is valid.
+     */
+    private boolean isValidUrl(String url) {
+        return Patterns.WEB_URL.matcher(url).matches();
     }
 
 }
