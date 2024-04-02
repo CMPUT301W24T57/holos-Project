@@ -1,5 +1,7 @@
 package com.example.holosproject;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,6 +19,8 @@ public class Event {
     private ArrayList<String> attendees;
 
     private HashMap<String, String> checkIns;
+
+    private ArrayList<GeoPoint> locations;
     private String eventId;
     private String imageUrl; // Field to store the image URL
 
@@ -39,6 +43,7 @@ public class Event {
         this.imageUrl = null;
         this.attendees = new ArrayList<String>();
         this.checkIns = new HashMap<String, String>();
+        this.locations = new ArrayList<GeoPoint>();
     }
 
     /**
@@ -52,6 +57,14 @@ public class Event {
 
     public HashMap<String, String> getCheckIns() {
         return checkIns;
+    }
+
+    public ArrayList<GeoPoint> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(ArrayList<GeoPoint> locations) {
+        this.locations = locations;
     }
 
     public void setCheckIns(HashMap<String, String> checkIns) {
