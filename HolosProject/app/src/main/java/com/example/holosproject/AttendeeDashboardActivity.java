@@ -261,12 +261,12 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private void rsvpEvent(String eventID, DocumentSnapshot document) {
         //Toast.makeText(this, "You have successfully checked in.", Toast.LENGTH_SHORT).show();
         // add user to event:
-        HashMap<String, Integer>  checkIns = (HashMap<String, Integer>) document.get("checkIns");
+        HashMap<String, String>  checkIns = (HashMap<String, String>) document.get("checkIns");
         ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
          if (!checkIns.containsKey(currentUser.getUid())) {
               addUserEvent(currentUser.getUid(), eventID);
               DocumentReference eventRef = database.collection("events").document(eventID);
-              checkIns.put(currentUser.getUid(), 0);
+              checkIns.put(currentUser.getUid(), "0");
               eventRef.update("checkIns", checkIns)
                      .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                      .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
@@ -274,7 +274,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
          else if (checkIns.containsKey(currentUser.getUid())){
              // TODO: ADD SOME SORT OF PREFIX / POSTFIX TO KEEP TRACK OF NUMBER OF TIMES USER HAS CHECKED IN
              DocumentReference eventRef = database.collection("events").document(eventID);
-             eventRef.update("checkIns", FieldValue.arrayUnion(currentUser.getUid()))
+             Integer parsedInt = Integer.valueOf(checkIns.get(currentUser.getUid()));
+             parsedInt++;
+             checkIns.put(currentUser.getUid(), String.valueOf(parsedInt));
+             eventRef.update("checkIns", checkIns)
                      .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                      .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
          }

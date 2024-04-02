@@ -16,7 +16,7 @@ public class Event {
     private final String creator;
     private ArrayList<String> attendees;
 
-    private HashMap<String, Integer> checkIns;
+    private HashMap<String, String> checkIns;
     private String eventId;
     private String imageUrl; // Field to store the image URL
 
@@ -38,7 +38,7 @@ public class Event {
         this.eventId = "";
         this.imageUrl = null;
         this.attendees = new ArrayList<String>();
-        this.checkIns = new HashMap<String, Integer>();
+        this.checkIns = new HashMap<String, String>();
     }
 
     /**
@@ -50,11 +50,11 @@ public class Event {
         return attendees;
     }
 
-    public HashMap<String, Integer> getCheckIns() {
+    public HashMap<String, String> getCheckIns() {
         return checkIns;
     }
 
-    public void setCheckIns(HashMap<String, Integer> checkIns) {
+    public void setCheckIns(HashMap<String, String> checkIns) {
         this.checkIns = checkIns;
     }
 

@@ -55,14 +55,14 @@ public class AttendeeCheckinsActivity extends AppCompatActivity {
         db.collection("events").document(eventId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        List<String> checkIns = (List<String>) documentSnapshot.get("checkIns");
+                       HashMap<String, String> checkIns = (HashMap<String, String>) documentSnapshot.get("checkIns");
                         if (checkIns != null) {
                             Map<String, AttendeeCheckin> checkinMap = new HashMap<>();
-                            for (String attendeeId : checkIns) {
-                                AttendeeCheckin attendeeCheckin = checkinMap.getOrDefault(attendeeId, new AttendeeCheckin("", 0));
-                                attendeeCheckin.setCheckinCount(attendeeCheckin.getCheckinCount() + 1);
-                                checkinMap.put(attendeeId, attendeeCheckin);
-                                fetchAttendeeName(attendeeId, attendeeCheckin);
+                            for (Map.Entry<String, String> entry : checkIns.entrySet()) {
+                                String attendeeID = entry.getKey();
+                                String checkInCount = entry.getValue();
+                                AttendeeCheckin attendeeCheckin = new AttendeeCheckin(attendeeID, Integer.valueOf(checkInCount));
+                                checkinMap.put(attendeeID, attendeeCheckin);
                             }
                             attendeeCheckins.clear();
                             attendeeCheckins.addAll(checkinMap.values());
@@ -74,24 +74,5 @@ public class AttendeeCheckinsActivity extends AppCompatActivity {
                     Log.w("AttendeeCheckinsActivity", "Could not get check-ins", e);
                 });
     }
-    
-    private void fetchAttendeeName(String attendeeId, AttendeeCheckin attendeeCheckin) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("userProfiles").document(attendeeId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String name = documentSnapshot.getString("name");
-                        if (name != null) {
-                            attendeeCheckin.setName(name);
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.w("AttendeeCheckinsActivity", "Could not get user names", e);
-                });
-    }
-
-
 
 }
