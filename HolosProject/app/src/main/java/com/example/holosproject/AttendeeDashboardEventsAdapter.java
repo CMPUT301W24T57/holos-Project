@@ -81,16 +81,13 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         switchPlanToAttend.setChecked(event.getAttendees().contains(currentUserId));
         TextView textViewEventName = diagView.findViewById(R.id.textViewEventNameDiag);
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
-        TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         ImageView eventPoster = diagView.findViewById(R.id.event_poster);
 
-        textViewEventName.setText("EVENT NAME: " + event.getName());
-        textViewEventDate.setText("EVENT DATE: " + event.getDate());
-        textViewEventTime.setText("EVENT TIME: " + event.getTime());
-        textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
-        System.out.println(event.getImageUrl());
+        textViewEventName.setText(event.getName());
+        textViewEventDate.setText("Date: " + event.getDate() + " at " + event.getTime());
+        textViewEventLocation.setText("Location: " + event.getAddress());
         Picasso.get().load(event.getImageUrl()).into(eventPoster);
 
         List<String> attendeeIds1 = event.getAttendees();
