@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,31 +11,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="196dp"
-        android:text="We Have been logged in"
+        android:text="Sucessfully Logged In"
         android:textSize="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/test_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="UserName"
+        android:layout_marginTop="20dp"
+        android:text="Username: "
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/test_success_text" />
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/test_success_text" />
 
-    <TextView
-        android:id="@+id/test_password"
+
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="We Have been logged in"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/test_username" />
+        app:layout_constraintTop_toBottomOf="@id/test_username"
+        android:id="@+id/loginAvatar"
+        />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

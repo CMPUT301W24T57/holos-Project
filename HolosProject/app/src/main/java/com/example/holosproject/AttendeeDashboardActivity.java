@@ -405,9 +405,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 }
             });
         }
-        // Handling someone who RSVPed an event that they QR scanned:
-        //commented out because it had a conflict with on resume
-        //displayEvents(currentUser);
     }
 }
 
