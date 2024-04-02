@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -136,6 +137,14 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         Event event = eventList.get(position);
         holder.textViewEventName.setText(event.getName());
         holder.textViewEventDate.setText(event.getDate());
+        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(event.getImageUrl())
+                    .into(holder.imageViewPosterPreview);
+        } else {
+            // Here you can set a default image or a placeholder
+            holder.imageViewPosterPreview.setImageResource(R.drawable.ic_launcher_background); // using launcher background as a placeholder for now
+        }
     }
 
     /**
@@ -209,10 +218,13 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         TextView textViewEventName;
         TextView textViewEventDate;
 
+        ImageView imageViewPosterPreview;
+
         EventViewHolder(View itemView, AttendeeDashboardEventsAdapter adapter) {
             super(itemView);
             textViewEventName = itemView.findViewById(R.id.textViewEventName);
             textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
+            imageViewPosterPreview = itemView.findViewById(R.id.imageViewPosterPreview);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
