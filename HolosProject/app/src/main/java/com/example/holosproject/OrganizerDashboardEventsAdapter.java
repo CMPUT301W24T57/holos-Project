@@ -9,20 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +70,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
     static class EventViewHolder extends RecyclerView.ViewHolder {
         TextView textViewEventName;
         TextView textViewEventDate;
+        ImageView imageViewPosterPreview;
 
         /**
          * Constructor for the EventViewHolder class.
@@ -82,6 +82,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             super(itemView);
             textViewEventName = itemView.findViewById(R.id.textViewEventName);
             textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
+            imageViewPosterPreview = itemView.findViewById(R.id.imageViewPosterPreview);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -107,6 +108,16 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         Event event = eventList.get(position);
         holder.textViewEventName.setText(event.getName());
         holder.textViewEventDate.setText(String.format("%s, %s", event.getDate(), event.getTime()));
+
+        // Use Glide to load the image
+        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(event.getImageUrl())
+                    .into(holder.imageViewPosterPreview);
+        } else {
+            // Here you can set a default image or a placeholder
+            holder.imageViewPosterPreview.setImageResource(R.drawable.ic_launcher_background); // using launcher background as a placeholder for now
+        }
     }
 
     /**

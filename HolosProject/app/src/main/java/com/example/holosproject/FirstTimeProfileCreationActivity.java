@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -131,6 +132,20 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
      * The users homepage.
      */
     private void createAccount(String name, String contact, String homepage) {
+        // first, validate the inputs
+        if (name.isEmpty() || !isValidName(name)) {
+            editTextName.setError("Please enter a valid name.");
+            return;
+        }
+        if (contact.isEmpty() || !isValidEmail(contact)) {
+            editTextContact.setError("Please enter a valid email address.");
+            return;
+        }
+        if (homepage.isEmpty() || !isValidUrl(homepage)) {
+            editTextHomepage.setError("Please enter a valid URL.");
+            return;
+        }
+
         mAuth.signInAnonymously()
                 .addOnCompleteListener(FirstTimeProfileCreationActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -139,7 +154,7 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            // TODO: Add data validation
+
                             // The user information that will be stored
                             Map<String, Object> userProfile = new HashMap<>();
                             userProfile.put("role", "attendee");
@@ -229,6 +244,27 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(FirstTimeProfileCreationActivity.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
+    }
+
+    /**
+     * Check if the name is valid.
+     */
+    private boolean isValidName(String name) {
+        return name.matches("[a-zA-Z\\s]+"); // Adjust regex as per your requirements
+    }
+
+    /**
+     * Check if the email is valid.
+     */
+    private boolean isValidEmail(CharSequence email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    /**
+     * Check if the URL is valid.
+     */
+    private boolean isValidUrl(String url) {
+        return Patterns.WEB_URL.matcher(url).matches();
     }
 
 }
