@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +45,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
     private Button finishEditProfileButton, removeProfileImageButton;
+    private Switch geolocationSwitch;
     private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
     private ImageUploader imageUploader; // Instance variable for the ImageUploader
 
@@ -60,7 +62,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editTextName = findViewById(R.id.editTextName);
         editTextHomepage = findViewById(R.id.editTextHomepage);
         editTextContact = findViewById(R.id.editTextContact);
-
+        geolocationSwitch = findViewById(R.id.switchGeolocation);
 
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -137,6 +139,10 @@ public class EditProfileActivity extends AppCompatActivity {
                         editTextContact.setText(document.getString("contact"));
                         editTextHomepage.setText(document.getString("homepage"));
 
+                        // Set the switch to the value stored in the user's profile
+                        Boolean geolocation = document.getBoolean("geolocationEnabled");
+                        geolocationSwitch.setChecked(geolocation != null && geolocation);
+
                         // Populate the image view with profile image (if it exists)
                         String imageUrl = document.getString("profileImageUrl");
                         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
@@ -168,6 +174,7 @@ public class EditProfileActivity extends AppCompatActivity {
         String newName = editTextName.getText().toString();
         String newContact = editTextContact.getText().toString();
         String newHomepage = editTextHomepage.getText().toString();
+        boolean geolocationEnabled = geolocationSwitch.isChecked();
 
         // Validate input data
         if (newName.isEmpty() || !isValidName(newName)) {
@@ -188,6 +195,7 @@ public class EditProfileActivity extends AppCompatActivity {
         updatedUserData.put("name", newName);
         updatedUserData.put("contact", newContact);
         updatedUserData.put("homepage", newHomepage);
+        updatedUserData.put("geolocationEnabled", geolocationEnabled);
         // Add more fields to update here
 
         // Update the user's profile document in Firestore

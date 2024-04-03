@@ -146,6 +146,9 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
             return;
         }
 
+        // Get the state of the geolocation switch
+        boolean isGeolocationEnabled = switchGeolocation.isChecked();
+
         mAuth.signInAnonymously()
                 .addOnCompleteListener(FirstTimeProfileCreationActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -163,6 +166,9 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                             userProfile.put("homepage", homepage);
                             userProfile.put("myEvents", new ArrayList<String>());
                             userProfile.put("createdEvents", new ArrayList<String>());
+                            userProfile.put("geolocationEnabled", isGeolocationEnabled);
+
+
 
                             // Check if the image has been uploaded and set the URL
                             if (uploadedImageUrl != null && !uploadedImageUrl.isEmpty()) {
