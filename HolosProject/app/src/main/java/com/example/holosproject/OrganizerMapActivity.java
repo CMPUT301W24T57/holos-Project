@@ -22,6 +22,10 @@ import java.util.List;
 
 public class OrganizerMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    // NOTE: 2024-04-03 4:46pm
+    // When I was testing the marker functionality on my computer, they were not showing up.
+    // I don't really know if this is due to a bug, or the emulator not entirely sure.
+
     private GoogleMap mMap;
     private static final String TAG = OrganizerMapActivity.class.getSimpleName();
 
@@ -48,8 +52,7 @@ public class OrganizerMapActivity extends FragmentActivity implements OnMapReady
 
         // Coordinates for central Edmonton as default view
         LatLng edmonton = new LatLng(53.5444, -113.4909);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(edmonton, 10));
-
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(edmonton, 13)); // Adjust this zoom level as you see fit (10 shows you all of edmonton)
         // Get the event ID from the intent
         String eventId = getIntent().getStringExtra("EVENT_ID"); // Make sure "EVENT_ID" matches the key used when starting this activity
 
