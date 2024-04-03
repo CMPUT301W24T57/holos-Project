@@ -62,6 +62,8 @@ import java.util.Objects;
 public class AttendeeDashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private final String TAG = "TestScreen";
+
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     // Using a RecyclerView to display all of the Events our user is currently enrolled in
     private RecyclerView eventsRecyclerView;
@@ -355,8 +357,13 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             eventRef.update("checkIns", checkIns)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                     .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
-            if (geolocation) {
 
+            // Check and update user location, respecting the geolocation preference.
+            checkAndUpdateUserLocation(eventID);
+
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            } else {
                 fusedLocationClient.getLastLocation()
                         .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                             @Override
@@ -442,6 +449,63 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                             });
                         }
                     }
+                }
+            });
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    double latitude = location.getLatitude();
+                                    double longitude = location.getLongitude();
+                                    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+                                    DocumentReference eventRef = database.collection("events").document(locationID);
+                                    eventRef.update("locations", FieldValue.arrayUnion(geoPoint));
+                                }
+                            }
+                        });
+            }
+        }
+    }
+
+    private void checkAndUpdateUserLocation(String eventID) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            DocumentReference userProfileRef = db.collection("userProfiles").document(currentUser.getUid());
+            userProfileRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Boolean isGeolocationEnabled = documentSnapshot.getBoolean("geolocationEnabled");
+                    if (isGeolocationEnabled != null && isGeolocationEnabled) {
+                        updateUserLocation(eventID);
+                    } else {
+                        Log.d(TAG, "Geolocation is disabled by the user. Not adding Location data.");
+                    }
+                }
+            }).addOnFailureListener(e -> Log.e(TAG, "Error fetching user profile", e));
+        }
+    }
+
+    private void updateUserLocation(String eventID) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null) {
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
+                    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+                    DocumentReference eventRef = database.collection("events").document(eventID);
+                    eventRef.update("locations", FieldValue.arrayUnion(geoPoint));
                 }
             });
         }
