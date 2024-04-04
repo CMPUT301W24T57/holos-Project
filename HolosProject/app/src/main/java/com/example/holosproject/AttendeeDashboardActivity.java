@@ -1,5 +1,6 @@
 package com.example.holosproject;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -60,9 +61,9 @@ import java.util.Objects;
 
 public class AttendeeDashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private final String TAG = "TestScreen";
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private final String TAG = "TestScreen";
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     // Using a RecyclerView to display all of the Events our user is currently enrolled in
     private RecyclerView eventsRecyclerView;
@@ -77,8 +78,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private FloatingActionButton scanButton;
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference eventsRef = database.collection("events");
-
     private CollectionReference customRef = database.collection("Custom QR Data");
+    private CollectionReference usersRef = database.collection("userProfiles");
+
+    private boolean geolocation;
     private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> { //basic popup after scanning to test things
         if (result.getContents() != null) {
             String scanContents = result.getContents();
@@ -175,6 +178,20 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 }
             });
         }
+
+        DocumentReference currentUserRef = usersRef.document(currentUser.getUid());
+
+        currentUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
+                        geolocation = document.getBoolean("geolocationEnabled");
+                    }
+                }
+            }
+        });
     }
 
 
@@ -326,7 +343,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
      * @param eventID  The ID of the event to be added.
      * @param document A document representing the event.
      */
-
     private void rsvpEvent(String eventID, DocumentSnapshot document) {
         //Toast.makeText(this, "You have successfully checked in.", Toast.LENGTH_SHORT).show();
         // add user to event:
@@ -342,24 +358,29 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                     .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
 
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-            } else {
-                fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                // Got last known location. In some rare situations this can be null.
-                                if (location != null) {
-                                    double latitude = location.getLatitude();
-                                    double longitude = location.getLongitude();
-                                    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
-                                    eventRef.update("locations", FieldValue.arrayUnion(geoPoint));
-                                }
-                            }
-                        });
-            }
-        } else if (checkIns.containsKey(currentUser.getUid())) {
+            // Check and update user location, respecting the geolocation preference.
+            checkAndUpdateUserLocation(eventID);
+//            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+//            } else {
+//                fusedLocationClient.getLastLocation()
+//                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+//                            @Override
+//                            public void onSuccess(Location location) {
+//                                // Got last known location. In some rare situations this can be null.
+//                                if (location != null) {
+//                                    double latitude = location.getLatitude();
+//                                    double longitude = location.getLongitude();
+//                                    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+//                                    eventRef.update("locations", FieldValue.arrayUnion(geoPoint));
+//                                }
+//                            }
+//                        });
+//
+//            }
+//        }
+        }
+    else if (checkIns.containsKey(currentUser.getUid())) {
             DocumentReference eventRef = database.collection("events").document(eventID);
             Integer parsedInt = Integer.valueOf(checkIns.get(currentUser.getUid()));
             parsedInt++;
@@ -434,7 +455,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             });
         }
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -455,6 +475,41 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                             }
                         });
             }
+        }
+    }
+
+    private void checkAndUpdateUserLocation(String eventID) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            DocumentReference userProfileRef = db.collection("userProfiles").document(currentUser.getUid());
+            userProfileRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Boolean isGeolocationEnabled = documentSnapshot.getBoolean("geolocationEnabled");
+                    if (isGeolocationEnabled != null && isGeolocationEnabled) {
+                        updateUserLocation(eventID);
+                    } else {
+                        Log.d(TAG, "Geolocation is disabled by the user. Not adding Location data.");
+                    }
+                }
+            }).addOnFailureListener(e -> Log.e(TAG, "Error fetching user profile", e));
+        }
+    }
+
+    private void updateUserLocation(String eventID) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null) {
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
+                    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+                    DocumentReference eventRef = database.collection("events").document(eventID);
+                    eventRef.update("locations", FieldValue.arrayUnion(geoPoint));
+                }
+            });
         }
     }
 }

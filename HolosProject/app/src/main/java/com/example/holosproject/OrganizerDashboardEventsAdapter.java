@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,6 +159,17 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             public void onClick(View v) {
                 Intent intent = new Intent(context, AttendeeCheckinsActivity.class);
                 intent.putExtra("checkins", event.getEventId());
+                context.startActivity(intent);
+            }
+        });
+
+        // Click listener for the View Check In Map button
+        Button viewCheckInMapButton = diagView.findViewById(R.id.viewCheckInMapButton);
+        viewCheckInMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, OrganizerMapActivity.class);
+                intent.putExtra("EVENT_ID", event.getEventId()); // Pass the event ID to the map activity
                 context.startActivity(intent);
             }
         });

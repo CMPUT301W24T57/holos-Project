@@ -1,6 +1,10 @@
 package com.example.holosproject;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -10,9 +14,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,6 +32,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -41,9 +49,12 @@ import java.util.Map;
 
 public class EditProfileActivity extends AppCompatActivity {
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
     private Button finishEditProfileButton, removeProfileImageButton;
+    private Switch geolocationSwitch;
     private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
     private ImageUploader imageUploader; // Instance variable for the ImageUploader
 
@@ -60,7 +71,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editTextName = findViewById(R.id.editTextName);
         editTextHomepage = findViewById(R.id.editTextHomepage);
         editTextContact = findViewById(R.id.editTextContact);
-
+        geolocationSwitch = findViewById(R.id.switchGeolocation);
 
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -115,6 +126,31 @@ public class EditProfileActivity extends AppCompatActivity {
                 removeProfileImage(currentUser.getUid());
             }
         });
+
+        geolocationSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (geolocationSwitch.isChecked()) {
+                    ActivityCompat.requestPermissions(EditProfileActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+                }
+                else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
+                    // Set the title and message for the dialog
+                    builder.setTitle("Notice")
+                            .setMessage("You must go into app permissions to revoke location privileges.")
+                            .setCancelable(false) // Set if dialog is cancelable
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss(); // Dismiss the dialog
+                                }
+                            });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    geolocationSwitch.setChecked(true);
+                }
+            }
+        });
     }
 
     /**
@@ -136,6 +172,17 @@ public class EditProfileActivity extends AppCompatActivity {
                         editTextName.setText(document.getString("name"));
                         editTextContact.setText(document.getString("contact"));
                         editTextHomepage.setText(document.getString("homepage"));
+
+                        // Set the switch to the value stored in the user's profile
+                        //Boolean geolocation = document.getBoolean("geolocationEnabled");
+                        // geolocationSwitch.setChecked(geolocation != null && geolocation);
+                        // set the status of the geolocation switch based on app permissions
+                        if (ActivityCompat.checkSelfPermission(EditProfileActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            geolocationSwitch.setChecked(false);
+                        }
+                        else {
+                            geolocationSwitch.setChecked(true);
+                        }
 
                         // Populate the image view with profile image (if it exists)
                         String imageUrl = document.getString("profileImageUrl");
@@ -168,6 +215,7 @@ public class EditProfileActivity extends AppCompatActivity {
         String newName = editTextName.getText().toString();
         String newContact = editTextContact.getText().toString();
         String newHomepage = editTextHomepage.getText().toString();
+        boolean geolocationEnabled = geolocationSwitch.isChecked();
 
         // Validate input data
         if (newName.isEmpty() || !isValidName(newName)) {
@@ -188,6 +236,7 @@ public class EditProfileActivity extends AppCompatActivity {
         updatedUserData.put("name", newName);
         updatedUserData.put("contact", newContact);
         updatedUserData.put("homepage", newHomepage);
+        updatedUserData.put("geolocationEnabled", geolocationEnabled);
         // Add more fields to update here
 
         // Update the user's profile document in Firestore
@@ -260,6 +309,31 @@ public class EditProfileActivity extends AppCompatActivity {
      */
     private boolean isValidUrl(String url) {
         return Patterns.WEB_URL.matcher(url).matches();
+    }
+
+    /**
+     *
+     * @param requestCode The request code passed in
+     * android.app.Activity, String[], int)}
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     * Handles what happens after the user responds to a permission being granted.
+     *                     In this case, it deals with the location permissions and this activity's geolocation switch.
+     */
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                geolocationSwitch.setChecked(true);
+            }
+            else {
+                geolocationSwitch.setChecked(false);
+            }
+        }
     }
 
 }
