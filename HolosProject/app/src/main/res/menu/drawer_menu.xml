@@ -19,6 +19,11 @@
         android:title="Organizer Dashboard"
         />
     <item
+        android:id="@+id/admin_login"
+        android:title="Administrator Login"
+        android:visible="false"
+        />
+    <item
         android:id="@+id/nav_admin_dashboard"
         android:title="Administrator Dashboard"
         android:visible="false"/> <!-- Initially set this to false -->
