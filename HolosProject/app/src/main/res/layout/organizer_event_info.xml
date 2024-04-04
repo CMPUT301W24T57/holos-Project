@@ -59,27 +59,12 @@
         android:layout_marginTop="7dp"
         android:text="Would you like to attend?" />
 
-    <TextView
-        android:id="@+id/event_attendee_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="17sp"
-        android:text="Attendees: "
-        android:layout_marginTop="7dp"
-        android:layout_marginBottom="14dp"/>
-
-<!--    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="17sp"
-        android:text="CHECK-IN CODE: "
-        android:layout_marginBottom="14dp"
-        />-->
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="17sp"
-        android:text="Go to QR View"
+        android:text="QR Management"
+        android:backgroundTint="#0097A7"
         android:layout_marginBottom="14dp"
         android:id="@+id/qrNav">
     </Button>
@@ -88,7 +73,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="17sp"
-        android:text="Attendee Checkins"
+        android:backgroundTint="#00bcd4"
+        android:text="Check-Ins / Attendees"
         android:layout_marginBottom="18dp"
         android:id="@+id/attendeeCheckins">
     </Button>
@@ -98,6 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="17sp"
+        android:backgroundTint="#448AFF"
         android:layout_below="@id/attendeeCheckins"
         android:text="View Check-in Map" />
 

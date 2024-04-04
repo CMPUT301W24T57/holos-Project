@@ -1,5 +1,6 @@
 package com.example.holosproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -43,10 +44,18 @@ public class AttendeeCheckinsActivity extends AppCompatActivity {
 
 
         Button backButton = findViewById(R.id.BackButton);
+        Button navButton = findViewById(R.id.attendeeNav);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToAttendeeView(eventId);
             }
         });
         fetchAttendeeCheckins(eventId);
@@ -81,4 +90,9 @@ public class AttendeeCheckinsActivity extends AppCompatActivity {
                 });
     }
 
+    private void goToAttendeeView(String eventID) {
+        Intent intent = new Intent(AttendeeCheckinsActivity.this, AttendeeListActivity.class);
+        intent.putExtra("EVENT_ID", eventID); // Pass the event ID to the map activity
+        AttendeeCheckinsActivity.this.startActivity(intent);
+    }
 }

@@ -245,20 +245,20 @@ public class ViewAllEventsActivity extends AppCompatActivity
         switchPlanToAttend.setChecked(event.getAttendees().contains(currentUserId));
         TextView textViewEventName = diagView.findViewById(R.id.textViewEventNameDiag);
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
-        TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
+        //TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
-        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
+        //TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         ImageView eventPoster = diagView.findViewById(R.id.event_poster);
 
         textViewEventName.setText("EVENT NAME: " + event.getName());
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
-        textViewEventTime.setText("EVENT TIME: " + event.getTime());
+        //textViewEventTime.setText("EVENT TIME: " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
         System.out.println(event.getImageUrl());
         Picasso.get().load(event.getImageUrl()).into(eventPoster);
 
         List<String> attendeeIds1 = event.getAttendees();
-        displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
+        //displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
 
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -279,7 +279,7 @@ public class ViewAllEventsActivity extends AppCompatActivity
                     .addOnSuccessListener(aVoid -> {
                         // Update the displayed attendees list
                         List<String> attendeeIds = event.getAttendees();
-                        displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
+                        //displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error updating attendees list", e);

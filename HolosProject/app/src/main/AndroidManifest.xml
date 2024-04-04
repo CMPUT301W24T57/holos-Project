@@ -68,6 +68,7 @@
         <activity android:name=".AdminViewEventsActivity" />
         <activity android:name=".AttendeeCheckinsActivity"></activity>
         <activity android:name=".OrganizerMapActivity"></activity>
+        <activity android:name=".AttendeeListActivity"></activity>
 
         <!-- Google Maps API Key-->
         <meta-data

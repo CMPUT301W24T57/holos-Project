@@ -306,7 +306,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         Intent intent = new Intent(this, EventDisplay.class);
         intent.putExtra("contents", scanContents);
         startActivity(intent);
-
     }
 
     /**
@@ -360,25 +359,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
             // Check and update user location, respecting the geolocation preference.
             checkAndUpdateUserLocation(eventID);
-//            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-//            } else {
-//                fusedLocationClient.getLastLocation()
-//                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-//                            @Override
-//                            public void onSuccess(Location location) {
-//                                // Got last known location. In some rare situations this can be null.
-//                                if (location != null) {
-//                                    double latitude = location.getLatitude();
-//                                    double longitude = location.getLongitude();
-//                                    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
-//                                    eventRef.update("locations", FieldValue.arrayUnion(geoPoint));
-//                                }
-//                            }
-//                        });
-//
-//            }
-//        }
         }
     else if (checkIns.containsKey(currentUser.getUid())) {
             DocumentReference eventRef = database.collection("events").document(eventID);

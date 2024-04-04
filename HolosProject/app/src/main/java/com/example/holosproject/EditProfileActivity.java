@@ -53,7 +53,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
-    private Button finishEditProfileButton, removeProfileImageButton;
+    private Button finishEditProfileButton, removeProfileImageButton, cancelButton;
     private Switch geolocationSwitch;
     private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
     private ImageUploader imageUploader; // Instance variable for the ImageUploader
@@ -84,11 +84,20 @@ public class EditProfileActivity extends AppCompatActivity {
         // Initialize buttons for finishing edits to profile, and for removing uploaded profile image
         finishEditProfileButton = findViewById(R.id.buttonFinishProfileCreation);
         removeProfileImageButton = findViewById(R.id.buttonRemoveProfileImage);
+        cancelButton = findViewById(R.id.buttonBack);
+
 
         finishEditProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 updateProfile();
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
