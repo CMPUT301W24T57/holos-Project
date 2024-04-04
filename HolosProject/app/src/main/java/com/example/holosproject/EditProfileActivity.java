@@ -1,8 +1,6 @@
 package com.example.holosproject;
 
 import android.app.AlertDialog;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -56,8 +54,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
-    private Button finishEditProfileButton, removeProfileImageButton, cancelButton;
-    private Switch geolocationSwitch, notificationSwitch;
+    private Button finishEditProfileButton, removeProfileImageButton, cancelButton, buttonNotificationSettings;
+    private Switch geolocationSwitch;
     private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
     private ImageUploader imageUploader; // Instance variable for the ImageUploader
 
@@ -75,7 +73,8 @@ public class EditProfileActivity extends AppCompatActivity {
         editTextHomepage = findViewById(R.id.editTextHomepage);
         editTextContact = findViewById(R.id.editTextContact);
         geolocationSwitch = findViewById(R.id.switchGeolocation);
-        notificationSwitch = findViewById(R.id.switchNotifications);
+        buttonNotificationSettings = findViewById(R.id.buttonNotificationSettings);
+        updateNotificationIcon();
 
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -165,17 +164,10 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
-        notificationSwitch.setOnClickListener(new View.OnClickListener() {
+        buttonNotificationSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!areNotificationsEnabled()) {
-                    // Direct users to the app's notification settings
-                    openNotificationSettings();
-                    // Optionally, reset the switch to off since you can't change the setting programmatically
-                    notificationSwitch.setChecked(false);
-                } else {
-                    // if notifications are enabled in the phones settings, and they flip the switch to on, we chillin
-                }
+                openNotificationSettings();
             }
         });
     }
@@ -211,9 +203,6 @@ public class EditProfileActivity extends AppCompatActivity {
                             geolocationSwitch.setChecked(true);
                         }
 
-                        // Set the notification switch to what we have inside of Firebase
-                        Boolean notification = document.getBoolean("notificationEnabled");
-                        notificationSwitch.setChecked(notification != null && notification);
 
 
                         // Populate the image view with profile image (if it exists)
@@ -248,7 +237,6 @@ public class EditProfileActivity extends AppCompatActivity {
         String newContact = editTextContact.getText().toString();
         String newHomepage = editTextHomepage.getText().toString();
         boolean geolocationEnabled = geolocationSwitch.isChecked();
-        boolean notificationEnabled = notificationSwitch.isChecked();
 
         // Validate input data
         if (newName.isEmpty() || !isValidName(newName)) {
@@ -270,7 +258,6 @@ public class EditProfileActivity extends AppCompatActivity {
         updatedUserData.put("contact", newContact);
         updatedUserData.put("homepage", newHomepage);
         updatedUserData.put("geolocationEnabled", geolocationEnabled);
-        updatedUserData.put("notificationEnabled", notificationEnabled);
         // Add more fields to update here
 
         // Update the user's profile document in Firestore
@@ -292,6 +279,14 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update the bell notification icon every time the activity resumes
+        updateNotificationIcon();
+    }
+
     //  handle image selection from user
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -370,20 +365,9 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Check if the users phone has notifications enabled for our app
-     */
-    private boolean areNotificationsEnabled() {
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return manager.areNotificationsEnabled();
-        } else {
-            return NotificationManagerCompat.from(this).areNotificationsEnabled();
-        }
-    }
 
     /**
-     * Direct the user to their settings, where they can enable notifications for our app
+     * Direct the user to their notification settings, where they can enable notifications for our app
      */
     private void openNotificationSettings() {
         Intent intent = new Intent();
@@ -398,6 +382,22 @@ public class EditProfileActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Depending on users notification settings, change the bell display from on/off
+     */
+    private void updateNotificationIcon() {
+        // Check if notifications are enabled and set the corresponding icon
+        if (areNotificationsEnabled()) {
+            buttonNotificationSettings.setCompoundDrawablesWithIntrinsicBounds(R.drawable.notif_on, 0, 0, 0);
+        } else {
+            buttonNotificationSettings.setCompoundDrawablesWithIntrinsicBounds(R.drawable.notif_off, 0, 0, 0);
+        }
+    }
 
-
+    /**
+     * Checks if the user has notifications enabled or disabled
+     */
+    private boolean areNotificationsEnabled() {
+        return NotificationManagerCompat.from(this).areNotificationsEnabled();
+    }
 }

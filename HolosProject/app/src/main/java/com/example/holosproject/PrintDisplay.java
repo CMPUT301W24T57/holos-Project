@@ -1,18 +1,9 @@
 package com.example.holosproject;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.os.CancellationSignal;
-import android.os.ParcelFileDescriptor;
-import android.print.PageRange;
-import android.print.PrintAttributes;
-import android.print.PrintDocumentAdapter;
-import android.print.PrintDocumentInfo;
-import android.print.PrintManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -32,17 +23,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Document;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;

@@ -69,26 +69,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextContact" />
 
-    <Switch
-        android:id="@+id/switchNotifications"
-        android:layout_width="0dp"
+    <!-- Add a bell icon in here -->
+    <Button
+        android:id="@+id/buttonNotificationSettings"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notifications"
-        app:layout_constraintEnd_toStartOf="@+id/switchGeolocation"
+        android:text="Notification Settings"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage" />
 
     <Switch
         android:id="@+id/switchGeolocation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/switchNotifications"
         android:text="Geolocation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/switchNotifications"
-        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage"
-        />
+        app:layout_constraintStart_toEndOf="@+id/buttonNotificationSettings"
+        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage" />
 
     <Button
         android:id="@+id/buttonFinishProfileCreation"
