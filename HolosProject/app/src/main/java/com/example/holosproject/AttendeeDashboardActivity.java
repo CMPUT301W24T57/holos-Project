@@ -60,7 +60,6 @@ import java.util.Objects;
 public class AttendeeDashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private final String TAG = "TestScreen";
-
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     // Using a RecyclerView to display all of the Events our user is currently enrolled in
@@ -158,6 +157,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         scanButton.setOnClickListener(v -> {
             scanQRCode();
         });
+
+        // if we got here from the check-in display screen,
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String eventID = bundle.getString("title");
@@ -178,7 +179,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }
 
         DocumentReference currentUserRef = usersRef.document(currentUser.getUid());
-
         currentUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
