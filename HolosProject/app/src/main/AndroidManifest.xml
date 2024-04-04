@@ -70,6 +70,7 @@
         <activity android:name=".AttendeeCheckinsActivity"></activity>
         <activity android:name=".OrganizerMapActivity"></activity>
         <activity android:name=".AttendeeListActivity"></activity>
+        <activity android:name=".PrintDisplay"></activity>
 
         <!-- Google Maps API Key-->
         <meta-data

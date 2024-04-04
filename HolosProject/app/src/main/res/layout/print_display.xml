@@ -23,7 +23,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/orienta"
-        android:text="Event Check-In"
+        android:text="Event Print"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold" />
@@ -44,7 +44,7 @@
     <ImageView
         android:id="@+id/eventPoster"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="250dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:layout_below="@id/eventTitle"
@@ -57,7 +57,7 @@
         android:layout_below="@id/eventPoster"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="15dp"
         android:text="Event Creator Goes Here"
         android:textAlignment="viewEnd"
         android:textColor="@color/material_dynamic_primary0"
@@ -86,25 +86,38 @@
         android:layout_centerHorizontal="true"
         android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/rsvpButton"
+    <TextView
+        android:id="@+id/event_Location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
         android:layout_below="@id/event_Date"
+        android:text="Event Location Goes Here"
+        android:textColor="@color/material_dynamic_primary0"
+        android:textSize="16sp"
         android:layout_centerHorizontal="true"
-        android:backgroundTint="#2297ef"
-        android:text="Check In to Event"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/eventCode"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        android:layout_below="@id/event_Location"
+        android:contentDescription="TODO"
         android:visibility="visible"/>
 
     <Button
         android:id="@+id/printButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/event_Date"
+        android:layout_below="@id/eventCode"
         android:layout_centerHorizontal="true"
         android:backgroundTint="#2297ef"
         android:text="Print Poster"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
 
 </RelativeLayout>

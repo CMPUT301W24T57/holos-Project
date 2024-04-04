@@ -69,7 +69,7 @@ public class QRGen extends AppCompatActivity {
         Bitmap bitmap1 = qrgEncoder1.getBitmap(0);
         checkInView.setImageBitmap(bitmap1);
 
-        QRGEncoder qrgEncoder2 = new QRGEncoder(eventID, null, QRGContents.Type.TEXT, 250);
+        QRGEncoder qrgEncoder2 = new QRGEncoder("promo" + eventID, null, QRGContents.Type.TEXT, 250);
         Bitmap bitmap2 = qrgEncoder2.getBitmap(0);
         promoView.setImageBitmap(bitmap2);
 
@@ -160,6 +160,12 @@ public class QRGen extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        });
+
+        findViewById(R.id.print_btn).setOnClickListener(v -> {
+            Intent intent = new Intent(this, PrintDisplay.class);
+            intent.putExtra("contents", eventID);
+            startActivity(intent);
         });
     }
 }
