@@ -99,6 +99,7 @@
         android:layout_height="wrap_content"
         android:textSize="17sp"
         android:layout_below="@id/attendeeCheckins"
+        android:layout_marginBottom="18dp"
         android:text="View Check-in Map" />
 
 

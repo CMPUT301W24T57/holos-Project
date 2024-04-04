@@ -1,6 +1,10 @@
 package com.example.holosproject;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -10,6 +14,8 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -49,6 +55,17 @@ public class IntroActivity extends AppCompatActivity { // AppCombatActivity prov
         administratorButton = findViewById(R.id.AdministratorButton);
 //        loginButton = findViewById(R.id.login_button);
         mAuth = FirebaseAuth.getInstance();
+
+        //Permission for notis
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(IntroActivity.this,
+                    android.Manifest.permission.POST_NOTIFICATIONS) !=
+                    PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(IntroActivity.this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
 
 
         attendeeButton.setOnClickListener(new View.OnClickListener() {

@@ -1,9 +1,13 @@
 package com.example.holosproject;
 
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +19,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -297,7 +302,8 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             @Override
             public void onClick(View v) {
                 String notificationText = editTextNotification.getText().toString();
-                sendNotificationToAttendees(event.getAttendees(), notificationText);
+                sendNotificationToAttendees(context, notificationText);
+                //sendNotificationToAttendees(context, "This is the first notification for this app");
                 dialog.dismiss();
             }
         });
@@ -311,8 +317,24 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         dialog.show();
     }
 
-    private void sendNotificationToAttendees(List<String> attendeeIds, String notificationText){
+    private void sendNotificationToAttendees(Context context, String notificationText){
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("NewNotis", "New Notis", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+        //Intent intent = new Intent(context, ViewAllEventsActivity.class);
+       //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), "NewNotis")
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Announcement")
+                .setContentText(notificationText)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+
+        notificationManager.notify(1, builder.build());
     }
 
 
