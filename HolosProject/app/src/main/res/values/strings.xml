@@ -10,6 +10,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="prefixName">"Event Name: %1$s"</string>
-    <string name="prefixDate">"Event Date: %1$s"</string>
+    <string name="prefixDate">"Event Date: %1$s at %2$s"</string>
     <string name="prefixOrganizer">"Event Organizer: %1$s"</string>
 </resources>

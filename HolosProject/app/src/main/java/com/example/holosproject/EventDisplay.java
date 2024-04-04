@@ -55,16 +55,21 @@ public class EventDisplay extends AppCompatActivity {
                         TextView creatorDisplay = findViewById(R.id.event_Creator);
                         TextView eventDisplay = findViewById(R.id.eventTitle);
                         ImageView posterDisplay = findViewById(R.id.eventPoster);
+                        ImageView avatarDisplay = findViewById(R.id.event_creatorAvatar);
                         Picasso.get().load(posterUrl).into(posterDisplay);
 
-                        dateDisplay.setText(getString(R.string.prefixDate, date));
+                        dateDisplay.setText(getString(R.string.prefixDate, date, time));
                         eventDisplay.setText(name);
                         db.collection("userProfiles").document(creator).get()
                                 .addOnSuccessListener(documentSnapshot -> {
                                     if (documentSnapshot.exists()) {
                                         String creatorName = documentSnapshot.getString("name");
+                                        String creatorAvatar = documentSnapshot.getString("profileImageUrl");
                                         if (name != null) {
                                             creatorDisplay.setText(getString(R.string.prefixOrganizer, creatorName));
+                                        }
+                                        if (creatorAvatar != null) {
+                                            Picasso.get().load(creatorAvatar).into(avatarDisplay);
                                         }
                                     }
                                 });

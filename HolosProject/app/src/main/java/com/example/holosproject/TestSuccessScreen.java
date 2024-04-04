@@ -24,9 +24,8 @@ public class TestSuccessScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_success_screen);
-
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         TextView textUsername = findViewById(R.id.test_username);
-        TextView textExtra = findViewById(R.id.test_password);
 
         // gets current user
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -36,9 +35,19 @@ public class TestSuccessScreen extends AppCompatActivity {
             String name = user.getDisplayName() != null ? user.getDisplayName() : "No name";
             String email = user.getEmail() != null ? user.getEmail() : "No email";
             // The user's ID, unique to the Firebase project
-            uid = user.getUid();
-            textExtra.setText(uid);
-            textUsername.setText(email);
+            DocumentReference userRef = db.collection("userProfiles").document(user.getUid());
+            userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            textUsername.setText("Username: " + (String) document.get("name"));
+                        }
+                    }
+                }
+            });
+
             // test implementation of navigation
             checkUserRoleAndNavigate();
         } else {
