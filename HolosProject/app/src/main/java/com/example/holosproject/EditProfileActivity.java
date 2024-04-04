@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -32,7 +31,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -303,7 +301,7 @@ public class EditProfileActivity extends AppCompatActivity {
      * For example, it can't be empty and it can't contain digits or special characters.
      */
     private boolean isValidName(String name) {
-        return name.matches("[a-zA-Z\\s]+"); // This regex makes it so name only has alphabetic characters and whitespace
+        return name.matches("^[a-zA-Z0-9 ]+$"); // This regex makes it so name only has characters, numbers and whitespace.
     }
 
     /**

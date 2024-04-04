@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * FileName: MainActivity
@@ -95,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
                             // The user information that will be stored
                             Map<String, Object> userProfile = new HashMap<>();
                             userProfile.put("role", "attendee");
-                            userProfile.put("name", "Anonymous User");
+                            String randomUsername = generateUsername();
+                            userProfile.put("name", randomUsername);
                             userProfile.put("contact", "None");
                             userProfile.put("homepage", "None");
                             userProfile.put("myEvents", new ArrayList<String>());
@@ -142,5 +144,18 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+    /**
+     * Generates username "Anonymous User" followed by 5 random digits. This is the default username for accounts
+     */
+    public static String generateUsername() {
+        Random random = new Random();
+        // Generate a random number between 10000 and 99999
+        int randomNumber = 10000 + random.nextInt(90000);
+        return "Anonymous User " + randomNumber;
+    }
+
+
 
 }
