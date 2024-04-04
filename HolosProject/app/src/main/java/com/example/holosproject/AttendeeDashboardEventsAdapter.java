@@ -1,14 +1,11 @@
 package com.example.holosproject;
 
-import android.app.Dialog;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -25,13 +22,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.zip.Inflater;
-
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * FileName: AttendeeDashboardEventsAdapter
@@ -82,7 +73,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         TextView textViewEventName = diagView.findViewById(R.id.textViewEventNameDiag);
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
-        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         ImageView eventPoster = diagView.findViewById(R.id.event_poster);
 
         textViewEventName.setText(event.getName());
@@ -91,7 +81,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         Picasso.get().load(event.getImageUrl()).into(eventPoster);
 
         List<String> attendeeIds1 = event.getAttendees();
-        displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
 
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -110,9 +99,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
             db.collection("events").document(event.getEventId())
                     .update("attendees", event.getAttendees())
                     .addOnSuccessListener(aVoid -> {
-                        // Update the displayed attendees list
-                        List<String> attendeeIds = event.getAttendees();
-                        displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error updating attendees list", e);
@@ -170,40 +156,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         userRef.update("myEvents", FieldValue.arrayRemove(eventId))
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event removed"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error removing event", e));
-    }
-
-    /**
-     * Displays attendee names in the TextView.
-     * @param attendeeIds The list of attendee IDs.
-     * @param textViewEventAttendeeList The TextView to display the names.
-     * @param db The instance of FirebaseFirestore.
-     */
-    private void displayAttendeeNames(List<String> attendeeIds, TextView textViewEventAttendeeList, FirebaseFirestore db) {
-        List<String> attendeeNames = new ArrayList<>();
-        AtomicInteger fetchCounter = new AtomicInteger(attendeeIds.size());
-
-        for (String attendeeId : attendeeIds) {
-            db.collection("userProfiles").document(attendeeId).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            String name = documentSnapshot.getString("name");
-                            if (name != null) {
-                                attendeeNames.add(name);
-                            }
-                        }
-                        if (fetchCounter.decrementAndGet() == 0) {
-                            String namesStr = String.join(", ", attendeeNames);
-                            textViewEventAttendeeList.setText("Attendees: " + namesStr);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error fetching user profile", e);
-                        if (fetchCounter.decrementAndGet() == 0) {
-                            String namesStr = String.join(", ", attendeeNames);
-                            textViewEventAttendeeList.setText("Attendees: " + namesStr);
-                        }
-                    });
-        }
     }
 
     @Override

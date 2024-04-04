@@ -93,6 +93,14 @@
         android:id="@+id/attendeeCheckins">
     </Button>
 
+    <Button
+        android:id="@+id/viewCheckInMapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:layout_below="@id/attendeeCheckins"
+        android:text="View Check-in Map" />
+
     <TextView
         android:id="@+id/textViewEventAnnouncementsDiag"
         android:layout_width="match_parent"

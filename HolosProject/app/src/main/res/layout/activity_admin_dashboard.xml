@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Administrator Dashboard"
-            android:textSize="24sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,19 +37,21 @@
 
         <Button
             android:id="@+id/btnViewProfiles"
-            android:layout_width="0dp"
+            android:layout_width="1.5in"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="View Profiles"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvAdminDashboard" />
 
         <Button
             android:id="@+id/btnViewEvents"
-            android:layout_width="0dp"
+            android:layout_width="1.5in"
             android:layout_height="wrap_content"
             android:text="View Events"
+            android:textSize="18sp"
             app:layout_constraintTop_toBottomOf="@+id/btnViewProfiles"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,9 +59,10 @@
 
         <Button
             android:id="@+id/btnViewImages"
-            android:layout_width="0dp"
+            android:layout_width="1.5in"
             android:layout_height="wrap_content"
             android:text="View Images"
+            android:textSize="18sp"
             app:layout_constraintTop_toBottomOf="@+id/btnViewEvents"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

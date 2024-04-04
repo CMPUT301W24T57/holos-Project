@@ -77,16 +77,6 @@
         android:layout_marginBottom="14dp"/>
 
     <TextView
-        android:id="@+id/event_attendee_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="17sp"
-        android:text="Attendees: "
-        android:layout_marginTop="7dp"
-        android:layout_marginBottom="14dp"
-        android:layout_below="@id/plan_to_attend_list"/>
-
-    <TextView
         android:id="@+id/textViewEventAnnouncementsDiag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,7 +84,7 @@
         android:textStyle="bold"
         android:gravity="center_horizontal"
         android:text="RECENT ANNOUNCEMENTS"
-        android:layout_below="@id/event_attendee_list"
+        android:layout_below="@id/plan_to_attend_list"
         android:textSize="22sp" />
 
 
