@@ -122,8 +122,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
         }
         // Add more navigation items if needed
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        DrawerLayout drawer = findViewById(R.id.admin_drawer_layout);
+        if (drawer != null) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 }

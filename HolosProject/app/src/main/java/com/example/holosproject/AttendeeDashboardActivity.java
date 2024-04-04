@@ -1,6 +1,5 @@
 package com.example.holosproject;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -44,7 +43,6 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -195,18 +193,31 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     }
 
 
-    // Grabs users role. Used to determine if user can access the admin dashboard or not.
+    /**
+     * Grabs user profile, to determine what they view in the Drawer Menu
+     * @param userId: the users ID
+     */
     private void fetchUserProfile(String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+        Menu menu = navigationView.getMenu();
+
+        MenuItem adminLoginMenuItem = menu.findItem(R.id.admin_login);
+
         db.collection("userProfiles").document(userId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String role = documentSnapshot.getString("role");
                 if ("admin".equals(role)) {
                     // Show the admin dashboard option in the navigation drawer.
-                    NavigationView navigationView = findViewById(R.id.nav_drawer_view);
-                    Menu menu = navigationView.getMenu();
                     MenuItem adminDashboardMenuItem = menu.findItem(R.id.nav_admin_dashboard);
                     adminDashboardMenuItem.setVisible(true);
+
+                    // hide the login option
+                    adminLoginMenuItem.setVisible(false);
+                }
+                else {
+                    // if role is not admin, then show the login option
+                    adminLoginMenuItem.setVisible(true);
                 }
             }
         }).addOnFailureListener(e -> {
@@ -240,6 +251,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             Intent intent = new Intent(this, AdminDashboardActivity.class);
             startActivity(intent);
             finish();
+        }
+        else if (id == R.id.admin_login) {
+            Intent intent = new Intent(this, Login.class);
+            startActivity(intent);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -306,7 +321,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         Intent intent = new Intent(this, EventDisplay.class);
         intent.putExtra("contents", scanContents);
         startActivity(intent);
-
     }
 
     /**
@@ -360,25 +374,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
             // Check and update user location, respecting the geolocation preference.
             checkAndUpdateUserLocation(eventID);
-//            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-//            } else {
-//                fusedLocationClient.getLastLocation()
-//                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-//                            @Override
-//                            public void onSuccess(Location location) {
-//                                // Got last known location. In some rare situations this can be null.
-//                                if (location != null) {
-//                                    double latitude = location.getLatitude();
-//                                    double longitude = location.getLongitude();
-//                                    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
-//                                    eventRef.update("locations", FieldValue.arrayUnion(geoPoint));
-//                                }
-//                            }
-//                        });
-//
-//            }
-//        }
         }
     else if (checkIns.containsKey(currentUser.getUid())) {
             DocumentReference eventRef = database.collection("events").document(eventID);

@@ -56,6 +56,10 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.organizer_dashboard);
 
+        // Setup NavigationView
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         // Setup the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -82,9 +86,6 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Setup NavigationView
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
         // Update the navigation drawer header with user info
         NavigationDrawerUtils.updateNavigationHeader(navigationView);
@@ -175,20 +176,27 @@ public class OrganizerDashboardActivity extends AppCompatActivity
     }
 
     /**
-     * Determines if the drawer should display "Admin Dashboard" based on if the users role is "admin".
+     * Finds user role, to determine what displays in the drawer menu
      * @param userId: the users ID
      */
-    // Grabs users role. Used to determine if user can access the admin dashboard or not.
     private void CheckDisplayAdminDashboard(String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Menu menu = navigationView.getMenu();
+        MenuItem adminLoginMenuItem = menu.findItem(R.id.admin_login);
+
         db.collection("userProfiles").document(userId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String role = documentSnapshot.getString("role");
                 if ("admin".equals(role)) {
                     // Show the admin dashboard option in the navigation drawer.
-                    Menu menu = navigationView.getMenu();
                     MenuItem adminDashboardMenuItem = menu.findItem(R.id.nav_admin_dashboard);
                     adminDashboardMenuItem.setVisible(true);
+
+                    // hide the login option
+                    adminLoginMenuItem.setVisible(false);
+                } else {
+                    // if role is not admin, then show the login option
+                    adminLoginMenuItem.setVisible(true);
                 }
             }
         }).addOnFailureListener(e -> {
@@ -223,6 +231,10 @@ public class OrganizerDashboardActivity extends AppCompatActivity
             Intent intent = new Intent(this, AdminDashboardActivity.class);
             startActivity(intent);
             finish();
+        }
+        else if (id == R.id.admin_login) {
+            Intent intent = new Intent(this, Login.class);
+            startActivity(intent);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;

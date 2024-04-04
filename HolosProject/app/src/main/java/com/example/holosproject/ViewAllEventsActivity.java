@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -44,9 +42,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * FileName: ViewAllEventsActivity
@@ -90,12 +85,17 @@ public class ViewAllEventsActivity extends AppCompatActivity
             finish();
         } else if (id == R.id.nav_view_all_events) {    // if we try to navigate to current view, close the drawer
             drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (id == R.id.nav_view_organizer_dashboard) {    // if we try to navigate to current view, close the drawer
+        } else if (id == R.id.nav_view_organizer_dashboard) {
             Intent intent = new Intent(this, OrganizerDashboardActivity.class);
             startActivity(intent);
             finish();
         }
-        else if (id == R.id.nav_admin_dashboard) {    // if we try to navigate to current view, close the drawer
+        else if (id == R.id.admin_login) {
+            Intent intent = new Intent(this, Login.class);
+            startActivity(intent);
+        }
+
+        else if (id == R.id.nav_admin_dashboard) {
         Intent intent = new Intent(this, AdminDashboardActivity.class);
         startActivity(intent);
         finish();
@@ -245,20 +245,20 @@ public class ViewAllEventsActivity extends AppCompatActivity
         switchPlanToAttend.setChecked(event.getAttendees().contains(currentUserId));
         TextView textViewEventName = diagView.findViewById(R.id.textViewEventNameDiag);
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
-        TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
+        //TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
-        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
+        //TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         ImageView eventPoster = diagView.findViewById(R.id.event_poster);
 
         textViewEventName.setText("EVENT NAME: " + event.getName());
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
-        textViewEventTime.setText("EVENT TIME: " + event.getTime());
+        //textViewEventTime.setText("EVENT TIME: " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
         System.out.println(event.getImageUrl());
         Picasso.get().load(event.getImageUrl()).into(eventPoster);
 
         List<String> attendeeIds1 = event.getAttendees();
-        displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
+        //displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
 
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -279,7 +279,7 @@ public class ViewAllEventsActivity extends AppCompatActivity
                     .addOnSuccessListener(aVoid -> {
                         // Update the displayed attendees list
                         List<String> attendeeIds = event.getAttendees();
-                        displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
+                        //displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error updating attendees list", e);
@@ -366,21 +366,30 @@ public class ViewAllEventsActivity extends AppCompatActivity
 
 
     /**
-     * Grabs the users profile, to determine if their current role. (admin or attendee)
+     * Grabs user profile, to determine what they view in the Drawer Menu
      * @param userId: the users ID
      */
-    // Grabs users role. Used to determine if user can access the admin dashboard or not.
     private void fetchUserProfile(String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+        Menu menu = navigationView.getMenu();
+
+        MenuItem adminLoginMenuItem = menu.findItem(R.id.admin_login);
+
         db.collection("userProfiles").document(userId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String role = documentSnapshot.getString("role");
                 if ("admin".equals(role)) {
                     // Show the admin dashboard option in the navigation drawer.
-                    NavigationView navigationView = findViewById(R.id.nav_drawer_view);
-                    Menu menu = navigationView.getMenu();
                     MenuItem adminDashboardMenuItem = menu.findItem(R.id.nav_admin_dashboard);
                     adminDashboardMenuItem.setVisible(true);
+
+                    // hide the login option
+                    adminLoginMenuItem.setVisible(false);
+                }
+                else {
+                    // if role is not admin, then show the login option
+                    adminLoginMenuItem.setVisible(true);
                 }
             }
         }).addOnFailureListener(e -> {

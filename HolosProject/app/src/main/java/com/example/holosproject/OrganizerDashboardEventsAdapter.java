@@ -149,7 +149,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
-        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
+        //TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         Button qrNavButton = diagView.findViewById(R.id.qrNav);
         Button SendNotification = diagView.findViewById(R.id.buttonsendNotification);
         Button AttendeeCheckins = diagView.findViewById(R.id.attendeeCheckins);
@@ -194,8 +194,8 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
         /*String attendeesStr = "Attendees: " + String.join(", ", event.getAttendees());
         textViewEventAttendeeList.setText(attendeesStr);*/
-        List<String> attendeeIds1 = event.getAttendees();
-        displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
+        //List<String> attendeeIds1 = event.getAttendees();
+        //displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
 
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -215,7 +215,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                     .addOnSuccessListener(aVoid -> {
                         // Update the displayed attendees list
                         List<String> attendeeIds = event.getAttendees();
-                        displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
+                        //displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
                     })
                     .addOnFailureListener(e -> {
 //                        Log.e(TAG, "Error updating attendees list", e);
