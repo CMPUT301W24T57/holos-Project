@@ -101,6 +101,16 @@
         android:layout_below="@id/attendeeCheckins"
         android:text="View Check-in Map" />
 
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="Send Notification"
+        android:layout_marginBottom="18dp"
+        android:id="@+id/buttonsendNotification">
+    </Button>
+
     <TextView
         android:id="@+id/textViewEventAnnouncementsDiag"
         android:layout_width="match_parent"

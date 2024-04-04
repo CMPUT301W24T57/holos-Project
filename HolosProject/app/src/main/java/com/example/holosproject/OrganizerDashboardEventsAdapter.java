@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -145,6 +146,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         Button qrNavButton = diagView.findViewById(R.id.qrNav);
+        Button SendNotification = diagView.findViewById(R.id.buttonsendNotification);
         Button AttendeeCheckins = diagView.findViewById(R.id.attendeeCheckins);
         qrNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,6 +162,13 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                 Intent intent = new Intent(context, AttendeeCheckinsActivity.class);
                 intent.putExtra("checkins", event.getEventId());
                 context.startActivity(intent);
+            }
+        });
+
+        SendNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSendNotificationDialog(context, event);
             }
         });
 
@@ -272,4 +281,41 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                     });
         }
     }
+
+    private void showSendNotificationDialog(Context context, Event event) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.send_notification_dialog, null);
+        builder.setView(dialogView);
+
+        EditText editTextNotification = dialogView.findViewById(R.id.editTextNotification);
+        Button buttonSend = dialogView.findViewById(R.id.sendNotification);
+        Button backsendNotification = dialogView.findViewById(R.id.backsendNotification);
+        builder.setTitle("");
+        AlertDialog dialog = builder.create();
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String notificationText = editTextNotification.getText().toString();
+                sendNotificationToAttendees(event.getAttendees(), notificationText);
+                dialog.dismiss();
+            }
+        });
+        backsendNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void sendNotificationToAttendees(List<String> attendeeIds, String notificationText){
+
+    }
+
+
+
+
 }
