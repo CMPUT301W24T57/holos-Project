@@ -1,12 +1,16 @@
 package com.example.holosproject;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,7 +57,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
     private Button finishEditProfileButton, removeProfileImageButton, cancelButton;
-    private Switch geolocationSwitch;
+    private Switch geolocationSwitch, notificationSwitch;
     private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
     private ImageUploader imageUploader; // Instance variable for the ImageUploader
 
@@ -70,6 +75,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editTextHomepage = findViewById(R.id.editTextHomepage);
         editTextContact = findViewById(R.id.editTextContact);
         geolocationSwitch = findViewById(R.id.switchGeolocation);
+        notificationSwitch = findViewById(R.id.switchNotifications);
 
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -158,6 +164,20 @@ public class EditProfileActivity extends AppCompatActivity {
                 }
             }
         });
+
+        notificationSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!areNotificationsEnabled()) {
+                    // Direct users to the app's notification settings
+                    openNotificationSettings();
+                    // Optionally, reset the switch to off since you can't change the setting programmatically
+                    notificationSwitch.setChecked(false);
+                } else {
+                    // if notifications are enabled in the phones settings, and they flip the switch to on, we chillin
+                }
+            }
+        });
     }
 
     /**
@@ -191,6 +211,11 @@ public class EditProfileActivity extends AppCompatActivity {
                             geolocationSwitch.setChecked(true);
                         }
 
+                        // Set the notification switch to what we have inside of Firebase
+                        Boolean notification = document.getBoolean("notificationEnabled");
+                        notificationSwitch.setChecked(notification != null && notification);
+
+
                         // Populate the image view with profile image (if it exists)
                         String imageUrl = document.getString("profileImageUrl");
                         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
@@ -223,6 +248,7 @@ public class EditProfileActivity extends AppCompatActivity {
         String newContact = editTextContact.getText().toString();
         String newHomepage = editTextHomepage.getText().toString();
         boolean geolocationEnabled = geolocationSwitch.isChecked();
+        boolean notificationEnabled = notificationSwitch.isChecked();
 
         // Validate input data
         if (newName.isEmpty() || !isValidName(newName)) {
@@ -244,6 +270,7 @@ public class EditProfileActivity extends AppCompatActivity {
         updatedUserData.put("contact", newContact);
         updatedUserData.put("homepage", newHomepage);
         updatedUserData.put("geolocationEnabled", geolocationEnabled);
+        updatedUserData.put("notificationEnabled", notificationEnabled);
         // Add more fields to update here
 
         // Update the user's profile document in Firestore
@@ -342,5 +369,35 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Check if the users phone has notifications enabled for our app
+     */
+    private boolean areNotificationsEnabled() {
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return manager.areNotificationsEnabled();
+        } else {
+            return NotificationManagerCompat.from(this).areNotificationsEnabled();
+        }
+    }
+
+    /**
+     * Direct the user to their settings, where they can enable notifications for our app
+     */
+    private void openNotificationSettings() {
+        Intent intent = new Intent();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        } else {
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", getPackageName());
+            intent.putExtra("app_uid", getApplicationInfo().uid);
+        }
+        startActivity(intent);
+    }
+
+
 
 }
