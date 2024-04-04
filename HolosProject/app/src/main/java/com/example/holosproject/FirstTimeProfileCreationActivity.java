@@ -1,6 +1,9 @@
 package com.example.holosproject;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -67,6 +71,9 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
     private FirebaseUser user;
     private FirebaseAuth mAuth;
 
+    // location stuff
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +86,7 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
         switchNotifications = findViewById(R.id.switchNotifications);
         switchGeolocation = findViewById(R.id.switchGeolocation);
         buttonFinishProfileCreation = findViewById(R.id.buttonFinishProfileCreation);
+
 
 
         buttonFinishProfileCreation.setOnClickListener(new View.OnClickListener() {
@@ -104,12 +112,40 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                 // Handle the failure, e.g., show a message
                 Toast.makeText(FirstTimeProfileCreationActivity.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
+
+
         });
 
         imageViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectImage();
+            }
+        });
+
+
+        switchGeolocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (switchGeolocation.isChecked()) {
+                    ActivityCompat.requestPermissions(FirstTimeProfileCreationActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+                }
+                else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(FirstTimeProfileCreationActivity.this);
+                    // Set the title and message for the dialog
+                    builder.setTitle("Notice")
+                            .setMessage("You must go into app permissions to revoke location privileges.")
+                            .setCancelable(false) // Set if dialog is cancelable
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss(); // Dismiss the dialog
+                                }
+                            });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    switchGeolocation.setChecked(true);
+                }
             }
         });
     }
@@ -145,6 +181,8 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
             editTextHomepage.setError("Please enter a valid URL.");
             return;
         }
+
+
 
         // Get the state of the geolocation switch
         boolean isGeolocationEnabled = switchGeolocation.isChecked();
@@ -271,6 +309,19 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
      */
     private boolean isValidUrl(String url) {
         return Patterns.WEB_URL.matcher(url).matches();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                switchGeolocation.setChecked(true);
+            }
+            else {
+                switchGeolocation.setChecked(false);
+            }
+        }
     }
 
 }
