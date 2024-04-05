@@ -69,7 +69,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextContact" />
 
-    <!-- Add a bell icon in here -->
     <Button
         android:id="@+id/buttonNotificationSettings"
         android:layout_width="wrap_content"
@@ -78,13 +77,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextHomepage" />
 
-    <Switch
-        android:id="@+id/switchGeolocation"
-        android:layout_width="0dp"
+    <Button
+        android:id="@+id/buttonLocationSettings"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Geolocation"
+        android:text="Location Settings"
+        android:drawableLeft="@drawable/location_on"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/buttonNotificationSettings"
         app:layout_constraintTop_toBottomOf="@+id/editTextHomepage" />
 
     <Button
@@ -96,7 +95,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:backgroundTint="#2297ef"
-        app:layout_constraintTop_toBottomOf="@+id/switchGeolocation"
+        app:layout_constraintTop_toBottomOf="@+id/buttonLocationSettings"
         />
 
     <Button

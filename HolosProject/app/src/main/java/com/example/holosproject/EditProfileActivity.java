@@ -1,9 +1,10 @@
 package com.example.holosproject;
 
-import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,10 +16,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.Toast;
+import android.Manifest;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -54,8 +55,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
-    private Button finishEditProfileButton, removeProfileImageButton, cancelButton, buttonNotificationSettings;
-    private Switch geolocationSwitch;
+    private Button finishEditProfileButton, removeProfileImageButton, cancelButton, buttonNotificationSettings, buttonLocationSettings;
     private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
     private ImageUploader imageUploader; // Instance variable for the ImageUploader
 
@@ -72,7 +72,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editTextName = findViewById(R.id.editTextName);
         editTextHomepage = findViewById(R.id.editTextHomepage);
         editTextContact = findViewById(R.id.editTextContact);
-        geolocationSwitch = findViewById(R.id.switchGeolocation);
+        buttonLocationSettings = findViewById(R.id.buttonLocationSettings);
         buttonNotificationSettings = findViewById(R.id.buttonNotificationSettings);
         updateNotificationIcon();
 
@@ -139,27 +139,15 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
-        geolocationSwitch.setOnClickListener(new View.OnClickListener() {
+        buttonLocationSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (geolocationSwitch.isChecked()) {
-                    ActivityCompat.requestPermissions(EditProfileActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-                }
-                else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
-                    // Set the title and message for the dialog
-                    builder.setTitle("Notice")
-                            .setMessage("You must go into app permissions to revoke location privileges.")
-                            .setCancelable(false) // Set if dialog is cancelable
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss(); // Dismiss the dialog
-                                }
-                            });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                    geolocationSwitch.setChecked(true);
+                if (ActivityCompat.checkSelfPermission(EditProfileActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    // If permissions are already granted, inform the user they need to go to settings to disable it
+                    showDisableLocationDialog();
+                } else {
+                    // Permissions not granted, show the permission prompt
+                    openLocationSettings();
                 }
             }
         });
@@ -192,19 +180,6 @@ public class EditProfileActivity extends AppCompatActivity {
                         editTextContact.setText(document.getString("contact"));
                         editTextHomepage.setText(document.getString("homepage"));
 
-                        // Set the switch to the value stored in the user's profile
-                        //Boolean geolocation = document.getBoolean("geolocationEnabled");
-                        // geolocationSwitch.setChecked(geolocation != null && geolocation);
-                        // set the status of the geolocation switch based on app permissions
-                        if (ActivityCompat.checkSelfPermission(EditProfileActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            geolocationSwitch.setChecked(false);
-                        }
-                        else {
-                            geolocationSwitch.setChecked(true);
-                        }
-
-
-
                         // Populate the image view with profile image (if it exists)
                         String imageUrl = document.getString("profileImageUrl");
                         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
@@ -236,7 +211,8 @@ public class EditProfileActivity extends AppCompatActivity {
         String newName = editTextName.getText().toString();
         String newContact = editTextContact.getText().toString();
         String newHomepage = editTextHomepage.getText().toString();
-        boolean geolocationEnabled = geolocationSwitch.isChecked();
+
+        boolean isLocationEnabled = isLocationEnabled(); // Check if location services are enabled
 
         // Validate input data
         if (newName.isEmpty() || !isValidName(newName)) {
@@ -257,7 +233,7 @@ public class EditProfileActivity extends AppCompatActivity {
         updatedUserData.put("name", newName);
         updatedUserData.put("contact", newContact);
         updatedUserData.put("homepage", newHomepage);
-        updatedUserData.put("geolocationEnabled", geolocationEnabled);
+        updatedUserData.put("geolocationEnabled", isLocationEnabled);
         // Add more fields to update here
 
         // Update the user's profile document in Firestore
@@ -283,8 +259,10 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Update the bell notification icon every time the activity resumes
+        // Update the Bell Icon after resuming
         updateNotificationIcon();
+        // Check if we have changed the locaiton settings, if we have
+        checkAndUpdateLocationStatus();
     }
 
     //  handle image selection from user
@@ -340,28 +318,21 @@ public class EditProfileActivity extends AppCompatActivity {
         return Patterns.WEB_URL.matcher(url).matches();
     }
 
-    /**
-     *
-     * @param requestCode The request code passed in
-     * android.app.Activity, String[], int)}
-     * @param permissions The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
-     * Handles what happens after the user responds to a permission being granted.
-     *                     In this case, it deals with the location permissions and this activity's geolocation switch.
-     */
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,  String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                geolocationSwitch.setChecked(true);
+            // Check if any permissions were granted
+            boolean anyPermissionGranted = false;
+            for (int result : grantResults) {
+                if (result == PackageManager.PERMISSION_GRANTED) {
+                    anyPermissionGranted = true;
+                    break;
+                }
             }
-            else {
-                geolocationSwitch.setChecked(false);
-            }
+
+            // Update the user's location permission setting in Firestore accordingly
+            updateLocationPermissionInFirestore(anyPermissionGranted);
         }
     }
 
@@ -399,5 +370,77 @@ public class EditProfileActivity extends AppCompatActivity {
      */
     private boolean areNotificationsEnabled() {
         return NotificationManagerCompat.from(this).areNotificationsEnabled();
+    }
+
+    /**
+     * Opens a fragment where the user can choose between fine, coarse or no location settings
+     */
+    private void openLocationSettings() {
+        // Use an AlertDialog to ask the user for their preference
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Location Access")
+                .setMessage("Do you want to allow access to your location?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestLocationPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+                    }
+                })
+                .setNeutralButton("No", null)
+                .show();
+    }
+
+    /**
+     * When location settings are enabled, and the user presses on the Location Settings button, inform the user that
+     * if the want to change their location settings, they need to do in device settings. Give them a prompt that
+     * leads them there.
+     */
+    private void showDisableLocationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Location Access")
+                .setMessage("Location access is currently enabled. If you wish to disable location services, please do so from your device's settings app.")
+                .setPositiveButton("Open Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Open the settings app at the location section
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void requestLocationPermission(String permissionType) {
+        ActivityCompat.requestPermissions(this, new String[]{permissionType}, LOCATION_PERMISSION_REQUEST_CODE);
+    }
+
+    /**
+     * Checks if the user has GPS Location enabled or disabled
+     */
+    private boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    /**
+     * Updates Firebase with the users location permissions, which is taken as an arguement
+     * @param permissionGranted : Boolean representing whether permissionGranted to location is true or false
+     */
+    private void updateLocationPermissionInFirestore(boolean permissionGranted) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("userProfiles").document(userId)
+                .update("geolocationEnabled", permissionGranted)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location permission updated."))
+                .addOnFailureListener(e -> Log.e(TAG, "Error updating location permission.", e));
+    }
+
+    private void checkAndUpdateLocationStatus() {
+        boolean isLocationPermissionGranted = ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+
+        updateLocationPermissionInFirestore(isLocationPermissionGranted);
     }
 }
