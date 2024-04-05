@@ -23,6 +23,8 @@ public class AdminViewImagesActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AdminViewImagesAdapter imagesAdapter;
     private List<String> imageUrls = new ArrayList<>();
+    // Static variable to control test mode
+    public static boolean isTestMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +39,20 @@ public class AdminViewImagesActivity extends AppCompatActivity {
         });
 
         recyclerView = findViewById(R.id.imagesRecyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // Or any number of columns you want
-        imagesAdapter = new AdminViewImagesAdapter(imageUrls, this);
-        recyclerView.setAdapter(imagesAdapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // can change num of columns. 2 looks best imo
+        // If we are in test mode, set the recyclerview to contain our mock data.
+        if (isTestMode) {
+            List<String> mockData = MockDataProvider.getMockImages();
+            imagesAdapter = new AdminViewImagesAdapter(mockData, this);
+            recyclerView.setAdapter(imagesAdapter);
 
-        fetchImages();
+        } else {
+            imagesAdapter = new AdminViewImagesAdapter(imageUrls, this);
+            recyclerView.setAdapter(imagesAdapter);
+            fetchImages();
+        }
+
+
 
     }
 
@@ -64,6 +75,20 @@ public class AdminViewImagesActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     // Handle any errors here
                 });
+    }
+
+    /**
+     * Enables test mode, used when running app tests.
+     */
+    // Static method to enable test mode
+    public static void enableTestMode() {
+        isTestMode = true;
+    }
+    /**
+     * Disables test mode, used when running app tests.
+     */
+    public static void disableTestMode() {
+        isTestMode = false;
     }
 
 }

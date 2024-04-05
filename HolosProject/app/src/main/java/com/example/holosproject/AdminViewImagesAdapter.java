@@ -29,6 +29,8 @@ public class AdminViewImagesAdapter extends RecyclerView.Adapter<AdminViewImages
 
     private final List<String> imageUrls;
     private final Context context;
+    // Static variable to control test mode
+    public static boolean isTestMode = false;
 
     public AdminViewImagesAdapter(List<String> imageUrls, Context context) {
         this.imageUrls = imageUrls;
@@ -79,23 +81,31 @@ public class AdminViewImagesAdapter extends RecyclerView.Adapter<AdminViewImages
      * @param position the position of the selected image in the recycler view
      */
     private void deleteImage(int position) {
-        String url = imageUrls.get(position);
-        StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(url);
 
-        // Delete the image from Firebase Storage
-        ref.delete().addOnSuccessListener(aVoid -> {
-            if (url.contains("profileImages")) {
-                updateFirestoreDocument("userProfiles", "profileImageUrl", url);
-            } else if (url.contains("eventImages")) {
-                updateFirestoreDocument("events", "imageUrl", url);
-            }
-            // Remove the URL from the adapter's data set and notify the item removed
+        if (isTestMode) {
             imageUrls.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, imageUrls.size());
-        }).addOnFailureListener(e -> {
-            Toast.makeText(context, "Failed to delete image.", Toast.LENGTH_SHORT).show();
-        });
+
+        } else {
+            String url = imageUrls.get(position);
+            StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(url);
+
+            // Delete the image from Firebase Storage
+            ref.delete().addOnSuccessListener(aVoid -> {
+                if (url.contains("profileImages")) {
+                    updateFirestoreDocument("userProfiles", "profileImageUrl", url);
+                } else if (url.contains("eventImages")) {
+                    updateFirestoreDocument("events", "imageUrl", url);
+                }
+                // Remove the URL from the adapter's data set and notify the item removed
+                imageUrls.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, imageUrls.size());
+            }).addOnFailureListener(e -> {
+                Toast.makeText(context, "Failed to delete image.", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     /**
@@ -117,6 +127,20 @@ public class AdminViewImagesAdapter extends RecyclerView.Adapter<AdminViewImages
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "Failed to find document", Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Enables test mode, used when running app tests.
+     */
+    // Static method to enable test mode
+    public static void enableTestMode() {
+        isTestMode = true;
+    }
+    /**
+     * Disables test mode, used when running app tests.
+     */
+    public static void disableTestMode() {
+        isTestMode = false;
     }
 
 }

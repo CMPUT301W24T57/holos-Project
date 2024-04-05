@@ -40,6 +40,8 @@ public class AdminDashboardTest {
         // Enabling test mode loads these activities with mock data, instead of data from firebase.
         AdminViewProfilesActivity.enableTestMode();
         AdminViewEventsActivity.enableTestMode();
+        AdminViewImagesActivity.enableTestMode();
+        AdminViewImagesAdapter.enableTestMode();
     }
 
     @Test
@@ -73,8 +75,21 @@ public class AdminDashboardTest {
     }
 
     @Test
-    public void ViewImages() throws InterruptedException {
+    public void ViewAndDeleteImagesTest() throws InterruptedException {
         onView(withId(R.id.btnViewImages)).perform(click());
+
+        try {
+            Thread.sleep(5000); // Sleep for 4 seconds while images load
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Tap first image at the using RecyclerViewActions
+        onView(withId(R.id.imagesRecyclerView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+
+        // Click on the 'Yes' deletion confirmation dialog
+        onView(ViewMatchers.withText("OK")).perform(click());
 
     }
 
@@ -83,6 +98,8 @@ public class AdminDashboardTest {
         // Disable test mode after each test
         AdminViewProfilesActivity.disableTestMode();
         AdminViewEventsActivity.disableTestMode();
+        AdminViewImagesActivity.disableTestMode();
+        AdminViewImagesAdapter.disableTestMode();
     }
 
 }
