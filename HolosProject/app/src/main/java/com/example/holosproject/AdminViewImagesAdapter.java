@@ -82,6 +82,13 @@ public class AdminViewImagesAdapter extends RecyclerView.Adapter<AdminViewImages
      */
     private void deleteImage(int position) {
 
+        // making sure we are not deleting the default profile image
+        String defaultProfilePicture = "https://firebasestorage.googleapis.com/v0/b/cmput-301-holosproject.appspot.com/o/profileImages%2Fdefault.png?alt=media&token=c8fccd35-cabe-4274-9f9a-f4c0607b2e4c";
+        if (imageUrls.get(position).equals(defaultProfilePicture)) {
+            Toast.makeText(context, "Error: Do not try to delete default profile image!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (isTestMode) {
             imageUrls.remove(position);
             notifyItemRemoved(position);
