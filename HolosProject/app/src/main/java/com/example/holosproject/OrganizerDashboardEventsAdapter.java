@@ -149,7 +149,6 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
-        //TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         Button qrNavButton = diagView.findViewById(R.id.qrNav);
         Button SendNotification = diagView.findViewById(R.id.buttonsendNotification);
         Button AttendeeCheckins = diagView.findViewById(R.id.attendeeCheckins);
@@ -192,10 +191,6 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
         textViewEventTime.setText("EVENT TIME: " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
-        /*String attendeesStr = "Attendees: " + String.join(", ", event.getAttendees());
-        textViewEventAttendeeList.setText(attendeesStr);*/
-        //List<String> attendeeIds1 = event.getAttendees();
-        //displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
 
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -246,45 +241,6 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         userRef.update("myEvents", FieldValue.arrayUnion(eventId))
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event added to user's list"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error adding event to user's list", e));
-    }
-
-    /**
-     * Displays the names of attendees for an event.
-     *
-     * @param attendeeIds           The IDs of the attendees.
-     * @param textViewEventAttendeeList The TextView to display the attendee names.
-     * @param db                    The instance of FirebaseFirestore.
-     */
-    private void displayAttendeeNames(List<String> attendeeIds, TextView textViewEventAttendeeList, FirebaseFirestore db) {
-        List<String> attendeeNames = new ArrayList<>();
-
-        // Since the counter decrements it ensures that we find all attendees
-        AtomicInteger fetchCounter = new AtomicInteger(attendeeIds.size());
-
-        for (String attendeeId : attendeeIds) {
-            db.collection("userProfiles").document(attendeeId).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            // Find the name
-                            String name = documentSnapshot.getString("name");
-                            if (name != null) {
-                                attendeeNames.add(name);
-                            }
-                        }
-                        // Decrement the counter and check if all fetches are done
-                        if (fetchCounter.decrementAndGet() == 0) {
-                            String namesStr = String.join(", ", attendeeNames);
-                            textViewEventAttendeeList.setText("Attendees: " + namesStr);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error fetching user profile", e);
-                        if (fetchCounter.decrementAndGet() == 0) {
-                            String namesStr = String.join(", ", attendeeNames);
-                            textViewEventAttendeeList.setText("Attendees: " + namesStr);
-                        }
-                    });
-        }
     }
 
     private void showSendNotificationDialog(Context context, Event event) {

@@ -139,31 +139,6 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
-        geolocationSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (geolocationSwitch.isChecked()) {
-                    ActivityCompat.requestPermissions(EditProfileActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-                }
-                else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
-                    // Set the title and message for the dialog
-                    builder.setTitle("Notice")
-                            .setMessage("You must go into app permissions to revoke location privileges.")
-                            .setCancelable(false) // Set if dialog is cancelable
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss(); // Dismiss the dialog
-                                }
-                            });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                    geolocationSwitch.setChecked(true);
-                }
-            }
-        });
-
         buttonNotificationSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -193,15 +168,9 @@ public class EditProfileActivity extends AppCompatActivity {
                         editTextHomepage.setText(document.getString("homepage"));
 
                         // Set the switch to the value stored in the user's profile
-                        //Boolean geolocation = document.getBoolean("geolocationEnabled");
-                        // geolocationSwitch.setChecked(geolocation != null && geolocation);
+                        Boolean geolocation = document.getBoolean("geolocationEnabled");
+                        geolocationSwitch.setChecked(geolocation != null && geolocation);
                         // set the status of the geolocation switch based on app permissions
-                        if (ActivityCompat.checkSelfPermission(EditProfileActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            geolocationSwitch.setChecked(false);
-                        }
-                        else {
-                            geolocationSwitch.setChecked(true);
-                        }
 
 
 

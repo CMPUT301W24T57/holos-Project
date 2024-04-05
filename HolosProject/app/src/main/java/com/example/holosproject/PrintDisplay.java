@@ -60,6 +60,8 @@ public class PrintDisplay extends AppCompatActivity {
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
                         String eventId = document.getId();
                         String posterUrl = document.getString("imageUrl");
+                        String customUrl = document.getString("customQRContents");
+                        QRGEncoder qrgEncoder2;
 
                         TextView dateDisplay = findViewById(R.id.event_Date);
                         TextView creatorDisplay = findViewById(R.id.event_Creator);
@@ -69,7 +71,7 @@ public class PrintDisplay extends AppCompatActivity {
                         ImageView avatarDisplay = findViewById(R.id.event_creatorAvatar);
                         Picasso.get().load(posterUrl).into(posterDisplay);
 
-                        QRGEncoder qrgEncoder2 = new QRGEncoder("promo" + eventID, null, QRGContents.Type.TEXT, 250);
+                        qrgEncoder2 = new QRGEncoder("promo" + eventID, null, QRGContents.Type.TEXT, 250);
                         Bitmap bitmap2 = qrgEncoder2.getBitmap(0);
                         promoDisplay.setImageBitmap(bitmap2);
 

@@ -24,6 +24,9 @@ public class Event {
     private String eventId;
     private String imageUrl; // Field to store the image URL
 
+    private String qrUrl;
+    private String customQRContents;
+
     /**
      * Constructs an event with the given attributes.
      *
@@ -41,6 +44,8 @@ public class Event {
         this.creator = creator;
         this.eventId = "";
         this.imageUrl = null;
+        this.qrUrl = null;
+        this.customQRContents = null;
         this.attendees = new ArrayList<String>();
         this.checkIns = new HashMap<String, String>();
         this.locations = new ArrayList<GeoPoint>();
@@ -61,6 +66,22 @@ public class Event {
 
     public ArrayList<GeoPoint> getLocations() {
         return locations;
+    }
+
+    public String getQrUrl() {
+        return qrUrl;
+    }
+
+    public void setQrUrl(String qrUrl) {
+        this.qrUrl = qrUrl;
+    }
+
+    public String getCustomQRContents() {
+        return customQRContents;
+    }
+
+    public void setCustomQRContents(String customQRContents) {
+        this.customQRContents = customQRContents;
     }
 
     public void setLocations(ArrayList<GeoPoint> locations) {
