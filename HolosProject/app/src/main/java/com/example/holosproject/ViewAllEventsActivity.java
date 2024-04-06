@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -37,6 +39,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -269,31 +272,40 @@ public class ViewAllEventsActivity extends AppCompatActivity
         List<String> attendeeIds1 = event.getAttendees();
         //displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
 
+        // Made the updating of the switch use firestore transactions.
+        // This way even if users open the dialog at the same time the limit will never be surpassed.
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                // Add the current user to the attendees list if not already included
-                if (!event.getAttendees().contains(currentUserId)) {
-                    addUserEvent(currentUserId, event.getEventId());
-                    event.getAttendees().add(currentUserId);
-                }
-            } else {
-                // Remove the current user from the attendees list
-                event.getAttendees().remove(currentUserId);
-                removeUserEvent(currentUserId, event.getEventId());
-            }
-
-            // Update the attendees list in Firestore
-            db.collection("events").document(event.getEventId())
-                    .update("attendees", event.getAttendees())
-                    .addOnSuccessListener(aVoid -> {
-                        // Update the displayed attendees list
-                        List<String> attendeeIds = event.getAttendees();
-                        //displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error updating attendees list", e);
-                    });
+            final DocumentReference eventRef = db.collection("events").document(event.getEventId());
+            db.runTransaction((Transaction.Function<Void>) transaction -> {
+                        DocumentSnapshot eventSnapshot = transaction.get(eventRef);
+                        List<String> currentAttendees = (List<String>) eventSnapshot.get("attendees");
+                        if (currentAttendees == null) {
+                            currentAttendees = new ArrayList<>();
+                        }
+                        if (isChecked) {
+                            // Trying to add the current user
+                            if (!currentAttendees.contains(currentUserId) && currentAttendees.size() < event.getLimit()) {
+                                currentAttendees.add(currentUserId);
+                                transaction.update(eventRef, "attendees", currentAttendees);
+                                addUserEvent(currentUserId, event.getEventId());
+                            } else {
+                                new Handler(Looper.getMainLooper()).post(() ->
+                                        Toast.makeText(context, "Error: The Event is Full", Toast.LENGTH_SHORT).show());
+                                return null;
+                            }
+                        } else {
+                            // Removing current User
+                            if (currentAttendees.contains(currentUserId)) {
+                                currentAttendees.remove(currentUserId);
+                                transaction.update(eventRef, "attendees", currentAttendees);
+                                removeUserEvent(currentUserId, event.getEventId());
+                            }
+                        }
+                        return null; // Transaction must return null if void
+                    }).addOnSuccessListener(aVoid -> Log.d(TAG, "Transaction successfully completed"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Transaction failed: ", e));
         });
+
         dispbuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface diagdisp, int i) {
