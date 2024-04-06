@@ -1,6 +1,9 @@
 package com.example.holosproject;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * FileName: Event
@@ -15,10 +18,15 @@ public class Event {
     private final String creator;
     private ArrayList<String> attendees;
 
-    private ArrayList<String> checkIns;
+    private HashMap<String, String> checkIns;
+
+    private ArrayList<GeoPoint> locations;
     private String eventId;
     private String imageUrl; // Field to store the image URL
     private int limit;
+
+    private String qrUrl;
+    private String customQRContents;
 
     /**
      * Constructs an event with the given attributes.
@@ -37,9 +45,15 @@ public class Event {
         this.creator = creator;
         this.eventId = "";
         this.imageUrl = null;
+        this.qrUrl = null;
+        this.customQRContents = null;
         this.attendees = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
         this.limit = Integer.MAX_VALUE;
+        this.checkIns = new HashMap<String, String>();
+        this.locations = new ArrayList<GeoPoint>();
+        this.limit = Integer.MAX_VALUE;
+
     }
 
     /**
@@ -51,29 +65,38 @@ public class Event {
         return attendees;
     }
 
-    /**
-     * Retrieves the list of check-ins for this event.
-     *
-     * @return the list of check-ins
-     */
-    public ArrayList<String> getCheckIns() {
+    public HashMap<String, String> getCheckIns() {
         return checkIns;
     }
 
-    /**
-     * Sets the list of check-ins for this event.
-     *
-     * @param checkIns the list of check-ins to set
-     */
-    public void setCheckIns(ArrayList<String> checkIns) {
+    public ArrayList<GeoPoint> getLocations() {
+        return locations;
+    }
+
+    public String getQrUrl() {
+        return qrUrl;
+    }
+
+    public void setQrUrl(String qrUrl) {
+        this.qrUrl = qrUrl;
+    }
+
+    public String getCustomQRContents() {
+        return customQRContents;
+    }
+
+    public void setCustomQRContents(String customQRContents) {
+        this.customQRContents = customQRContents;
+    }
+
+    public void setLocations(ArrayList<GeoPoint> locations) {
+        this.locations = locations;
+    }
+
+    public void setCheckIns(HashMap<String, String> checkIns) {
         this.checkIns = checkIns;
     }
 
-    /**
-     * Retrieves the event ID.
-     *
-     * @return the event ID
-     */
     public String getEventId() {
         return eventId;
     }

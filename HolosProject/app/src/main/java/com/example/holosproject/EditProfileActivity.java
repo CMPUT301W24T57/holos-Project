@@ -1,17 +1,27 @@
 package com.example.holosproject;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,9 +50,12 @@ import java.util.Map;
 
 public class EditProfileActivity extends AppCompatActivity {
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
     private final String TAG = "EditProfileActivity";
     private EditText editTextName, editTextHomepage, editTextContact;
-    private Button finishEditProfileButton, removeProfileImageButton;
+    private Button finishEditProfileButton, removeProfileImageButton, cancelButton, buttonNotificationSettings;
+    private Switch geolocationSwitch;
     private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
     private ImageUploader imageUploader; // Instance variable for the ImageUploader
 
@@ -59,7 +72,9 @@ public class EditProfileActivity extends AppCompatActivity {
         editTextName = findViewById(R.id.editTextName);
         editTextHomepage = findViewById(R.id.editTextHomepage);
         editTextContact = findViewById(R.id.editTextContact);
-
+        geolocationSwitch = findViewById(R.id.switchGeolocation);
+        buttonNotificationSettings = findViewById(R.id.buttonNotificationSettings);
+        updateNotificationIcon();
 
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -72,11 +87,20 @@ public class EditProfileActivity extends AppCompatActivity {
         // Initialize buttons for finishing edits to profile, and for removing uploaded profile image
         finishEditProfileButton = findViewById(R.id.buttonFinishProfileCreation);
         removeProfileImageButton = findViewById(R.id.buttonRemoveProfileImage);
+        cancelButton = findViewById(R.id.buttonBack);
+
 
         finishEditProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 updateProfile();
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
@@ -114,6 +138,13 @@ public class EditProfileActivity extends AppCompatActivity {
                 removeProfileImage(currentUser.getUid());
             }
         });
+
+        buttonNotificationSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNotificationSettings();
+            }
+        });
     }
 
     /**
@@ -135,6 +166,13 @@ public class EditProfileActivity extends AppCompatActivity {
                         editTextName.setText(document.getString("name"));
                         editTextContact.setText(document.getString("contact"));
                         editTextHomepage.setText(document.getString("homepage"));
+
+                        // Set the switch to the value stored in the user's profile
+                        Boolean geolocation = document.getBoolean("geolocationEnabled");
+                        geolocationSwitch.setChecked(geolocation != null && geolocation);
+                        // set the status of the geolocation switch based on app permissions
+
+
 
                         // Populate the image view with profile image (if it exists)
                         String imageUrl = document.getString("profileImageUrl");
@@ -167,10 +205,19 @@ public class EditProfileActivity extends AppCompatActivity {
         String newName = editTextName.getText().toString();
         String newContact = editTextContact.getText().toString();
         String newHomepage = editTextHomepage.getText().toString();
+        boolean geolocationEnabled = geolocationSwitch.isChecked();
 
         // Validate input data
-        if (newName.isEmpty() || newContact.isEmpty() || newHomepage.isEmpty()) {
-            // Show error message
+        if (newName.isEmpty() || !isValidName(newName)) {
+            editTextName.setError("Please enter a valid name.");
+            return;
+        }
+        if (newContact.isEmpty() || !isValidEmail(newContact)) {
+            editTextContact.setError("Please enter a valid email address.");
+            return;
+        }
+        if (newHomepage.isEmpty() || !isValidUrl(newHomepage)) {
+            editTextHomepage.setError("Please enter a valid URL.");
             return;
         }
 
@@ -179,6 +226,7 @@ public class EditProfileActivity extends AppCompatActivity {
         updatedUserData.put("name", newName);
         updatedUserData.put("contact", newContact);
         updatedUserData.put("homepage", newHomepage);
+        updatedUserData.put("geolocationEnabled", geolocationEnabled);
         // Add more fields to update here
 
         // Update the user's profile document in Firestore
@@ -200,6 +248,14 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update the bell notification icon every time the activity resumes
+        updateNotificationIcon();
+    }
+
     //  handle image selection from user
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -231,4 +287,86 @@ public class EditProfileActivity extends AppCompatActivity {
         }).addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Failed to remove profile image from storage.", Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Check if the name is valid.
+     * For example, it can't be empty and it can't contain digits or special characters.
+     */
+    private boolean isValidName(String name) {
+        return name.matches("^[a-zA-Z0-9 ]+$"); // This regex makes it so name only has characters, numbers and whitespace.
+    }
+
+    /**
+     * Check if the email is valid.
+     */
+    private boolean isValidEmail(CharSequence email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    /**
+     * Check if the URL is valid.
+     */
+    private boolean isValidUrl(String url) {
+        return Patterns.WEB_URL.matcher(url).matches();
+    }
+
+    /**
+     *
+     * @param requestCode The request code passed in
+     * android.app.Activity, String[], int)}
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     * Handles what happens after the user responds to a permission being granted.
+     *                     In this case, it deals with the location permissions and this activity's geolocation switch.
+     */
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                geolocationSwitch.setChecked(true);
+            }
+            else {
+                geolocationSwitch.setChecked(false);
+            }
+        }
+    }
+
+
+    /**
+     * Direct the user to their notification settings, where they can enable notifications for our app
+     */
+    private void openNotificationSettings() {
+        Intent intent = new Intent();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        } else {
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", getPackageName());
+            intent.putExtra("app_uid", getApplicationInfo().uid);
+        }
+        startActivity(intent);
+    }
+
+    /**
+     * Depending on users notification settings, change the bell display from on/off
+     */
+    private void updateNotificationIcon() {
+        // Check if notifications are enabled and set the corresponding icon
+        if (areNotificationsEnabled()) {
+            buttonNotificationSettings.setCompoundDrawablesWithIntrinsicBounds(R.drawable.notif_on, 0, 0, 0);
+        } else {
+            buttonNotificationSettings.setCompoundDrawablesWithIntrinsicBounds(R.drawable.notif_off, 0, 0, 0);
+        }
+    }
+
+    /**
+     * Checks if the user has notifications enabled or disabled
+     */
+    private boolean areNotificationsEnabled() {
+        return NotificationManagerCompat.from(this).areNotificationsEnabled();
+    }
 }

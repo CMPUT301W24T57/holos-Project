@@ -69,26 +69,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextContact" />
 
-    <Switch
-        android:id="@+id/switchNotifications"
-        android:layout_width="0dp"
+    <!-- Add a bell icon in here -->
+    <Button
+        android:id="@+id/buttonNotificationSettings"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notifications"
-        app:layout_constraintEnd_toStartOf="@+id/switchGeolocation"
+        android:text="Notification Settings"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage" />
 
     <Switch
         android:id="@+id/switchGeolocation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/switchNotifications"
         android:text="Geolocation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/switchNotifications"
-        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage"
-        />
+        app:layout_constraintStart_toEndOf="@+id/buttonNotificationSettings"
+        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage" />
 
     <Button
         android:id="@+id/buttonFinishProfileCreation"
@@ -98,8 +95,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:backgroundTint="#2297ef"
         app:layout_constraintTop_toBottomOf="@+id/switchGeolocation"
         />
+
+    <Button
+        android:id="@+id/buttonBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#d32f2f"
+        android:text="Cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonFinishProfileCreation"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/buttonRemoveProfileImage"
@@ -108,6 +119,7 @@
         android:text="Remove Profile Picture"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:backgroundTint="#AFB42B"
         app:layout_constraintTop_toBottomOf="@+id/profile_photo_subtext"
         android:visibility="gone">
     </Button>

@@ -8,15 +8,20 @@
         />
     <item
         android:id="@+id/nav_view_all_events"
-        android:title="View All Events"
+        android:title="All Events"
         />
     <item
         android:id="@+id/nav_view_registered_events"
-        android:title="View My Events"
+        android:title="My Registered Events"
         />
     <item
         android:id="@+id/nav_view_organizer_dashboard"
         android:title="Organizer Dashboard"
+        />
+    <item
+        android:id="@+id/admin_login"
+        android:title="Administrator Login"
+        android:visible="false"
         />
     <item
         android:id="@+id/nav_admin_dashboard"

@@ -1,28 +1,33 @@
 package com.example.holosproject;
 
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +76,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
     static class EventViewHolder extends RecyclerView.ViewHolder {
         TextView textViewEventName;
         TextView textViewEventDate;
+        ImageView imageViewPosterPreview;
 
         /**
          * Constructor for the EventViewHolder class.
@@ -82,6 +88,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             super(itemView);
             textViewEventName = itemView.findViewById(R.id.textViewEventName);
             textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
+            imageViewPosterPreview = itemView.findViewById(R.id.imageViewPosterPreview);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -107,6 +114,16 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         Event event = eventList.get(position);
         holder.textViewEventName.setText(event.getName());
         holder.textViewEventDate.setText(String.format("%s, %s", event.getDate(), event.getTime()));
+
+        // Use Glide to load the image
+        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(event.getImageUrl())
+                    .into(holder.imageViewPosterPreview);
+        } else {
+            // Here you can set a default image or a placeholder
+            holder.imageViewPosterPreview.setImageResource(R.drawable.ic_launcher_background); // using launcher background as a placeholder for now
+        }
     }
 
     /**
@@ -132,10 +149,15 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
+
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         TextView textViewFull = diagView.findViewById(R.id.textViewFull);
-        Button qrNavButton = diagView.findViewById(R.id.qrNav);
+       
         ArrayList<String> attendees = event.getAttendees();
+        Button qrNavButton = diagView.findViewById(R.id.qrNav);
+        Button SendNotification = diagView.findViewById(R.id.buttonsendNotification);
+        Button AttendeeCheckins = diagView.findViewById(R.id.attendeeCheckins);
+
         qrNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,15 +166,37 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                 v.getContext().startActivity(intent);
             }
         });
+        AttendeeCheckins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, AttendeeCheckinsActivity.class);
+                intent.putExtra("checkins", event.getEventId());
+                context.startActivity(intent);
+            }
+        });
+
+        SendNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSendNotificationDialog(context, event);
+            }
+        });
+
+        // Click listener for the View Check In Map button
+        Button viewCheckInMapButton = diagView.findViewById(R.id.viewCheckInMapButton);
+        viewCheckInMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, OrganizerMapActivity.class);
+                intent.putExtra("EVENT_ID", event.getEventId()); // Pass the event ID to the map activity
+                context.startActivity(intent);
+            }
+        });
 
         textViewEventName.setText("EVENT NAME: " + event.getName());
         textViewEventDate.setText("EVENT DATE: " + event.getDate());
         textViewEventTime.setText("EVENT TIME: " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
-        /*String attendeesStr = "Attendees: " + String.join(", ", event.getAttendees());
-        textViewEventAttendeeList.setText(attendeesStr);*/
-        List<String> attendeeIds1 = event.getAttendees();
-        displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
 
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -172,7 +216,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                     .addOnSuccessListener(aVoid -> {
                         // Update the displayed attendees list
                         List<String> attendeeIds = event.getAttendees();
-                        displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
+                        //displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
                     })
                     .addOnFailureListener(e -> {
 //                        Log.e(TAG, "Error updating attendees list", e);
@@ -205,42 +249,57 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                 .addOnFailureListener(e -> Log.e(TAG, "Error adding event to user's list", e));
     }
 
-    /**
-     * Displays the names of attendees for an event.
-     *
-     * @param attendeeIds           The IDs of the attendees.
-     * @param textViewEventAttendeeList The TextView to display the attendee names.
-     * @param db                    The instance of FirebaseFirestore.
-     */
-    private void displayAttendeeNames(List<String> attendeeIds, TextView textViewEventAttendeeList, FirebaseFirestore db) {
-        List<String> attendeeNames = new ArrayList<>();
+    private void showSendNotificationDialog(Context context, Event event) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.send_notification_dialog, null);
+        builder.setView(dialogView);
 
-        // Since the counter decrements it ensures that we find all attendees
-        AtomicInteger fetchCounter = new AtomicInteger(attendeeIds.size());
+        EditText editTextNotification = dialogView.findViewById(R.id.editTextNotification);
+        Button buttonSend = dialogView.findViewById(R.id.sendNotification);
+        Button backsendNotification = dialogView.findViewById(R.id.backsendNotification);
+        builder.setTitle("");
+        AlertDialog dialog = builder.create();
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String notificationText = editTextNotification.getText().toString();
+                sendNotificationToAttendees(context, notificationText);
+                //sendNotificationToAttendees(context, "This is the first notification for this app");
+                dialog.dismiss();
+            }
+        });
+        backsendNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
-        for (String attendeeId : attendeeIds) {
-            db.collection("userProfiles").document(attendeeId).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            // Find the name
-                            String name = documentSnapshot.getString("name");
-                            if (name != null) {
-                                attendeeNames.add(name);
-                            }
-                        }
-                        // Decrement the counter and check if all fetches are done
-                        if (fetchCounter.decrementAndGet() == 0) {
-                            String namesStr = String.join(", ", attendeeNames);
-                            textViewEventAttendeeList.setText("Attendees: " + namesStr);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error fetching user profile", e);
-                        if (fetchCounter.decrementAndGet() == 0) {
-                            String namesStr = String.join(", ", attendeeNames);
-                            textViewEventAttendeeList.setText("Attendees: " + namesStr);
-                        }
-                    });
-        }
+        dialog.show();
     }
+
+    private void sendNotificationToAttendees(Context context, String notificationText){
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("NewNotis", "New Notis", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+        //Intent intent = new Intent(context, ViewAllEventsActivity.class);
+       //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), "NewNotis")
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Announcement")
+                .setContentText(notificationText)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+
+        notificationManager.notify(1, builder.build());
+    }
+
+
+
+
 }

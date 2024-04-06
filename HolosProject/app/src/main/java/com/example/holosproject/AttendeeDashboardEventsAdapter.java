@@ -1,14 +1,11 @@
 package com.example.holosproject;
 
-import android.app.Dialog;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -17,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -24,13 +22,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.zip.Inflater;
-
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * FileName: AttendeeDashboardEventsAdapter
@@ -80,21 +72,18 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         switchPlanToAttend.setChecked(event.getAttendees().contains(currentUserId));
         TextView textViewEventName = diagView.findViewById(R.id.textViewEventNameDiag);
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
-        TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
-        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         ImageView eventPoster = diagView.findViewById(R.id.event_poster);
         TextView textViewFull = diagView.findViewById(R.id.textViewFull);
 
-        textViewEventName.setText("EVENT NAME: " + event.getName());
-        textViewEventDate.setText("EVENT DATE: " + event.getDate());
-        textViewEventTime.setText("EVENT TIME: " + event.getTime());
-        textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
-        System.out.println(event.getImageUrl());
+        textViewEventName.setText(event.getName());
+        textViewEventDate.setText("Date: " + event.getDate() + " at " + event.getTime());
+        textViewEventLocation.setText("Location: " + event.getAddress());
         Picasso.get().load(event.getImageUrl()).into(eventPoster);
 
 
         List<String> attendeeIds1 = event.getAttendees();
+
         displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
         int numAttendees = attendeeIds1.size();
         int eventLimit = event.getLimit();
@@ -105,6 +94,7 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
             switchPlanToAttend.setVisibility(View.GONE);} // Hide the switch
             textViewFull.setVisibility(View.VISIBLE); // Show the "Full" text
         }
+
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 // Add the current user to the attendees list if not already included
@@ -122,9 +112,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
             db.collection("events").document(event.getEventId())
                     .update("attendees", event.getAttendees())
                     .addOnSuccessListener(aVoid -> {
-                        // Update the displayed attendees list
-                        List<String> attendeeIds = event.getAttendees();
-                        displayAttendeeNames(attendeeIds, textViewEventAttendeeList, db);
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error updating attendees list", e);
@@ -146,6 +133,14 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         Event event = eventList.get(position);
         holder.textViewEventName.setText(event.getName());
         holder.textViewEventDate.setText(event.getDate());
+        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(event.getImageUrl())
+                    .into(holder.imageViewPosterPreview);
+        } else {
+            // Here you can set a default image or a placeholder
+            holder.imageViewPosterPreview.setImageResource(R.drawable.ic_launcher_background); // using launcher background as a placeholder for now
+        }
     }
 
     /**
@@ -176,40 +171,6 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                 .addOnFailureListener(e -> Log.e(TAG, "Error removing event", e));
     }
 
-    /**
-     * Displays attendee names in the TextView.
-     * @param attendeeIds The list of attendee IDs.
-     * @param textViewEventAttendeeList The TextView to display the names.
-     * @param db The instance of FirebaseFirestore.
-     */
-    private void displayAttendeeNames(List<String> attendeeIds, TextView textViewEventAttendeeList, FirebaseFirestore db) {
-        List<String> attendeeNames = new ArrayList<>();
-        AtomicInteger fetchCounter = new AtomicInteger(attendeeIds.size());
-
-        for (String attendeeId : attendeeIds) {
-            db.collection("userProfiles").document(attendeeId).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            String name = documentSnapshot.getString("name");
-                            if (name != null) {
-                                attendeeNames.add(name);
-                            }
-                        }
-                        if (fetchCounter.decrementAndGet() == 0) {
-                            String namesStr = String.join(", ", attendeeNames);
-                            textViewEventAttendeeList.setText("Attendees: " + namesStr);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error fetching user profile", e);
-                        if (fetchCounter.decrementAndGet() == 0) {
-                            String namesStr = String.join(", ", attendeeNames);
-                            textViewEventAttendeeList.setText("Attendees: " + namesStr);
-                        }
-                    });
-        }
-    }
-
     @Override
     public int getItemCount() {
         return eventList.size();
@@ -219,10 +180,13 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         TextView textViewEventName;
         TextView textViewEventDate;
 
+        ImageView imageViewPosterPreview;
+
         EventViewHolder(View itemView, AttendeeDashboardEventsAdapter adapter) {
             super(itemView);
             textViewEventName = itemView.findViewById(R.id.textViewEventName);
             textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
+            imageViewPosterPreview = itemView.findViewById(R.id.imageViewPosterPreview);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -14,8 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <ImageView
-                android:layout_width="250sp"
-                android:layout_height="250sp"
+                android:layout_width="200sp"
+                android:layout_height="200sp"
                 android:layout_centerHorizontal="true"
                 android:id="@+id/checkInDisplay">
             </ImageView>
@@ -53,12 +53,12 @@
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/save_btn"
-                android:text="Share Promotional QR Code" />
+                android:text="Share Check-In QR Code" />
 
             <ImageView
                 android:id="@+id/promoQRDisplay"
-                android:layout_width="250sp"
-                android:layout_height="250sp"
+                android:layout_width="200sp"
+                android:layout_height="200sp"
                 android:layout_below="@id/save_btn"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp">
@@ -81,6 +81,16 @@
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/save_btn2"
                 android:text="Share Promotional QR Code" />
+
+            <Button
+                android:id="@+id/print_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/share_btn2"
+                android:text="Print Promotional Poster" />
+
         </RelativeLayout>
     </ScrollView>
 

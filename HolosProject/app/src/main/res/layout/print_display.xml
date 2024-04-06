@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EventDisplay">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#6936c8"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <!-- Organizer Dashboard title -->
+    <TextView
+        android:id="@+id/text_dashboard_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/orienta"
+        android:text="Event Print"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/eventTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/toolbar"
+        android:fontFamily="@font/orienta"
+        android:text="Event Title Here"
+        android:textColor="@color/material_dynamic_primary0"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/eventPoster"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/eventTitle"
+        android:contentDescription="TODO" />
+
+    <TextView
+        android:id="@+id/event_Creator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/eventPoster"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="15dp"
+        android:text="Event Creator Goes Here"
+        android:textAlignment="viewEnd"
+        android:textColor="@color/material_dynamic_primary0"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_below="@id/eventPoster"
+        android:layout_toLeftOf="@id/event_Creator"
+        android:id="@+id/event_creatorAvatar"
+        />
+
+    <TextView
+        android:id="@+id/event_Date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_below="@id/event_Creator"
+        android:text="Event Date Goes Here"
+        android:textColor="@color/material_dynamic_primary0"
+        android:textSize="16sp"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/event_Location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_below="@id/event_Date"
+        android:text="Event Location Goes Here"
+        android:textColor="@color/material_dynamic_primary0"
+        android:textSize="16sp"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/eventCode"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        android:layout_below="@id/event_Location"
+        android:contentDescription="TODO"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/printButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/eventCode"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="#2297ef"
+        android:text="Print Poster"
+        android:visibility="visible"/>
+
+
+</RelativeLayout>

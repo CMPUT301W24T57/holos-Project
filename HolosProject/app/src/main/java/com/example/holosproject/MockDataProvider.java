@@ -52,4 +52,17 @@ public class MockDataProvider {
 
         return mockEvents;
     }
+
+    public static List<String> getMockImages() {
+        List<String> mockImages = new ArrayList<>();
+        // Add mock URLs
+        mockImages.add("https://placebear.com/500/500");
+        mockImages.add("https://placebear.com/400/400");
+        mockImages.add("https://placebear.com/600/600");
+        mockImages.add("https://placebear.com/700/700");
+
+        return mockImages;
+    }
+
+
 }

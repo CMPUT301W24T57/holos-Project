@@ -56,6 +56,10 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.organizer_dashboard);
 
+        // Setup NavigationView
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         // Setup the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -82,9 +86,9 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Setup NavigationView
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+
+        // Update the navigation drawer header with user info
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
 
         fabAddEvent = findViewById(R.id.fab_add_event);
         fabAddEvent.setOnClickListener(view -> {
@@ -92,9 +96,20 @@ public class OrganizerDashboardActivity extends AppCompatActivity
             startActivity(intent);
             recreate();
         });
+    }
 
-        // Fetch events created by the user
+    /**
+     * After returning from a fragment, we fetch user events again
+     */
+    protected void onResume() {
+        super.onResume();
+        // Clear the events list before fetching to avoid duplicates
+        eventsList.clear();
+        // Fetch the events again when coming back to this activity
         fetchUserEvents();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
     }
 
     /**
@@ -112,6 +127,11 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                                 if (myEvents != null && !myEvents.isEmpty()) {
                                     fetchEventsFromCollection(myEvents);
                                 }
+                                else {
+                                    // Important to clear the list and update adapter if there are no events
+                                    eventsList.clear();
+                                    eventsAdapter.notifyDataSetChanged();
+                                }
                             }
                         }
                     });
@@ -123,6 +143,9 @@ public class OrganizerDashboardActivity extends AppCompatActivity
      * @param myEvents List of event IDs.
      */
     private void fetchEventsFromCollection(List<String> myEvents) {
+        // Clear the events list before adding new events to avoid duplicates
+        eventsList.clear();
+
         for (String eventId : myEvents) {
             db.collection("events").document(eventId)
                     .get()
@@ -135,13 +158,19 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                             String creator = documentSnapshot.getString("creator");
                             ArrayList<String> attendees = (ArrayList<String>) documentSnapshot.get("attendees");
 
+
+
+
+
                             int limit = Integer.MAX_VALUE;
                             Long limitLong = documentSnapshot.getLong("limit");
                             if (limitLong != null) {
                                 limit = limitLong.intValue();
                             }
+                            String imageUrl = documentSnapshot.getString("imageUrl"); // Get the image URL from the document
 
                             Event event = new Event(name, date, time, address, creator);
+                            event.setImageUrl(imageUrl);
                             event.setEventId(eventId);
                             event.setAttendees(attendees);
                             event.setLimit(limit);
@@ -156,23 +185,29 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                     });
         }
     }
-    // TODO: Fix the bug where events you create don't display until you leave the screen and come back
 
     /**
-     * Determines if the drawer should display "Admin Dashboard" based on if the users role is "admin".
+     * Finds user role, to determine what displays in the drawer menu
      * @param userId: the users ID
      */
-    // Grabs users role. Used to determine if user can access the admin dashboard or not.
     private void CheckDisplayAdminDashboard(String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Menu menu = navigationView.getMenu();
+        MenuItem adminLoginMenuItem = menu.findItem(R.id.admin_login);
+
         db.collection("userProfiles").document(userId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String role = documentSnapshot.getString("role");
                 if ("admin".equals(role)) {
                     // Show the admin dashboard option in the navigation drawer.
-                    Menu menu = navigationView.getMenu();
                     MenuItem adminDashboardMenuItem = menu.findItem(R.id.nav_admin_dashboard);
                     adminDashboardMenuItem.setVisible(true);
+
+                    // hide the login option
+                    adminLoginMenuItem.setVisible(false);
+                } else {
+                    // if role is not admin, then show the login option
+                    adminLoginMenuItem.setVisible(true);
                 }
             }
         }).addOnFailureListener(e -> {
@@ -207,6 +242,10 @@ public class OrganizerDashboardActivity extends AppCompatActivity
             Intent intent = new Intent(this, AdminDashboardActivity.class);
             startActivity(intent);
             finish();
+        }
+        else if (id == R.id.admin_login) {
+            Intent intent = new Intent(this, Login.class);
+            startActivity(intent);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;

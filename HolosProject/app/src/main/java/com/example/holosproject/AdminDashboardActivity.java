@@ -73,6 +73,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
     }
 
+    protected void onResume() {
+        super.onResume();
+
+        NavigationView navigationView = findViewById(R.id.admin_nav_view);
+        NavigationDrawerUtils.updateNavigationHeader(navigationView);
+
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (toggle.onOptionsItemSelected(item)) {
@@ -114,8 +122,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
         }
         // Add more navigation items if needed
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        DrawerLayout drawer = findViewById(R.id.admin_drawer_layout);
+        if (drawer != null) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 }
