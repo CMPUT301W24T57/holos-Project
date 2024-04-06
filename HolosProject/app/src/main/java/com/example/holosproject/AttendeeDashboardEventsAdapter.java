@@ -84,15 +84,15 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
 
         List<String> attendeeIds1 = event.getAttendees();
 
-        displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
+//        displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
         int numAttendees = attendeeIds1.size();
         int eventLimit = event.getLimit();
-
+        Log.d("NumA","Num attendees: "+numAttendees);
         if (numAttendees >= eventLimit) {
             Log.d("HideFull","We should Hide full");
             if (!attendeeIds1.contains(currentUserId)) {
-            switchPlanToAttend.setVisibility(View.GONE);} // Hide the switch
-            textViewFull.setVisibility(View.VISIBLE); // Show the "Full" text
+            switchPlanToAttend.setVisibility(View.GONE);}
+            textViewEventName.setText(event.getName()+" (Full)");
         }
 
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -131,7 +131,11 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
-        holder.textViewEventName.setText(event.getName());
+        if (event.getAttendees().size() >= event.getLimit()){
+            holder.textViewEventName.setText(event.getName() + " (Full)");
+        }
+        else{holder.textViewEventName.setText(event.getName());}
+
         holder.textViewEventDate.setText(event.getDate());
         if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
             Glide.with(holder.itemView.getContext())
