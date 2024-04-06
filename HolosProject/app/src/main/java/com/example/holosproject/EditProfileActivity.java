@@ -40,6 +40,14 @@ import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.content.Context;
+
 /**
  * FileName: EditProfileActivity
  * Description: Contains the logic for Editing a users profile.
@@ -147,6 +155,65 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
+    private Uri drawableToUri(Drawable drawable) {
+        Bitmap bitmap = drawableToBitmap(drawable);
+        return bitmapToUri(getApplicationContext(), bitmap);
+    }
+
+    private Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
+
+    private Uri bitmapToUri(Context context, Bitmap bitmap) {
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "ProfileImage", null);
+        return Uri.parse(path);
+    }
+
+    private Drawable generateProfilePicture(String name) {
+        // Create a Bitmap with the specified width and height
+        int width = 200;
+        int height = 200;
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        // Create a Canvas object to draw on the Bitmap
+        Canvas canvas = new Canvas(bitmap);
+
+        // Generate a random color for the background
+        Paint backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.rgb(255, 165, 0)); // Orange color
+
+        // Draw a rectangle with rounded corners as the background
+        canvas.drawRoundRect(0, 0, width, height, 20, 20, backgroundPaint);
+
+        // Create a Paint object for drawing text
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(80);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+
+        // Calculate the position to draw the text
+        float xPos = canvas.getWidth() / 2;
+        float yPos = (canvas.getHeight() / 2) - ((textPaint.descent() + textPaint.ascent()) / 2);
+
+        // Draw the first letter of the name on the canvas
+        canvas.drawText(name.substring(0, 1).toUpperCase(), xPos, yPos, textPaint);
+
+        // Convert the Bitmap to a Drawable and return
+        return new BitmapDrawable(getResources(), bitmap);
+    }
+
     /**
      * fetchUserProfile retrieves the current user profile and populates UI fields with the data.
      *
@@ -211,7 +278,16 @@ public class EditProfileActivity extends AppCompatActivity {
         if (newName.isEmpty() || !isValidName(newName)) {
             editTextName.setError("Please enter a valid name.");
             return;
+        } else {
+            // Generate profile picture based on the first letter of the name
+            Drawable profilePicture = generateProfilePicture(newName);
+            // Set the generated profile picture to the ImageView
+            ImageView profileImage = findViewById(R.id.imageViewProfile);
+            profileImage.setImageDrawable(profilePicture);
+            imageUploader.uploadProfileImage(drawableToUri(profilePicture));
         }
+
+
         if (newContact.isEmpty() || !isValidEmail(newContact)) {
             editTextContact.setError("Please enter a valid email address.");
             return;
@@ -227,7 +303,6 @@ public class EditProfileActivity extends AppCompatActivity {
         updatedUserData.put("contact", newContact);
         updatedUserData.put("homepage", newHomepage);
         updatedUserData.put("geolocationEnabled", geolocationEnabled);
-        // Add more fields to update here
 
         // Update the user's profile document in Firestore
         db.collection("userProfiles").document(userId)
