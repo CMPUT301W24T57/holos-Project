@@ -149,9 +149,15 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
+
+        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
+        TextView textViewFull = diagView.findViewById(R.id.textViewFull);
+       
+        ArrayList<String> attendees = event.getAttendees();
         Button qrNavButton = diagView.findViewById(R.id.qrNav);
         Button SendNotification = diagView.findViewById(R.id.buttonsendNotification);
         Button AttendeeCheckins = diagView.findViewById(R.id.attendeeCheckins);
+
         qrNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -23,6 +23,7 @@ public class Event {
     private ArrayList<GeoPoint> locations;
     private String eventId;
     private String imageUrl; // Field to store the image URL
+    private int limit;
 
     private String qrUrl;
     private String customQRContents;
@@ -47,8 +48,12 @@ public class Event {
         this.qrUrl = null;
         this.customQRContents = null;
         this.attendees = new ArrayList<String>();
+        this.checkIns = new ArrayList<String>();
+        this.limit = Integer.MAX_VALUE;
         this.checkIns = new HashMap<String, String>();
         this.locations = new ArrayList<GeoPoint>();
+        this.limit = Integer.MAX_VALUE;
+
     }
 
     /**
@@ -167,7 +172,12 @@ public class Event {
     public void setTime(String time) {
         this.time = time;
     }
-
+    public void setLimit(int limit){
+        this.limit = limit;
+    }
+    public int getLimit(){
+        return this.limit;
+    }
     /**
      * Retrieves the address of the event.
      *

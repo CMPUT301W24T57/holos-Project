@@ -74,13 +74,26 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         ImageView eventPoster = diagView.findViewById(R.id.event_poster);
+        TextView textViewFull = diagView.findViewById(R.id.textViewFull);
 
         textViewEventName.setText(event.getName());
         textViewEventDate.setText("Date: " + event.getDate() + " at " + event.getTime());
         textViewEventLocation.setText("Location: " + event.getAddress());
         Picasso.get().load(event.getImageUrl()).into(eventPoster);
 
+
         List<String> attendeeIds1 = event.getAttendees();
+
+        displayAttendeeNames(attendeeIds1, textViewEventAttendeeList, db);
+        int numAttendees = attendeeIds1.size();
+        int eventLimit = event.getLimit();
+
+        if (numAttendees >= eventLimit) {
+            Log.d("HideFull","We should Hide full");
+            if (!attendeeIds1.contains(currentUserId)) {
+            switchPlanToAttend.setVisibility(View.GONE);} // Hide the switch
+            textViewFull.setVisibility(View.VISIBLE); // Show the "Full" text
+        }
 
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {

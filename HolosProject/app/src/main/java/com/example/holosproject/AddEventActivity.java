@@ -64,6 +64,7 @@ public class AddEventActivity extends AppCompatActivity {
 
     private Uri qrCodeUri;
     private ImageView imageViewEventPoster;
+    private EditText eventLimit;
 
     private Button uploadQR;
     private ActivityResultLauncher<String> mGetContent;
@@ -114,6 +115,7 @@ public class AddEventActivity extends AppCompatActivity {
         });
 
         eventAddress = findViewById(R.id.edit_text_event_address);
+        eventLimit = findViewById(R.id.edit_text_event_limit);
         cancel = findViewById(R.id.button_cancel);
         save = findViewById(R.id.button_save);
         uploadQR = findViewById(R.id.button_upload_qr);
@@ -257,10 +259,15 @@ public class AddEventActivity extends AppCompatActivity {
 
         // Create a new event object with the provided details
         Event event = new Event(eventName, eventTime, eventDate, eventAddress, currentUser.getUid());
+        String eventLims = eventLimit.getText().toString();
+        if (!eventLims.isEmpty()) {
+            int eventLim = Integer.parseInt(eventLims);
+            event.setLimit(eventLim);
+        }
+
         if (customQR != null) {
             event.setCustomQRContents(customQR);
         }
-
         // Add the event to the Firestore database
         db.collection("events")
                 .add(event)

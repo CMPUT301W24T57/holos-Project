@@ -158,11 +158,22 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                             String creator = documentSnapshot.getString("creator");
                             ArrayList<String> attendees = (ArrayList<String>) documentSnapshot.get("attendees");
 
+
+
+
+
+                            int limit = Integer.MAX_VALUE;
+                            Long limitLong = documentSnapshot.getLong("limit");
+                            if (limitLong != null) {
+                                limit = limitLong.intValue();
+                            }
                             String imageUrl = documentSnapshot.getString("imageUrl"); // Get the image URL from the document
+
                             Event event = new Event(name, date, time, address, creator);
                             event.setImageUrl(imageUrl);
                             event.setEventId(eventId);
                             event.setAttendees(attendees);
+                            event.setLimit(limit);
                             eventsList.add(event);
                             eventsAdapter.notifyDataSetChanged();
                         } else {
