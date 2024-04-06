@@ -284,7 +284,7 @@ public class ViewAllEventsActivity extends AppCompatActivity
                         }
                         if (isChecked) {
                             // Trying to add the current user
-                            if (!currentAttendees.contains(currentUserId) && currentAttendees.size() < eventLimit) {
+                            if (!currentAttendees.contains(currentUserId) && currentAttendees.size() < event.getLimit()) {
                                 currentAttendees.add(currentUserId);
                                 transaction.update(eventRef, "attendees", currentAttendees);
                                 addUserEvent(currentUserId, event.getEventId());
