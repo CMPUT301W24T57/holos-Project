@@ -184,10 +184,17 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                             String imageUrl = document.getString("imageUrl");
                             ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
 
+                            int limit = Integer.MAX_VALUE;
+                            Long limitLong = document.getLong("limit");
+                            if (limitLong != null) {
+                                limit = limitLong.intValue();
+                            }
+
                             Event event = new Event(name, date, time, address, creator);
                             event.setEventId(eventId);
                             event.setImageUrl(imageUrl);
                             event.setAttendees(attendees); // Assuming you have a setter for attendees
+                            event.setLimit(limit);
                             if (attendees.contains(currentUser.getUid())) {
                                 System.out.println("Event: "+ event.getName());
                                 eventList.add(event);

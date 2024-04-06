@@ -133,16 +133,9 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
+        TextView textViewFull = diagView.findViewById(R.id.textViewFull);
         Button qrNavButton = diagView.findViewById(R.id.qrNav);
         ArrayList<String> attendees = event.getAttendees();
-        int numAttendees = attendees.size();
-        int eventLimit = event.getLimit();
-        Switch switchAttend = diagView.findViewById(R.id.plan_to_attend_list);
-        TextView textViewFull = diagView.findViewById(R.id.textViewFull);
-        if (numAttendees >= eventLimit) {
-            switchAttend.setVisibility(View.GONE); // Hide the switch
-            textViewFull.setVisibility(View.VISIBLE); // Show the "Full" text
-        }
         qrNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

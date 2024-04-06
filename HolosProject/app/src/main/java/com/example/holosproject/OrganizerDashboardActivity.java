@@ -135,9 +135,16 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                             String creator = documentSnapshot.getString("creator");
                             ArrayList<String> attendees = (ArrayList<String>) documentSnapshot.get("attendees");
 
+                            int limit = Integer.MAX_VALUE;
+                            Long limitLong = documentSnapshot.getLong("limit");
+                            if (limitLong != null) {
+                                limit = limitLong.intValue();
+                            }
+
                             Event event = new Event(name, date, time, address, creator);
                             event.setEventId(eventId);
                             event.setAttendees(attendees);
+                            event.setLimit(limit);
                             eventsList.add(event);
                             eventsAdapter.notifyDataSetChanged();
                         } else {
