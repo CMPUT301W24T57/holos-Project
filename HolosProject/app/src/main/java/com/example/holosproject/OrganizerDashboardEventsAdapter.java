@@ -152,7 +152,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
 
 //        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         TextView textViewFull = diagView.findViewById(R.id.textViewFull);
-       
+
         ArrayList<String> attendees = event.getAttendees();
         Button qrNavButton = diagView.findViewById(R.id.qrNav);
         Button SendNotification = diagView.findViewById(R.id.buttonsendNotification);
@@ -264,7 +264,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             @Override
             public void onClick(View v) {
                 String notificationText = editTextNotification.getText().toString();
-                sendNotificationToAttendees(context, notificationText);
+                sendNotificationToAttendees(context, event, notificationText);
                 //sendNotificationToAttendees(context, "This is the first notification for this app");
                 dialog.dismiss();
             }
@@ -279,7 +279,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         dialog.show();
     }
 
-    private void sendNotificationToAttendees(Context context, String notificationText){
+    private void sendNotificationToAttendees(Context context, Event event, String notificationText) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -287,19 +287,28 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             notificationManager.createNotificationChannel(channel);
         }
         //Intent intent = new Intent(context, ViewAllEventsActivity.class);
-       //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), "NewNotis")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Announcement")
-                .setContentText(notificationText)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true);
 
-        notificationManager.notify(1, builder.build());
+        List<String> attendees = event.getAttendees();
+
+        for (String attendee : attendees) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), "NewNotis")
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setContentTitle("Announcement")
+                    .setContentText(notificationText)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setAutoCancel(true);
+
+            int notificationId = generateUniqueNotificationId();
+            notificationManager.notify(notificationId, builder.build());
+        }
+    }
+    private int notificationIdCounter = 0;
+
+    private int generateUniqueNotificationId() {
+        return notificationIdCounter++;
     }
 
-
-
-
 }
+
