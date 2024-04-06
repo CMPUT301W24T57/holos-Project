@@ -129,7 +129,7 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                                 removeUserEvent(currentUserId, event.getEventId());
                             }
                         }
-                        return null; // Transaction must return null if void
+                        return null;
                     }).addOnSuccessListener(aVoid -> Log.d(TAG, "Transaction successfully completed"))
                     .addOnFailureListener(e -> Log.e(TAG, "Transaction failed: ", e));
         });
