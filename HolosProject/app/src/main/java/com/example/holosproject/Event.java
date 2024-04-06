@@ -48,7 +48,6 @@ public class Event {
         this.qrUrl = null;
         this.customQRContents = null;
         this.attendees = new ArrayList<String>();
-        this.checkIns = new ArrayList<String>();
         this.limit = Integer.MAX_VALUE;
         this.checkIns = new HashMap<String, String>();
         this.locations = new ArrayList<GeoPoint>();

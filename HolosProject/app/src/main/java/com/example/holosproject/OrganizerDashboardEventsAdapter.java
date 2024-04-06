@@ -150,7 +150,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
 
-        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
+//        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         TextView textViewFull = diagView.findViewById(R.id.textViewFull);
        
         ArrayList<String> attendees = event.getAttendees();
