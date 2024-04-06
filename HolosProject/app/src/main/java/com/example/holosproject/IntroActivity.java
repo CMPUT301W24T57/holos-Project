@@ -57,6 +57,7 @@ public class IntroActivity extends AppCompatActivity { // AppCombatActivity prov
         mAuth = FirebaseAuth.getInstance();
 
         //Permission for notis
+        /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(IntroActivity.this,
                     android.Manifest.permission.POST_NOTIFICATIONS) !=
@@ -66,6 +67,8 @@ public class IntroActivity extends AppCompatActivity { // AppCombatActivity prov
                         new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
             }
         }
+
+         */
 
 
         attendeeButton.setOnClickListener(new View.OnClickListener() {
