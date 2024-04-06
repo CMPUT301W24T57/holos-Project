@@ -286,8 +286,8 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             NotificationChannel channel = new NotificationChannel("NewNotis", "New Notis", NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
         }
-        //Intent intent = new Intent(context, ViewAllEventsActivity.class);
-        //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent = new Intent(context, ViewAllEventsActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         List<String> attendees = event.getAttendees();
