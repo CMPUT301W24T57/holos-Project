@@ -74,6 +74,14 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
     // location stuff
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
+
+    /**
+     * Overrides the onCreate method to initialize the first-time profile creation activity.
+     * Sets the content view to the first-time profile creation layout.
+     * Initializes FirebaseAuth instance and UI components such as image view, edit texts, switches, and buttons.
+     * @param savedInstanceState A Bundle containing the saved state of the activity.
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -244,6 +252,14 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
                 });
     }
 
+
+    /**
+     * Updates the user interface based on the provided FirebaseUser.
+     * If the user is signed in, it starts the MainActivity and finishes the current activity to prevent users from using the back button.
+     * If authentication fails, it displays a toast message indicating authentication failure.
+     * @param user The FirebaseUser object representing the signed-in user.
+     */
+
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             // If the user is signed in go to the next activity
@@ -256,6 +272,14 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the result of an activity started for result.
+     * If the result is from picking an image and it's successful, it saves the selected image URI and updates the ImageView with the selected image.
+     * @param requestCode The request code passed to startActivityForResult().
+     * @param resultCode The result code returned by the child activity.
+     * @param data An Intent that carries the result data.
+     */
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -267,6 +291,11 @@ public class FirstTimeProfileCreationActivity extends AppCompatActivity {
 
     // Method to upload profile image.
     // We call this method AFTER the profile was successfully created.
+    /**
+     * Uploads the selected profile image to Firebase Storage and updates the user's profile image URL in Firestore.
+     * @param imageUri The URI of the selected image to upload.
+     * @param userId The ID of the user whose profile image is being updated.
+     */
     private void uploadProfileImage(Uri imageUri, String userId) {
         StorageReference profileImageRef = FirebaseStorage.getInstance().getReference("profileImages/" + userId + ".jpg");
 

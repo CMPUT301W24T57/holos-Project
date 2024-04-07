@@ -80,6 +80,12 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private CollectionReference usersRef = database.collection("userProfiles");
 
     private boolean geolocation;
+
+
+    /**
+     * A launcher for scanning barcodes.
+     */
+
     private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> { //basic popup after scanning to test things
         if (result.getContents() != null) {
             String scanContents = result.getContents();
@@ -90,6 +96,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private FusedLocationProviderClient fusedLocationClient;
     private String locationID;
 
+
+    /**
+     * This activity handles the behavior when the app resumes from the paused state.
+     */
 
     @Override
     protected void onResume() {
@@ -111,6 +121,12 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * Called when the activity is paused and no longer visible to the user.
+     * This method ensures that the event listener for changes in the events collection is removed
+     * to prevent potential memory leaks and unnecessary resource consumption.
+     */
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -119,6 +135,11 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }
     }
 
+
+    /**
+     * This activity represents the dashboard for attendees.
+     * It displays events, allows check-in, and provides access to user settings.
+     */
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -227,6 +248,12 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     }
 
     // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
+    /**
+     * Handles the navigation when a navigation item is selected in the navigation drawer.
+     *
+     * @param item The selected navigation item
+     * @return True if the item selection event was handled successfully, false otherwise
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // If the user selects one of the items in the drawer, what happens? (navigate to that respective activity)
@@ -484,6 +511,12 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Checks if geolocation is enabled for the current user and updates their location if enabled.
+     *
+     * @param eventID The ID of the event for which the user's location is being updated
+     */
+
     private void checkAndUpdateUserLocation(String eventID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -502,6 +535,13 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             }).addOnFailureListener(e -> Log.e(TAG, "Error fetching user profile", e));
         }
     }
+
+
+    /**
+     * Updates the user's location for a specific event in the database.
+     *
+     * @param eventID The ID of the event for which the user's location is being updated
+     */
 
     private void updateUserLocation(String eventID) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
