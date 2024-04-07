@@ -286,6 +286,14 @@ public class AddEventActivity extends AppCompatActivity {
                             handleCustomQR(customQR, eventID);
                             uploadCustomQR(qrCodeUri, eventID);
                         }
+                        // we need to wait a LITTLE BIT so that when we go back to the dashboard the poster shows up
+                        try {
+                            Toast.makeText(AddEventActivity.this, "Please wait, uploading your event...", Toast.LENGTH_SHORT).show();
+                            Thread.sleep(300);
+                        }
+                        catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         finish();
                     }
                 })

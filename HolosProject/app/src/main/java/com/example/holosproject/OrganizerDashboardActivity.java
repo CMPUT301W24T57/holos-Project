@@ -106,7 +106,14 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         // Clear the events list before fetching to avoid duplicates
         eventsList.clear();
         // Fetch the events again when coming back to this activity
-        fetchUserEvents();
+        // we wait half a second so images load lol
+        try {
+            Thread.sleep(500);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+       fetchUserEvents();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         NavigationDrawerUtils.updateNavigationHeader(navigationView);
@@ -168,7 +175,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
                                 limit = limitLong.intValue();
                             }
                             String imageUrl = documentSnapshot.getString("imageUrl"); // Get the image URL from the document
-
+                            System.out.println("Event name: " + name + "URL: " + imageUrl);
                             Event event = new Event(name, date, time, address, creator);
                             event.setImageUrl(imageUrl);
                             event.setEventId(eventId);

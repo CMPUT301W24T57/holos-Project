@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -371,32 +372,33 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         HashMap<String, String> checkIns = (HashMap<String, String>) document.get("checkIns");
         ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
         ArrayList<GeoPoint> locations = (ArrayList<GeoPoint>) document.get("locations");
-        if (!checkIns.containsKey(currentUser.getUid())) {
-            addUserEvent(currentUser.getUid(), eventID);
-            DocumentReference eventRef = database.collection("events").document(eventID);
-            checkIns.put(currentUser.getUid(), "1");
-            eventRef.update("checkIns", checkIns)
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
-                    .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
 
-            // Check and update user location, respecting the geolocation preference.
-            checkAndUpdateUserLocation(eventID);
-        }
-        else if (checkIns.containsKey(currentUser.getUid())) {
-            DocumentReference eventRef = database.collection("events").document(eventID);
-            Integer parsedInt = Integer.valueOf(checkIns.get(currentUser.getUid()));
-            parsedInt++;
-            checkIns.put(currentUser.getUid(), String.valueOf(parsedInt));
-            eventRef.update("checkIns", checkIns)
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
-                    .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
-        }
         if (!attendees.contains(currentUser.getUid())) {
-            DocumentReference eventRef = database.collection("events").document(eventID);
-            eventRef.update("attendees", FieldValue.arrayUnion(currentUser.getUid()))
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to attendees"))
-                    .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+            Toast.makeText(this, "You need to sign up for the event before checking in.", Toast.LENGTH_SHORT).show();
         }
+        else {
+            if (!checkIns.containsKey(currentUser.getUid())) {
+                addUserEvent(currentUser.getUid(), eventID);
+                DocumentReference eventRef = database.collection("events").document(eventID);
+                checkIns.put(currentUser.getUid(), "1");
+                eventRef.update("checkIns", checkIns)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
+                        .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+
+                // Check and update user location, respecting the geolocation preference.
+                checkAndUpdateUserLocation(eventID);
+            } else if (checkIns.containsKey(currentUser.getUid())) {
+                DocumentReference eventRef = database.collection("events").document(eventID);
+                Integer parsedInt = Integer.valueOf(checkIns.get(currentUser.getUid()));
+                parsedInt++;
+                checkIns.put(currentUser.getUid(), String.valueOf(parsedInt));
+                eventRef.update("checkIns", checkIns)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
+                        .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+            }
+            Toast.makeText(this, "You have successfully checked in.", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     /**
