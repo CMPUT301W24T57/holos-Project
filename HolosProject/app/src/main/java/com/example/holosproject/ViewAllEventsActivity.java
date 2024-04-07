@@ -113,6 +113,16 @@ public class ViewAllEventsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_view_all_events);
 
+        // Check if this activity was launched from a notification click
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey("eventId")) {
+            String eventId = extras.getString("eventId");
+            if (eventId != null) {
+                // If the event ID is present, display the details of the event
+                handleEventDetails(eventId);
+            }
+        }
+
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -156,6 +166,23 @@ public class ViewAllEventsActivity extends AppCompatActivity
             }, 1000);
         }
         // TODO: Fetch all events from Firestore and update the RecyclerView
+    }
+    private void handleEventDetails(String eventId) {
+        // Fetch the event details from Firestore using the eventId
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference eventRef = db.collection("events").document(eventId);
+        eventRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Event details retrieved successfully, you can now display them
+                Event event = documentSnapshot.toObject(Event.class);
+                if (event != null) {
+                    // Show event details dialog or navigate to event details activity
+                    showEventDetailsDialog(this, event);
+                }
+            }
+        }).addOnFailureListener(e -> {
+            // Handle failure to fetch event details
+        });
     }
 
     @Override
