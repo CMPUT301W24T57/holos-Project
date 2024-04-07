@@ -295,7 +295,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             // Set the notification title to "NEW EVENT ANNOUNCEMENT FROM [Event Name]"
-            String notificationTitle = "NEW EVENT ANNOUNCEMENT FROM " + event.getName();
+            String notificationTitle = "New Announcement: " + event.getName();
 
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), "NewNotis")
