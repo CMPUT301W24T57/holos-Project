@@ -295,6 +295,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
 
             // Create an intent to open the event details activity
             Intent intent = new Intent(context, ViewAllEventsActivity.class);
+            intent.putExtra("eventId", event.getEventId());
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE); // Use FLAG_IMMUTABLE
 
             // Build the notification
