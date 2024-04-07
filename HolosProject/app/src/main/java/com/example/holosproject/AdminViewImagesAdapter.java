@@ -32,10 +32,25 @@ public class AdminViewImagesAdapter extends RecyclerView.Adapter<AdminViewImages
     // Static variable to control test mode
     public static boolean isTestMode = false;
 
+    /**
+     * Constructs a new AdminViewImagesAdapter with the specified list of image URLs and context.
+     *
+     * @param imageUrls The list of image URLs to be displayed by the adapter.
+     * @param context   The context from which the adapter is created.
+     */
+
     public AdminViewImagesAdapter(List<String> imageUrls, Context context) {
         this.imageUrls = imageUrls;
         this.context = context;
     }
+
+    /**
+     * Called when the RecyclerView needs a new ViewHolder to represent an item.
+     *
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
+     * @param viewType The type of the new View.
+     * @return A new ViewHolder that holds a View of the given view type.
+     */
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -43,20 +58,42 @@ public class AdminViewImagesAdapter extends RecyclerView.Adapter<AdminViewImages
         return new ViewHolder(view);
     }
 
+
+    /**
+     * Called by RecyclerView to display the data at the specified position.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the item at the given position.
+     * @param position The position of the item within the adapter's data set.
+     */
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Glide.with(context).load(imageUrls.get(position)).into(holder.imageViewItem);
         holder.imageViewItem.setOnClickListener(v -> showDeleteConfirmation(position));
     }
 
+    /**
+     * Returns the total number of images in the data set.
+     *
+     * @return The total number of images.
+     */
+
     @Override
     public int getItemCount() {
         return imageUrls.size();
     }
 
+    /**
+     * ViewHolder class to hold references to the views for each item in the RecyclerView.
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageViewItem;
 
+        /**
+         * Constructor to initialize the ViewHolder.
+         *
+         * @param view The view containing the ImageView for the item.
+         */
         public ViewHolder(View view) {
             super(view);
             imageViewItem = view.findViewById(R.id.imageViewItem);
