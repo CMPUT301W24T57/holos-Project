@@ -160,7 +160,10 @@ public class AddEventActivity extends AppCompatActivity {
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });
     }
-
+    /**
+     * Launches an intent to pick a QR image from the device's gallery.
+     * The result of the selection will be handled in the method onActivityResult().
+     */
     private void pickQRImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_QR_REQUEST);
@@ -291,7 +294,13 @@ public class AddEventActivity extends AppCompatActivity {
                 });
     }
 
-    // Stores the users uploaded event image on Firebase
+    /**
+     * Uploads the event image to Firebase Storage and updates the event document in Firestore
+     * with the image URL upon successful upload.
+     *
+     * @param imageUri The URI of the image to be uploaded.
+     * @param eventId  The ID of the event for which the image is being uploaded.
+     */
     private void uploadEventImage(Uri imageUri, String eventId) {
         StorageReference eventImageRef = FirebaseStorage.getInstance().getReference("eventImages/" + eventId + "img");
         eventImageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
@@ -304,7 +313,13 @@ public class AddEventActivity extends AppCompatActivity {
         });
     }
 
-    // Stores the users uploaded event image on Firebase
+    /**
+     * Uploads a custom QR image to Firebase Storage and updates the event document in Firestore
+     * with the QR image URL upon successful upload.
+     *
+     * @param qrUri   The URI of the QR image to be uploaded.
+     * @param eventId The ID of the event for which the QR image is being uploaded.
+     */
     private void uploadCustomQR(Uri qrUri, String eventId) {
         StorageReference eventImageRef = FirebaseStorage.getInstance().getReference("eventImages/" + eventId + "qr");
         eventImageRef.putFile(qrUri).addOnSuccessListener(taskSnapshot -> {
@@ -317,8 +332,16 @@ public class AddEventActivity extends AppCompatActivity {
         });
     }
 
-    // The result of getting the image from the image upload, we save it and set it as the new preview
-    @Override
+    /**
+     * This method is called when an activity launched for result returns.
+     * It handles the result of selecting an image or a QR code from the device's gallery.
+     * If an image is selected, it sets the URI of the selected image to be used as the event poster.
+     * If a QR code is selected, it triggers the scanning of the custom QR code.
+     *
+     * @param requestCode The request code passed to startActivityForResult().
+     * @param resultCode  The result code returned by the child activity.
+     * @param data        An Intent object that carries the result data.
+     */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         System.out.println(requestCode);
@@ -331,7 +354,11 @@ public class AddEventActivity extends AppCompatActivity {
             scanCustomQR(qrCodeUri);
         }
     }
-
+    /**
+     * Scans a custom QR code image to extract its content.
+     *
+     * @param qrCodeUri The URI of the QR code image to be scanned.
+     */
     private void scanCustomQR(Uri qrCodeUri) {
         try
         {
@@ -369,6 +396,10 @@ public class AddEventActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Displays a DatePickerDialog to allow the user to select a date for the event.
+     * The selected date will be displayed in the associated EditText field.
+     */
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -387,6 +418,10 @@ public class AddEventActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    /**
+     * Displays a TimePickerDialog to allow the user to select a time for the event.
+     * The selected time will be displayed in the associated EditText field.
+     */
     private void showTimePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
