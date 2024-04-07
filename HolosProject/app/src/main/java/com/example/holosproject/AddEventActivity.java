@@ -1,6 +1,5 @@
 package com.example.holosproject;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -15,12 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,6 +29,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
@@ -43,8 +43,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 /**
  * Activity for adding new events.
@@ -68,6 +66,16 @@ public class AddEventActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> mGetContent;
     private String customQR = null;
     private EditText eventLimit;
+
+
+    /**
+     * This method is called when the activity is first created. It initializes UI components,
+     * sets up event listeners for various actions such as selecting time and date, uploading QR images,
+     * canceling the operation, saving event details, and uploading event posters.
+     * It also retrieves the current user information from Firebase Authentication.
+     *
+     * @param savedInstanceState A Bundle object containing the activity's previously saved state, if any.
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
