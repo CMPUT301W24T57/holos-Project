@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<OrganizerDashboardEventsAdapter.EventViewHolder> {
     private List<Event> eventList;
@@ -152,7 +150,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
 
 //        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         TextView textViewFull = diagView.findViewById(R.id.textViewFull);
-       
+
         ArrayList<String> attendees = event.getAttendees();
         Button qrNavButton = diagView.findViewById(R.id.qrNav);
         Button SendNotification = diagView.findViewById(R.id.buttonsendNotification);
@@ -264,7 +262,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             @Override
             public void onClick(View v) {
                 String notificationText = editTextNotification.getText().toString();
-                sendNotificationToAttendees(context, notificationText);
+                sendNotificationToAttendees(context, event, notificationText);
                 //sendNotificationToAttendees(context, "This is the first notification for this app");
                 dialog.dismiss();
             }
@@ -279,27 +277,45 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         dialog.show();
     }
 
-    private void sendNotificationToAttendees(Context context, String notificationText){
+    private void sendNotificationToAttendees(Context context, Event event, String notificationText) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("NewNotis", "New Notis", NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
         }
-        //Intent intent = new Intent(context, ViewAllEventsActivity.class);
-       //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), "NewNotis")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Announcement")
-                .setContentText(notificationText)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true);
 
-        notificationManager.notify(1, builder.build());
+
+        List<String> attendees = event.getAttendees();
+
+        for (String attendee : attendees) {
+            // Set the notification title to "NEW EVENT ANNOUNCEMENT FROM [Event Name]"
+            String notificationTitle = "New Announcement: " + event.getName();
+
+            // Create an intent to open the event details activity
+            Intent intent = new Intent(context, ViewAllEventsActivity.class);
+            intent.putExtra("event_id", event.getEventId()); // Pass the event ID to the activity
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE); // Use FLAG_IMMUTABLE
+
+            // Build the notification
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), "NewNotis")
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setContentTitle(notificationTitle)
+                    .setContentText(notificationText)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setContentIntent(pendingIntent) // Set the pending intent
+                    .setAutoCancel(true);
+            // Notify
+            int notificationId = generateUniqueNotificationId();
+            notificationManager.notify(notificationId, builder.build());
+        }
+    }
+    private int notificationIdCounter = 0;
+
+    private int generateUniqueNotificationId() {
+        return notificationIdCounter++;
     }
 
-
-
-
 }
+
