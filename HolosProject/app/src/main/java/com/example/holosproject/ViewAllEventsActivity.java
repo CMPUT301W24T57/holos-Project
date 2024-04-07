@@ -187,6 +187,7 @@ public class ViewAllEventsActivity extends AppCompatActivity
                             String creator = document.getString("creator");
                             String eventId = document.getId();
                             String imageUrl = document.getString("imageUrl");
+                            String announcement = document.getString("recentAnnouncement");
 
                             int limit = Integer.MAX_VALUE;
                             Long limitLong = document.getLong("limit");
@@ -198,7 +199,8 @@ public class ViewAllEventsActivity extends AppCompatActivity
                             Event event = new Event(name, date, time, address, creator);
                             event.setEventId(eventId);
                             event.setImageUrl(imageUrl);
-                            event.setAttendees(attendees); // Assuming you have a setter for attendees
+                            event.setAttendees(attendees);
+                            event.setRecentAnnouncement(announcement);
                             Log.d("SetLimit", "Limit: " + limit);
                             event.setLimit(limit);
                             Log.d("EventLimit","Limit: "+event.getLimit());

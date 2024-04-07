@@ -283,6 +283,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                             String creator = document.getString("creator");
                             String eventId = document.getId();
                             String imageUrl = document.getString("imageUrl");
+                            String announcement = document.getString("recentAnnouncement");
                             ArrayList<String> attendees = (ArrayList<String>) document.get("attendees");
 
                             int limit = Integer.MAX_VALUE;
@@ -296,14 +297,15 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                             event.setImageUrl(imageUrl);
                             event.setAttendees(attendees);
                             event.setLimit(limit);
-                            if (attendees.contains(currentUser.getUid())) {
+                            event.setRecentAnnouncement(announcement);
+
+                            if (attendees != null && attendees.contains(currentUser.getUid())) {
                                 eventList.add(event);
                             }
                         }
                         eventsAdapter.notifyDataSetChanged();
                     } else {
                         Log.w(TAG, "Error getting documents: ", task.getException());
-                        // Handle the error properly
                     }
                 });
     }
@@ -317,6 +319,65 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         options.setOrientationLocked(true);
         options.setCaptureActivity(CaptureAct.class);
         barLauncher.launch(options);
+    }
+
+    /**
+     * Handles what happens when a valid QR code is scanned.
+     * Given the text contained in the QR code, attempts to match the text with the title of a document
+     * In the events collection in the database. Given it finds a match, it takes the title of the event
+     * and its date and adds it to the user's visible event list. (Does not add to anything in database yet)
+     *
+     * @param scanContents: a string containing the contents of the scanned QR code
+     */
+    private void handleScan(String scanContents) {
+        // if this is a promo QR,
+        if (scanContents.contains("promo")) {
+            String strippedContents = scanContents.replace("promo", "");
+            DocumentReference docRef = eventsRef.document(strippedContents);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            goToPromoDisplay(scanContents);
+                        }
+                    } else {
+                        Log.d("Firestore", "Database Error");
+                    }
+                }
+            });
+        }
+        // if this is just a check-in QR,
+        else {
+            DocumentReference qrRef = customRef.document(Integer.toString(Objects.hashCode(scanContents)));
+            qrRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            goToEventDisplay(document.getString("linkedEvent"));
+                        } else {
+                            DocumentReference docRef = eventsRef.document(scanContents);
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists()) {
+                                            goToEventDisplay(scanContents);
+                                        }
+                                    } else {
+                                        Log.d("Firestore", "Database Error");
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -399,65 +460,6 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             Toast.makeText(this, "You have successfully checked in.", Toast.LENGTH_SHORT).show();
         }
 
-    }
-
-    /**
-     * Handles what happens when a valid QR code is scanned.
-     * Given the text contained in the QR code, attempts to match the text with the title of a document
-     * In the events collection in the database. Given it finds a match, it takes the title of the event
-     * and its date and adds it to the user's visible event list. (Does not add to anything in database yet)
-     *
-     * @param scanContents: a string containing the contents of the scanned QR code
-     */
-    private void handleScan(String scanContents) {
-        // if this is a promo QR,
-        if (scanContents.contains("promo")) {
-            String strippedContents = scanContents.replace("promo", "");
-            DocumentReference docRef = eventsRef.document(strippedContents);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            goToPromoDisplay(scanContents);
-                        }
-                    } else {
-                        Log.d("Firestore", "Database Error");
-                    }
-                }
-            });
-        }
-        // if this is just a check-in QR,
-        else {
-            DocumentReference qrRef = customRef.document(Integer.toString(Objects.hashCode(scanContents)));
-            qrRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            goToEventDisplay(document.getString("linkedEvent"));
-                        } else {
-                            DocumentReference docRef = eventsRef.document(scanContents);
-                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        DocumentSnapshot document = task.getResult();
-                                        if (document.exists()) {
-                                            goToEventDisplay(scanContents);
-                                        }
-                                    } else {
-                                        Log.d("Firestore", "Database Error");
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-        }
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,39 +9,54 @@
     android:padding="12dp"
     android:gravity="center_horizontal">
 
-    <TextView
-        android:id="@+id/textViewTitle"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#00bcd4"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <TextView
+        android:id="@+id/text_dashboard_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:text="EVENT DETAILS"
-        android:gravity="center_horizontal"
-        android:layout_marginBottom="30dp"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/orienta"
+        android:text="YOUR EVENT"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewEventNameDiag"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="17sp"
+        android:layout_below="@id/text_dashboard_title"
+        android:layout_marginTop="20dp"
+        android:textSize="30sp"
+        android:layout_centerHorizontal="true"
         android:text="Event Name:"
+        android:textStyle="bold"
         android:layout_marginBottom="14dp"/>
 
-    <TextView
-        android:id="@+id/textViewEventDateDiag"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="17sp"
-        android:text="Event Date:"
-        android:layout_marginBottom="14dp"/>
+        android:layout_height="125sp"
+        android:id="@+id/event_poster"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/textViewEventNameDiag"
+        />
 
     <TextView
         android:id="@+id/textViewEventTimeDiag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="17sp"
-        android:text="Event Time:"
-        android:layout_marginBottom="14dp"/>
+        android:text="Date/Time:"
+        android:layout_marginBottom="14dp"
+        android:layout_below="@id/event_poster"/>
+
 
     <TextView
         android:id="@+id/textViewEventLocationDiag"
@@ -48,7 +64,9 @@
         android:layout_height="wrap_content"
         android:textSize="17sp"
         android:text="Event Location:"
+        android:layout_below="@id/textViewEventTimeDiag"
         android:layout_marginBottom="14dp"/>
+
 
     <TextView
         android:id="@+id/textViewFull"
@@ -58,12 +76,13 @@
         android:text="The event is Full"
         android:visibility="gone"
          />
+
     <Switch
         android:id="@+id/plan_to_attend_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="17sp"
-        android:layout_marginTop="7dp"
+        android:layout_below="@id/textViewEventLocationDiag"
         android:text="Would you like to attend?" />
 
     <Button
@@ -71,19 +90,24 @@
         android:layout_height="wrap_content"
         android:textSize="17sp"
         android:text="QR Management"
-        android:backgroundTint="#0097A7"
+        android:backgroundTint="#00bcd4"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="14dp"
-        android:id="@+id/qrNav">
+        android:layout_below="@id/plan_to_attend_list"
+        android:id="@+id/qrNav"
+        android:layout_centerHorizontal="true">
     </Button>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="17sp"
-        android:backgroundTint="#00bcd4"
         android:text="Check-Ins / Attendees"
+        android:backgroundTint="#0097A7"
+        android:layout_below="@id/qrNav"
         android:layout_marginBottom="18dp"
-        android:id="@+id/attendeeCheckins">
+        android:id="@+id/attendeeCheckins"
+        android:layout_centerHorizontal="true">
     </Button>
 
     <Button
@@ -91,10 +115,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="17sp"
-        android:backgroundTint="#448AFF"
+        android:backgroundTint="#009688"
         android:layout_below="@id/attendeeCheckins"
         android:layout_marginBottom="18dp"
-        android:text="View Check-in Map" />
+        android:text="View Check-in Map"
+        android:layout_centerHorizontal="true"/>
 
 
     <Button
@@ -103,29 +128,10 @@
         android:textSize="17sp"
         android:text="Send Notification"
         android:layout_marginBottom="18dp"
-        android:id="@+id/buttonsendNotification">
+        android:layout_below="@id/viewCheckInMapButton"
+        android:id="@+id/buttonsendNotification"
+        android:backgroundTint="#00796b"
+        android:layout_centerHorizontal="true">
     </Button>
 
-    <TextView
-        android:id="@+id/textViewEventAnnouncementsDiag"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:layout_marginTop="50dp"
-        android:textStyle="bold"
-        android:gravity="center_horizontal"
-        android:text="RECENT ANNOUNCEMENTS"
-        android:textSize="22sp" />
-
-
-    <TextView
-        android:id="@+id/textViewEventNullAnnouncementsDiag"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:layout_marginTop="-40dp"
-        android:text="No announcements have been made for this event yet. Check back later!"
-        android:textSize="17sp" />
-
-
-</LinearLayout>
+</RelativeLayout>

@@ -28,6 +28,8 @@ public class Event {
     private String qrUrl;
     private String customQRContents;
 
+    private String recentAnnouncement;
+
     /**
      * Constructs an event with the given attributes.
      *
@@ -51,8 +53,15 @@ public class Event {
         this.limit = Integer.MAX_VALUE;
         this.checkIns = new HashMap<String, String>();
         this.locations = new ArrayList<GeoPoint>();
-        this.limit = Integer.MAX_VALUE;
+        this.recentAnnouncement = null;
+    }
 
+    public String getRecentAnnouncement() {
+        return recentAnnouncement;
+    }
+
+    public void setRecentAnnouncement(String recentAnnouncement) {
+        this.recentAnnouncement = recentAnnouncement;
     }
 
     /**
