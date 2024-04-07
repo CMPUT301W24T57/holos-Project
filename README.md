@@ -1,6 +1,6 @@
-Project Part 3:
+Project Part 4:
 
-[Updated UI Mockups and Storyboard Sequence](https://github.com/CMPUT301W24T57/holos-Project/wiki/Updated-UI-Mockups-Storyboard-for-Project-Part-%233) 
+[Updated UI Mockups and Storyboard Sequence]([https://github.com/CMPUT301W24T57/holos-Project/wiki/Updated-UI-Mockups-Storyboard-for-Project-Part-%233](https://github.com/CMPUT301W24T57/holos-Project/wiki/Storyboard-UI-Project-Part-%234) 
 
 
 [UML Diagram](https://github.com/CMPUT301W24T57/holos-Project/wiki/UML-Diagram-(Project-Part-%233))
