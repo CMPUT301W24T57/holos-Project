@@ -58,13 +58,11 @@ public class AddEventActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private Button save, cancel, buttonUploadImage;
     private static final int PICK_IMAGE_REQUEST = 1;
-
     private static final int PICK_QR_REQUEST = 2;
     private Uri eventImageUri;
 
     private Uri qrCodeUri;
     private ImageView imageViewEventPoster;
-    private EditText eventLimit;
 
     private Button uploadQR;
     private ActivityResultLauncher<String> mGetContent;
@@ -115,52 +113,9 @@ public class AddEventActivity extends AppCompatActivity {
         });
 
         eventAddress = findViewById(R.id.edit_text_event_address);
-        eventLimit = findViewById(R.id.edit_text_event_limit);
         cancel = findViewById(R.id.button_cancel);
         save = findViewById(R.id.button_save);
         uploadQR = findViewById(R.id.button_upload_qr);
-
-        mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
-                result -> {
-                    if (result != null) {
-                        Uri imageUri = result;
-                        // taken from https://stackoverflow.com/questions/29649673/scan-barcode-from-an-image-in-gallery-android
-                        try
-                        {
-                            InputStream inputStream = getContentResolver().openInputStream(imageUri);
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            if (bitmap == null)
-                            {
-                                Log.e("TAG", "uri is not a bitmap," + imageUri.toString());
-                                return;
-                            }
-                            int width = bitmap.getWidth(), height = bitmap.getHeight();
-                            int[] pixels = new int[width * height];
-                            bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-                            bitmap.recycle();
-                            bitmap = null;
-                            RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
-                            BinaryBitmap bBitmap = new BinaryBitmap(new HybridBinarizer(source));
-                            MultiFormatReader reader = new MultiFormatReader();
-                            try
-                            {
-                                Result qrResult = reader.decode(bBitmap);
-                                //Toast.makeText(this, "The content of the QR image is: " + qrResult.getText(), Toast.LENGTH_SHORT).show();
-                                // Handle the custom QR code...
-                                customQR = qrResult.getText();
-                            }
-                            catch (NotFoundException e)
-                            {
-                                Log.e("TAG", "decode exception", e);
-                                Toast.makeText(this, "You have uploaded an invalid QR code, try again.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        catch (FileNotFoundException e)
-                        {
-                            Log.e("TAG", "can not open file" + imageUri.toString(), e);
-                        }
-                    }
-                });
 
         // Set listener for uploading a QR image
         uploadQR.setOnClickListener(new View.OnClickListener() {
@@ -171,48 +126,6 @@ public class AddEventActivity extends AppCompatActivity {
         });
         imageViewEventPoster = findViewById(R.id.imageViewEventPoster);
         buttonUploadImage = findViewById(R.id.buttonUploadImage);
-
-        mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
-                result -> {
-                    if (result != null) {
-                        qrCodeUri = result;
-                        // taken from https://stackoverflow.com/questions/29649673/scan-barcode-from-an-image-in-gallery-android
-                        try
-                        {
-                            InputStream inputStream = getContentResolver().openInputStream(qrCodeUri);
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            if (bitmap == null)
-                            {
-                                Log.e("TAG", "uri is not a bitmap," + qrCodeUri.toString());
-                                return;
-                            }
-                            int width = bitmap.getWidth(), height = bitmap.getHeight();
-                            int[] pixels = new int[width * height];
-                            bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-                            bitmap.recycle();
-                            bitmap = null;
-                            RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
-                            BinaryBitmap bBitmap = new BinaryBitmap(new HybridBinarizer(source));
-                            MultiFormatReader reader = new MultiFormatReader();
-                            try
-                            {
-                                Result qrResult = reader.decode(bBitmap);
-                                //Toast.makeText(this, "The content of the QR image is: " + qrResult.getText(), Toast.LENGTH_SHORT).show();
-                                // Handle the custom QR code...
-                                customQR = qrResult.getText();
-                            }
-                            catch (NotFoundException e)
-                            {
-                                Log.e("TAG", "decode exception", e);
-                                Toast.makeText(this, "You have uploaded an invalid QR code, try again.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        catch (FileNotFoundException e)
-                        {
-                            Log.e("TAG", "can not open file" + qrCodeUri.toString(), e);
-                        }
-                    }
-                });
 
         // Set click listener for the cancel button
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -239,7 +152,8 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     private void pickQRImage() {
-        mGetContent.launch("image/*");
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, PICK_QR_REQUEST);
     }
 
     /**
@@ -259,15 +173,10 @@ public class AddEventActivity extends AppCompatActivity {
 
         // Create a new event object with the provided details
         Event event = new Event(eventName, eventTime, eventDate, eventAddress, currentUser.getUid());
-        String eventLims = eventLimit.getText().toString();
-        if (!eventLims.isEmpty()) {
-            int eventLim = Integer.parseInt(eventLims);
-            event.setLimit(eventLim);
-        }
-
         if (customQR != null) {
             event.setCustomQRContents(customQR);
         }
+
         // Add the event to the Firestore database
         db.collection("events")
                 .add(event)
@@ -286,10 +195,10 @@ public class AddEventActivity extends AppCompatActivity {
                             handleCustomQR(customQR, eventID);
                             uploadCustomQR(qrCodeUri, eventID);
                         }
-                        // we need to wait a LITTLE BIT so that when we go back to the dashboard the poster shows up
+
                         try {
-                            Toast.makeText(AddEventActivity.this, "Please wait, uploading your event...", Toast.LENGTH_SHORT).show();
-                            Thread.sleep(300);
+                            Toast.makeText(AddEventActivity.this, "Please wait, uploading your new event...", Toast.LENGTH_SHORT).show();
+                            Thread.sleep(800);
                         }
                         catch (InterruptedException e) {
                             e.printStackTrace();
@@ -369,7 +278,7 @@ public class AddEventActivity extends AppCompatActivity {
 
     // Stores the users uploaded event image on Firebase
     private void uploadEventImage(Uri imageUri, String eventId) {
-        StorageReference eventImageRef = FirebaseStorage.getInstance().getReference("eventImages/" + eventId);
+        StorageReference eventImageRef = FirebaseStorage.getInstance().getReference("eventImages/" + eventId + "img");
         eventImageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
             taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
                 FirebaseFirestore.getInstance().collection("events").document(eventId)
@@ -381,9 +290,9 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     // Stores the users uploaded event image on Firebase
-    private void uploadCustomQR(Uri imageUri, String eventId) {
-        StorageReference eventImageRef = FirebaseStorage.getInstance().getReference("eventImages/" + eventId);
-        eventImageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+    private void uploadCustomQR(Uri qrUri, String eventId) {
+        StorageReference eventImageRef = FirebaseStorage.getInstance().getReference("eventImages/" + eventId + "qr");
+        eventImageRef.putFile(qrUri).addOnSuccessListener(taskSnapshot -> {
             taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
                 FirebaseFirestore.getInstance().collection("events").document(eventId)
                         .update("qrUrl", uri.toString()); // Update event with image URL
@@ -397,12 +306,51 @@ public class AddEventActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        System.out.println(requestCode);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             eventImageUri = data.getData();
             imageViewEventPoster.setImageURI(eventImageUri); // Show the chosen image as a preview
         }
         else if (requestCode == PICK_QR_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             qrCodeUri = data.getData();
+            scanCustomQR(qrCodeUri);
+        }
+    }
+
+    private void scanCustomQR(Uri qrCodeUri) {
+        try
+        {
+            InputStream inputStream = getContentResolver().openInputStream(qrCodeUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            if (bitmap == null)
+            {
+                Log.e("TAG", "uri is not a bitmap," + qrCodeUri.toString());
+                return;
+            }
+            int width = bitmap.getWidth(), height = bitmap.getHeight();
+            int[] pixels = new int[width * height];
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+            bitmap.recycle();
+            bitmap = null;
+            RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+            BinaryBitmap bBitmap = new BinaryBitmap(new HybridBinarizer(source));
+            MultiFormatReader reader = new MultiFormatReader();
+            try
+            {
+                Result qrResult = reader.decode(bBitmap);
+                //Toast.makeText(this, "The content of the QR image is: " + qrResult.getText(), Toast.LENGTH_SHORT).show();
+                // Handle the custom QR code...
+                customQR = qrResult.getText();
+            }
+            catch (NotFoundException e)
+            {
+                Log.e("TAG", "decode exception", e);
+                Toast.makeText(this, "You have uploaded an invalid QR code, try again.", Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            Log.e("TAG", "can not open file" + qrCodeUri.toString(), e);
         }
     }
 

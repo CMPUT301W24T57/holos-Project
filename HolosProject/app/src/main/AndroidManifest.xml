@@ -57,23 +57,23 @@
             tools:ignore="DiscouragedApi,LockedOrientationActivity" >
         </activity>
          <!-- Declare FirstTimeProfileCreationActivity -->
-        <activity android:name=".FirstTimeProfileCreationActivity"></activity> <!-- Declare AttendeeDashboardActivity -->
-        <activity android:name=".AttendeeDashboardActivity"></activity> <!-- Declare EditProfileActivity -->
-        <activity android:name=".EditProfileActivity"></activity> <!-- Declare ViewAllEventsActivity -->
-        <activity android:name=".ViewAllEventsActivity"></activity>
-        <activity android:name=".AdminDashboardActivity"></activity>
+        <activity android:name=".FirstTimeProfileCreationActivity" /> <!-- Declare AttendeeDashboardActivity -->
+        <activity android:name=".AttendeeDashboardActivity" /> <!-- Declare EditProfileActivity -->
+        <activity android:name=".EditProfileActivity" /> <!-- Declare ViewAllEventsActivity -->
+        <activity android:name=".ViewAllEventsActivity" />
+        <activity android:name=".AdminDashboardActivity" />
         <activity android:name=".OrganizerDashboardActivity" />
         <activity android:name=".AddEventActivity" />
         <activity android:name=".AdminViewProfilesActivity" />
         <activity android:name=".AdminViewImagesActivity" />
         <activity android:name=".AdminViewEventsActivity" />
-        <activity android:name=".AttendeeCheckinsActivity"></activity>
-        <activity android:name=".OrganizerMapActivity"></activity>
-        <activity android:name=".AttendeeListActivity"></activity>
-        <activity android:name=".PrintDisplay"></activity>
-        <activity android:name=".TestAttendeeDashboardActivity"></activity>
-        <activity android:name=".TestEventDisplay"></activity>
-        <activity android:name=".TestViewAllEventsActivity"></activity>
+        <activity android:name=".AttendeeCheckinsActivity" />
+        <activity android:name=".OrganizerMapActivity" />
+        <activity android:name=".AttendeeListActivity" />
+        <activity android:name=".PrintDisplay" />
+        <activity android:name=".TestAttendeeDashboardActivity" />
+        <activity android:name=".TestEventDisplay" />
+        <activity android:name=".TestViewAllEventsActivity" />
 
         <!-- Google Maps API Key-->
         <meta-data
