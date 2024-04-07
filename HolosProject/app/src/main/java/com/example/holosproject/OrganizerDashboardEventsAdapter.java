@@ -290,22 +290,23 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         List<String> attendees = event.getAttendees();
 
         for (String attendee : attendees) {
-
-            Intent intent = new Intent(context, ViewAllEventsActivity.class);
-            intent.putExtra("eventId", event.getEventId()); // Pass event ID to the activity
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
             // Set the notification title to "NEW EVENT ANNOUNCEMENT FROM [Event Name]"
             String notificationTitle = "New Announcement: " + event.getName();
 
+            // Create an intent to open the event details activity
+            Intent intent = new Intent(context, ViewAllEventsActivity.class);
+            intent.putExtra("event_id", event.getEventId()); // Pass the event ID to the activity
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+            // Build the notification
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), "NewNotis")
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
                     .setContentTitle(notificationTitle)
                     .setContentText(notificationText)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setContentIntent(pendingIntent) // Set the pending intent
                     .setAutoCancel(true);
-
+            // Notify
             int notificationId = generateUniqueNotificationId();
             notificationManager.notify(notificationId, builder.build());
         }
