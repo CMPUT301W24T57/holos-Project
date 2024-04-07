@@ -113,6 +113,7 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         catch (InterruptedException e) {
             e.printStackTrace();
         }
+
        fetchUserEvents();
 
         NavigationView navigationView = findViewById(R.id.nav_view);

@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,6 +97,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             super(itemView);
             textViewEventName = itemView.findViewById(R.id.textViewEventName);
             textViewEventDate = itemView.findViewById(R.id.textViewEventDate);
+
             imageViewPosterPreview = itemView.findViewById(R.id.imageViewPosterPreview);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -120,8 +122,8 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
-        holder.textViewEventName.setText(event.getName());
-        holder.textViewEventDate.setText(String.format("%s, %s", event.getDate(), event.getTime()));
+        holder.textViewEventName.setText(String.format("Your Event: %s", event.getName()));
+        holder.textViewEventDate.setText(String.format("%s, %s at %s", event.getDate(), event.getTime(), event.getAddress()));
 
         // Use Glide to load the image
         if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
@@ -154,14 +156,13 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         Switch switchPlanToAttend = diagView.findViewById(R.id.plan_to_attend_list);
         switchPlanToAttend.setChecked(event.getAttendees().contains(currentUserId));
         TextView textViewEventName = diagView.findViewById(R.id.textViewEventNameDiag);
-        TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
+        ImageView eventPoster = diagView.findViewById(R.id.event_poster);
+        Picasso.get().load(event.getImageUrl()).into(eventPoster);
 
-//        TextView textViewEventAttendeeList = diagView.findViewById(R.id.event_attendee_list);
         TextView textViewFull = diagView.findViewById(R.id.textViewFull);
 
-        ArrayList<String> attendees = event.getAttendees();
         Button qrNavButton = diagView.findViewById(R.id.qrNav);
         Button SendNotification = diagView.findViewById(R.id.buttonsendNotification);
         Button AttendeeCheckins = diagView.findViewById(R.id.attendeeCheckins);
@@ -201,9 +202,8 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             }
         });
 
-        textViewEventName.setText("EVENT NAME: " + event.getName());
-        textViewEventDate.setText("EVENT DATE: " + event.getDate());
-        textViewEventTime.setText("EVENT TIME: " + event.getTime());
+        textViewEventName.setText(event.getName());
+        textViewEventTime.setText("EVENT DATE & TIME: " + event.getDate() + " at " + event.getTime());
         textViewEventLocation.setText("EVENT LOCATION: " + event.getAddress());
 
         switchPlanToAttend.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -279,8 +279,16 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             @Override
             public void onClick(View v) {
                 String notificationText = editTextNotification.getText().toString();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("events").document(event.getEventId())
+                        .update("recentAnnouncement", notificationText)
+                        .addOnSuccessListener(aVoid -> {
+                            event.setRecentAnnouncement(notificationText);
+                        })
+                        .addOnFailureListener(e -> {
+//                        Log.e(TAG, "Error updating announcement", e);
+                        });
                 sendNotificationToAttendees(event, notificationText);
-                //sendNotificationToAttendees(context, "This is the first notification for this app");
                 dialog.dismiss();
             }
         });
@@ -352,7 +360,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         List<String> attendees = event.getAttendees();
         for (String attendee : attendees) {
             // Set the notification title to "NEW EVENT ANNOUNCEMENT FROM [Event Name]"
-            String notificationTitle = "New Announcement: " + event.getName();
+            String notificationTitle = "New Announcement from " + event.getName();
             sendNotificationThroughServer(notificationText, notificationTitle, attendee);
         }
     }

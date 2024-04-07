@@ -94,6 +94,7 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         TextView textViewEventName = diagView.findViewById(R.id.textViewEventNameDiag);
         TextView textViewEventDate = diagView.findViewById(R.id.textViewEventDateDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
+        TextView textViewEventAnnouncement = diagView.findViewById(R.id.textViewEventNullAnnouncementsDiag);
         ImageView eventPoster = diagView.findViewById(R.id.event_poster);
         TextView textViewFull = diagView.findViewById(R.id.textViewFull);
 
@@ -101,6 +102,13 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         textViewEventDate.setText("Date: " + event.getDate() + " at " + event.getTime());
         textViewEventLocation.setText("Location: " + event.getAddress());
         Picasso.get().load(event.getImageUrl()).into(eventPoster);
+
+        if (event.getRecentAnnouncement() != null) {
+            textViewEventAnnouncement.setText(event.getRecentAnnouncement());
+        }
+        else {
+            System.out.println(event.getRecentAnnouncement());
+        }
 
 
         List<String> attendeeIds1 = event.getAttendees();
@@ -169,6 +177,12 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         diag.show();
     }
 
+    /**
+     * Creates each view within the list (displays basic information and event poster of an event)
+     * @param holder: The holder that is displaying event info
+     * @param position: The position of the event to be displayed
+     */
+
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
@@ -177,7 +191,8 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         }
         else{holder.textViewEventName.setText(event.getName());}
 
-        holder.textViewEventDate.setText(event.getDate());
+        holder.textViewEventDate.setText(String.format("%s, %s at %s", event.getDate(), event.getTime(), event.getAddress()));
+
         if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
             Glide.with(holder.itemView.getContext())
                     .load(event.getImageUrl())
@@ -221,10 +236,13 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         return eventList.size();
     }
 
+    /**
+     * Constructor class for the EventViewHolder
+     */
+
     static class EventViewHolder extends RecyclerView.ViewHolder {
         TextView textViewEventName;
         TextView textViewEventDate;
-
         ImageView imageViewPosterPreview;
 
         EventViewHolder(View itemView, AttendeeDashboardEventsAdapter adapter) {

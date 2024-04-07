@@ -53,14 +53,17 @@ public class AttendeeListActivity extends AppCompatActivity {
         adapter = new AdminViewProfilesAdapter(AttendeeListActivity.this, profiles);
         recyclerView.setAdapter(adapter);
 
-        // Back button
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> {
-            // Finish this activity and go back to the previous one in the stack
             finish();
         });
         fetchAttendees(eventID);
     }
+
+    /**
+     * Fetches all attendees of a given event
+     * @param eventId: the event to fetch attendees for
+     */
     private void fetchAttendees(String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("events").document(eventId).get()

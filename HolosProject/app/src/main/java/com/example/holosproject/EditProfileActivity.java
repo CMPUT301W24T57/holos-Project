@@ -67,6 +67,8 @@ public class EditProfileActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 123; // Constant for the request code for picking image
     private ImageUploader imageUploader; // Instance variable for the ImageUploader
 
+    private UploadManager uploadManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +85,8 @@ public class EditProfileActivity extends AppCompatActivity {
         geolocationSwitch = findViewById(R.id.switchGeolocation);
         buttonNotificationSettings = findViewById(R.id.buttonNotificationSettings);
         updateNotificationIcon();
+
+        uploadManager = new UploadManager(this);
 
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -117,6 +121,7 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onImageUploadSuccess(String downloadUrl) {
                 // Image uploaded successfully
+                uploadManager.setImageUploaded(true);
                 Toast.makeText(EditProfileActivity.this, "Image Uploaded!", Toast.LENGTH_SHORT).show();
                 removeProfileImageButton.setVisibility(View.VISIBLE); // Make the remove button visible
                 // Set the image URL in the user's profile here if needed
@@ -279,12 +284,15 @@ public class EditProfileActivity extends AppCompatActivity {
             editTextName.setError("Please enter a valid name.");
             return;
         } else {
-            // Generate profile picture based on the first letter of the name
-            Drawable profilePicture = generateProfilePicture(newName);
-            // Set the generated profile picture to the ImageView
-            ImageView profileImage = findViewById(R.id.imageViewProfile);
-            profileImage.setImageDrawable(profilePicture);
-            imageUploader.uploadProfileImage(drawableToUri(profilePicture));
+            // Generate profile picture based on the first letter of the name,
+            // IF they did not upload a custom image
+            if (!uploadManager.isImageUploaded()) {
+                Drawable profilePicture = generateProfilePicture(newName);
+                // Set the generated profile picture to the ImageView
+                ImageView profileImage = findViewById(R.id.imageViewProfile);
+                profileImage.setImageDrawable(profilePicture);
+                imageUploader.uploadProfileImage(drawableToUri(profilePicture));
+            }
         }
 
 
@@ -360,6 +368,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     })
                     .addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Failed to remove profile image.", Toast.LENGTH_SHORT).show());
         }).addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Failed to remove profile image from storage.", Toast.LENGTH_SHORT).show());
+        uploadManager.setImageUploaded(false);
     }
 
     /**
