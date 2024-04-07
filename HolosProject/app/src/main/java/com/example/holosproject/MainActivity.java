@@ -1,6 +1,5 @@
 package com.example.holosproject;
 
-import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -83,15 +82,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }));
         }
-    }
-
-    /**
-     * Navigates to IntroActivity
-     */
-    private void goToIntro() {
-        Intent intent = new Intent(this, IntroActivity.class);
-        startActivity(intent);
-        finish(); // Prevents user from clicking back button
     }
 
     /**
@@ -192,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Generates username "Anonymous User" followed by 5 random digits. This is the default username for accounts
      */
-    public static String generateUsername() {
+    private static String generateUsername() {
         Random random = new Random();
         // Generate a random number between 10000 and 99999
         int randomNumber = 10000 + random.nextInt(90000);

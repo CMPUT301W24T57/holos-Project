@@ -31,7 +31,6 @@
         <activity
             android:name=".AdministratorCreation"
             android:exported="false" />
-        <activity android:name=".IntroActivity" />
         <activity
             android:name=".TestSuccessScreen"
             android:exported="false" />
@@ -56,8 +55,7 @@
             android:theme="@style/zxing_CaptureTheme"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" >
         </activity>
-         <!-- Declare FirstTimeProfileCreationActivity -->
-        <activity android:name=".FirstTimeProfileCreationActivity" /> <!-- Declare AttendeeDashboardActivity -->
+         <!-- Declare FirstTimeProfileCreationActivity --><!-- Declare AttendeeDashboardActivity -->
         <activity android:name=".AttendeeDashboardActivity" /> <!-- Declare EditProfileActivity -->
         <activity android:name=".EditProfileActivity" /> <!-- Declare ViewAllEventsActivity -->
         <activity android:name=".ViewAllEventsActivity" />
