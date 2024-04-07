@@ -30,6 +30,14 @@ public class AdminViewEventsActivity extends AppCompatActivity {
     // Static variable to control test mode
     public static boolean isTestMode = false;
 
+    /**
+     * This method is called when the activity is first created.
+     * It sets up the layout, initializes the RecyclerView, and populates it with event data.
+     * It also sets a click listener for the back button to finish the activity and return to the previous one.
+     *
+     * @param savedInstanceState A Bundle object containing the activity's previously saved state, if any.
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,12 +99,18 @@ public class AdminViewEventsActivity extends AppCompatActivity {
                 });
     }
 
-    // Method used to enable test mode. Used within the app tests.
+    /**
+     * Enables test mode, allowing mock events to be loaded.
+     * This mode is typically used for testing purposes.
+     */
     public static void enableTestMode() {
         isTestMode = true;
     }
 
-    // Method used to disable test mode. Used within the app tests.
+    /**
+     * Disables test mode, preventing mock events from being loaded.
+     * This method is typically called to exit testing mode.
+     */
     public static void disableTestMode() {
         isTestMode = false;
     }
