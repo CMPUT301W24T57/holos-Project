@@ -61,7 +61,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private final String TAG = "TestScreen";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    FirebaseUser currentUser;
     // Using a RecyclerView to display all of the Events our user is currently enrolled in
     private RecyclerView eventsRecyclerView;
     private AttendeeDashboardEventsAdapter eventsAdapter;
@@ -73,10 +73,10 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
     // References for attendee QR scan:
     private FloatingActionButton scanButton;
-    private FirebaseFirestore database = FirebaseFirestore.getInstance();
-    private CollectionReference eventsRef = database.collection("events");
-    private CollectionReference customRef = database.collection("Custom QR Data");
-    private CollectionReference usersRef = database.collection("userProfiles");
+    private FirebaseFirestore database;
+    private CollectionReference eventsRef;
+    private CollectionReference customRef;
+    private CollectionReference usersRef;
 
     private boolean geolocation;
     private ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> { //basic popup after scanning to test things
@@ -88,6 +88,12 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private ListenerRegistration eventsListener;
     private FusedLocationProviderClient fusedLocationClient;
     private String locationID;
+
+    private static boolean testMode = false;
+
+    private List<Event> mockEvents = null;
+
+    protected static Event testEvent;
 
 
     @Override
@@ -140,9 +146,17 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
+        System.out.println(testMode);
         // calling fetchUserProfile to see if the user is an admin, if they are, allow them to access the Admin Dashboard through the Drawer.
-        fetchUserProfile(currentUser.getUid());
+        if (testMode) {
+            fetchTestProfile();
+        }
+        else {
+            setUpDatabase();
+            if (currentUser != null) {
+                fetchUserProfile(currentUser.getUid());
+            }
+        }
 
         // Setting up the RecyclerView
         // Most of the code for this is found within the AttendeeDashboardEventsActivity file
@@ -155,41 +169,60 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
         scanButton = findViewById(R.id.fabQRCode);
         scanButton.setOnClickListener(v -> {
-            scanQRCode();
+            if (!testMode) {
+                scanQRCode();
+            }
+            else {
+                testScanQRCode();
+            }
         });
 
         // if we got here from the check-in display screen,
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String eventID = bundle.getString("title");
-            DocumentReference docRef = eventsRef.document(eventID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            rsvpEvent(eventID, document);
-                            fetchEvents();
-                            eventsAdapter.notifyDataSetChanged();
+            if (!testMode) {
+                DocumentReference docRef = eventsRef.document(eventID);
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                rsvpEvent(eventID, document);
+                                fetchEvents();
+                                eventsAdapter.notifyDataSetChanged();
+                            }
                         }
                     }
-                }
-            });
-        }
-
-        DocumentReference currentUserRef = usersRef.document(currentUser.getUid());
-        currentUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-                        geolocation = document.getBoolean("geolocationEnabled");
+                });
+            }
+            else {
+                mockEvents = MockDataProvider.getMockEvents();
+                for (Event event : mockEvents) {
+                    if (event.getEventId() == eventID) {
+                        testRSVPEvent(eventID, event);
                     }
                 }
             }
-        });
+        }
+
+        if (!testMode) {
+            if (currentUser != null) {
+                DocumentReference currentUserRef = usersRef.document(currentUser.getUid());
+                currentUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document != null && document.exists()) {
+                                geolocation = document.getBoolean("geolocationEnabled");
+                            }
+                        }
+                    }
+                });
+            }
+        }
     }
 
 
@@ -223,6 +256,13 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }).addOnFailureListener(e -> {
             // Handle error, e.g., show a message to the user.
         });
+    }
+
+    private void fetchTestProfile() {
+        NavigationView navigationView = findViewById(R.id.nav_drawer_view);
+        Menu menu = navigationView.getMenu();
+        MenuItem adminLoginMenuItem = menu.findItem(R.id.admin_login);
+        adminLoginMenuItem.setVisible(true);
     }
 
     // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
@@ -318,6 +358,13 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         barLauncher.launch(options);
     }
 
+    private void testScanQRCode() {
+        List<Event> mockEvents = MockDataProvider.getMockEvents();
+        String mockID = mockEvents.get(0).getEventId();
+        handleTestCode(mockID);
+
+    }
+
     /**
      * Sends user to a (barebones) event details display screen where they can check in.
      *
@@ -399,6 +446,29 @@ public class AttendeeDashboardActivity extends AppCompatActivity
         }
     }
 
+    private void testRSVPEvent(String eventID, Event event) {
+        HashMap<String, String> checkIns = (HashMap<String, String>) event.getCheckIns();
+        ArrayList<String> attendees = (ArrayList<String>) event.getAttendees();
+        ArrayList<GeoPoint> locations = (ArrayList<GeoPoint>) event.getLocations();
+
+        UserProfile mockUser = MockDataProvider.getMockUser();
+
+        if (!checkIns.containsKey(mockUser.getUid())) {
+            addUserEvent(mockUser.getUid(), eventID);
+            checkIns.put(mockUser.getUid(), "1");
+            event.setCheckIns(checkIns);
+
+            // Check and update user location, respecting the geolocation preference.
+            //checkAndUpdateUserLocation(eventID);
+        }
+        if (!attendees.contains(mockUser.getUid())) {
+            attendees.add(mockUser.getUid());
+            event.setAttendees(attendees);
+        }
+
+        testEvent = event;
+    }
+
     /**
      * Handles what happens when a valid QR code is scanned.
      * Given the text contained in the QR code, attempts to match the text with the title of a document
@@ -457,6 +527,16 @@ public class AttendeeDashboardActivity extends AppCompatActivity
             });
         }
     }
+
+    private void handleTestCode(String eventID) {
+        if (eventID.contains("promo")) {
+            String strippedContents = eventID.replace("promo", "");
+            goToPromoDisplay(eventID);
+        }
+        else {
+            goToEventDisplay(eventID);
+        }
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -513,5 +593,21 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 }
             });
         }
+    }
+
+    public static void enableTestMode() {
+        testMode = true;
+    }
+
+    public static void disableTestMode() {
+        testMode = false;
+    }
+
+    private void setUpDatabase() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        database = FirebaseFirestore.getInstance();
+        eventsRef = database.collection("events");
+        CollectionReference customRef = database.collection("Custom QR Data");
+        CollectionReference usersRef = database.collection("userProfiles");
     }
 }

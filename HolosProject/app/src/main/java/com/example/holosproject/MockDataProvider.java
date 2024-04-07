@@ -37,6 +37,7 @@ public class MockDataProvider {
         Event event1 = new Event("Technology Conference", "May 17, 2024", "4:00PM", "New York City"
         , "Josh Allen");
         event1.setEventId("event1");
+        event1.setImageUrl("https://placebear.com/500/500");
 
         Event event2 = new Event("Pizza Time", "April 28, 2024", "1:00PM", "Edmonton"
                 , "Peter Parker");
@@ -62,6 +63,13 @@ public class MockDataProvider {
         mockImages.add("https://placebear.com/700/700");
 
         return mockImages;
+    }
+
+    public static UserProfile getMockUser() {
+        UserProfile mockUser = new UserProfile();
+        mockUser.setUid("test12345");
+        mockUser.setName("Test User");
+        return mockUser;
     }
 
 

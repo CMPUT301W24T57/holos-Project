@@ -23,10 +23,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 public class EventDisplay extends AppCompatActivity {
 
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference eventsRef = database.collection("events");
+
+    private static boolean testMode = false;
 
     /**
      * Retrieves and displays the details of the event specified by the eventID.
@@ -79,15 +83,44 @@ public class EventDisplay extends AppCompatActivity {
         });
     }
 
+    private void handleTestEvent(String eventID) {
+        List<Event> mockEvents = MockDataProvider.getMockEvents();
+        for (Event event : mockEvents) {
+            if (event.getEventId() == eventID) {
+                String name = event.getName();
+                String date = event.getDate();
+                String time = event.getTime();
+                String posterUrl = event.getImageUrl();
+
+                TextView dateDisplay = findViewById(R.id.event_Date);
+                TextView creatorDisplay = findViewById(R.id.event_Creator);
+                TextView eventDisplay = findViewById(R.id.eventTitle);
+                ImageView posterDisplay = findViewById(R.id.eventPoster);
+                ImageView avatarDisplay = findViewById(R.id.event_creatorAvatar);
+                Picasso.get().load(posterUrl).into(posterDisplay);
+
+                dateDisplay.setText(getString(R.string.prefixDate, date, time));
+                eventDisplay.setText(name);
+            }
+        }
+    }
+
     /**
      * Navigates back to the dashboard activity.
      *
      * @param eventID The ID of the event.
      */
     private void backToDashboard(String eventID) {
-        Intent intent = new Intent(this, AttendeeDashboardActivity.class);
-        intent.putExtra("title", eventID);
-        startActivity(intent);
+        if (!testMode) {
+            Intent intent = new Intent(this, AttendeeDashboardActivity.class);
+            intent.putExtra("title", eventID);
+            startActivity(intent);
+        }
+        else {
+            Intent intent = new Intent(this, TestAttendeeDashboardActivity.class);
+            intent.putExtra("title", eventID);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -104,7 +137,12 @@ public class EventDisplay extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String eventID = bundle.getString("contents");
-            handleEvent(eventID);
+            if (!testMode) {
+                handleEvent(eventID);
+            }
+            else {
+                handleTestEvent(eventID);
+            }
             Button rsvpButton = findViewById(R.id.rsvpButton);
             rsvpButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -113,5 +151,13 @@ public class EventDisplay extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public static void enableTestMode() {
+        testMode = true;
+    }
+
+    public static void disableTestMode() {
+        testMode = false;
     }
 }

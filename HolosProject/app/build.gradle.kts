@@ -38,7 +38,7 @@ android {
 
 dependencies {
     // Firebase Dependencies
-    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-storage:latest_version")
@@ -59,6 +59,6 @@ dependencies {
     implementation("com.github.androidmads:QRGenerator:1.0.1")
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
-    implementation("com.google.firebase:firebase-messaging:22.0.0")
+    implementation("com.google.firebase:firebase-messaging:23.4.1")
     // implementation(files("C:\\Users\\Nicolas\\AppData\\Local\\Android\\Sdk\\platforms\\android-34\\android.jar"))
 }

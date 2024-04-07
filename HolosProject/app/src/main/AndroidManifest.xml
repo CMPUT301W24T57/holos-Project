@@ -71,6 +71,8 @@
         <activity android:name=".OrganizerMapActivity"></activity>
         <activity android:name=".AttendeeListActivity"></activity>
         <activity android:name=".PrintDisplay"></activity>
+        <activity android:name=".TestAttendeeDashboardActivity"></activity>
+        <activity android:name=".TestEventDisplay"></activity>
 
         <!-- Google Maps API Key-->
         <meta-data
