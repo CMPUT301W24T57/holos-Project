@@ -73,6 +73,7 @@
         <activity android:name=".PrintDisplay"></activity>
         <activity android:name=".TestAttendeeDashboardActivity"></activity>
         <activity android:name=".TestEventDisplay"></activity>
+        <activity android:name=".TestViewAllEventsActivity"></activity>
 
         <!-- Google Maps API Key-->
         <meta-data

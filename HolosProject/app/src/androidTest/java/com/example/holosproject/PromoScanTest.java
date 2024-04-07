@@ -33,20 +33,15 @@ import java.util.List;
  *
  */
 
-public class QRScanTest {
+public class PromoScanTest {
 
     @Rule
     public ActivityScenarioRule<TestAttendeeDashboardActivity> scenario = new
             ActivityScenarioRule<TestAttendeeDashboardActivity>(TestAttendeeDashboardActivity.class);
 
-    @Before
-    public void setUp() {
-        TestAttendeeDashboardActivity.enableTestMode();
-    }
-
     @Test
     // Test for "scanning" an event check-in code
-    public void checkInTest()  {
+    public void promoTest()  {
         List<Event> mockEvents = MockDataProvider.getMockEvents();
         Event mockEvent = mockEvents.get(0);
         UserProfile mockUser = MockDataProvider.getMockUser();
@@ -69,7 +64,8 @@ public class QRScanTest {
         }
 
         String eventName = mockEvent.getName();
-        onView(withId(R.id.textViewEventNameDiag)).check(matches(withText(eventName)));
+        onView(withId(R.id.textViewEventNameDiag)).check(matches(withText("EVENT NAME: " + eventName)));
+
 
     }
 

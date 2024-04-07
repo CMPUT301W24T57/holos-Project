@@ -1,20 +1,15 @@
 package com.example.holosproject;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,28 +17,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.journeyapps.barcodescanner.ScanContract;
-import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * FileName: AttendeeDashboardActivity
@@ -77,7 +61,7 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
     private FusedLocationProviderClient fusedLocationClient;
     private String locationID;
 
-    private static boolean testMode = false;
+    private static boolean checkInMode = false;
 
     private static boolean testPassed = false;
 
@@ -107,8 +91,6 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
 
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        System.out.println(testMode);
-        // calling fetchUserProfile to see if the user is an admin, if they are, allow them to access the Admin Dashboard through the Drawer.
         fetchTestProfile();
 
         // Setting up the RecyclerView
@@ -122,7 +104,12 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
 
         scanButton = findViewById(R.id.fabQRCode);
         scanButton.setOnClickListener(v -> {
-                testScanQRCode();
+                if (checkInMode) {
+                    testScanQRCode();
+                }
+                else {
+                    testPromoQRCode();
+                }
         });
 
         // if we got here from the check-in display screen,
@@ -222,6 +209,13 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
 
     }
 
+    private void testPromoQRCode() {
+        List<Event> mockEvents = MockDataProvider.getMockEvents();
+        String mockID = "promo" + mockEvents.get(0).getEventId();
+        handleTestCode(mockID);
+
+    }
+
     /**
      * Sends user to a (barebones) event details display screen where they can check in.
      *
@@ -241,7 +235,7 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
      */
 
     private void goToPromoDisplay(String scanContents) {
-        Intent intent = new Intent(this, ViewAllEventsActivity.class);
+        Intent intent = new Intent(this, TestViewAllEventsActivity.class);
         intent.putExtra("promo", scanContents);
         startActivity(intent);
     }
@@ -304,11 +298,11 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
     }
 
     protected static void enableTestMode() {
-        testMode = true;
+        checkInMode = true;
     }
 
     protected static void disableTestMode() {
-        testMode = false;
+        checkInMode = false;
     }
 
     protected void setTestEvent(Event event) {
