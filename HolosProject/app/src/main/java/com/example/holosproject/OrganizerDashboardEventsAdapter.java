@@ -3,6 +3,7 @@ package com.example.holosproject;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -290,9 +291,9 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
 
         for (String attendee : attendees) {
 
-            //Intent intent = new Intent(context, ViewAllEventsActivity.class);
-            //intent.putExtra("eventId", event.getEventId()); // Pass event ID to the activity
-            //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent intent = new Intent(context, ViewAllEventsActivity.class);
+            intent.putExtra("eventId", event.getEventId()); // Pass event ID to the activity
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             // Set the notification title to "NEW EVENT ANNOUNCEMENT FROM [Event Name]"
             String notificationTitle = "New Announcement: " + event.getName();
