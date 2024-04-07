@@ -42,7 +42,7 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="125sp"
+        android:layout_height="185sp"
         android:id="@+id/event_poster"
         android:layout_marginTop="5dp"
         android:layout_below="@id/textViewEventNameDiag"
@@ -85,18 +85,36 @@
         android:layout_below="@id/textViewEventLocationDiag"
         android:text="Would you like to attend?" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:layout_width="85dp"
+        android:layout_height="85dp"
         android:textSize="17sp"
         android:text="QR Management"
         android:backgroundTint="#00bcd4"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="14dp"
         android:layout_below="@id/plan_to_attend_list"
+        android:src="@drawable/placeholderqr"
         android:id="@+id/qrNav"
+        android:translationX="-85dp"
         android:layout_centerHorizontal="true">
-    </Button>
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/viewCheckInMapButton"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="14dp"
+        android:layout_toRightOf="@id/qrNav"
+        android:src="@drawable/mapicon"
+        android:textSize="17sp"
+        android:backgroundTint="#009688"
+        android:layout_below="@id/plan_to_attend_list"
+        android:text="View Check-in Map"
+        android:layout_centerHorizontal="true"
+   >
+    </ImageView>
 
     <Button
         android:layout_width="wrap_content"
@@ -104,22 +122,11 @@
         android:textSize="17sp"
         android:text="Check-Ins / Attendees"
         android:backgroundTint="#0097A7"
-        android:layout_below="@id/qrNav"
-        android:layout_marginBottom="18dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@id/viewCheckInMapButton"
         android:id="@+id/attendeeCheckins"
-        android:layout_centerHorizontal="true">
-    </Button>
-
-    <Button
-        android:id="@+id/viewCheckInMapButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="17sp"
-        android:backgroundTint="#009688"
-        android:layout_below="@id/attendeeCheckins"
-        android:layout_marginBottom="18dp"
-        android:text="View Check-in Map"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true" />
 
 
     <Button
@@ -128,7 +135,7 @@
         android:textSize="17sp"
         android:text="Send Notification"
         android:layout_marginBottom="18dp"
-        android:layout_below="@id/viewCheckInMapButton"
+        android:layout_below="@id/attendeeCheckins"
         android:id="@+id/buttonsendNotification"
         android:backgroundTint="#00796b"
         android:layout_centerHorizontal="true">

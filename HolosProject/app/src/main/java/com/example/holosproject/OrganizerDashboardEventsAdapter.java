@@ -163,11 +163,11 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
 
         TextView textViewFull = diagView.findViewById(R.id.textViewFull);
 
-        Button qrNavButton = diagView.findViewById(R.id.qrNav);
+        ImageView qrNav = diagView.findViewById(R.id.qrNav);
         Button SendNotification = diagView.findViewById(R.id.buttonsendNotification);
         Button AttendeeCheckins = diagView.findViewById(R.id.attendeeCheckins);
 
-        qrNavButton.setOnClickListener(new View.OnClickListener() {
+        qrNav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, QRGen.class);
@@ -192,8 +192,8 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         });
 
         // Click listener for the View Check In Map button
-        Button viewCheckInMapButton = diagView.findViewById(R.id.viewCheckInMapButton);
-        viewCheckInMapButton.setOnClickListener(new View.OnClickListener() {
+        ImageView viewCheckInMap = diagView.findViewById(R.id.viewCheckInMapButton);
+        viewCheckInMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, OrganizerMapActivity.class);
