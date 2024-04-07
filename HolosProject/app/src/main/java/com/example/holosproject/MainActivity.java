@@ -82,6 +82,11 @@ public class MainActivity extends AppCompatActivity {
         finish(); // Prevents user from clicking back button
     }
 
+    /**
+     * Upon first login, creatse a new user in the Firebase with some default information.
+     * Also uses a default user profile, which I should maybe get rid of?
+     */
+
     private void createNewUser() {
         mAuth = FirebaseAuth.getInstance();
         String defaultUrl = "https://firebasestorage.googleapis.com/v0/b/cmput-301-holosproject.appspot.com/o/profileImages%2Fdefault.png?alt=media&token=c8fccd35-cabe-4274-9f9a-f4c0607b2e4c";
@@ -132,6 +137,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    /**
+     * Sends the user to the next page after creating their user in the Firebase.
+     * @param user
+     */
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {

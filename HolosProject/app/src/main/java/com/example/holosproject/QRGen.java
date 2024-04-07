@@ -51,6 +51,8 @@ public class QRGen extends AppCompatActivity {
 
     private QRGEncoder qrgEncoder;
 
+    private ImageView checkInView, promoView;
+
     /**
      * Called when the activity is starting.
      *
@@ -69,8 +71,8 @@ public class QRGen extends AppCompatActivity {
             return insets;
         });
 
-        ImageView checkInView = findViewById(R.id.checkInDisplay);
-        ImageView promoView = findViewById(R.id.promoQRDisplay);
+        checkInView = findViewById(R.id.checkInDisplay);
+        promoView = findViewById(R.id.promoQRDisplay);
 
         Bundle bundle = getIntent().getExtras();
         String eventID;
@@ -113,10 +115,10 @@ public class QRGen extends AppCompatActivity {
             OutputStream fos;
             try {
                 if (customContents != null) {
-                    QRGEncoder qrgEncoder = new QRGEncoder(customContents, null, QRGContents.Type.TEXT, 200);
+                    qrgEncoder = new QRGEncoder(customContents, null, QRGContents.Type.TEXT, 200);
                 }
                 else {
-                    QRGEncoder qrgEncoder = new QRGEncoder(eventID, null, QRGContents.Type.TEXT, 200);
+                    qrgEncoder = new QRGEncoder(eventID, null, QRGContents.Type.TEXT, 200);
                 }
                 Bitmap bitmap = qrgEncoder.getBitmap(0);
                 ContentResolver resolver = getContentResolver();
@@ -134,33 +136,7 @@ public class QRGen extends AppCompatActivity {
         });
 
         findViewById(R.id.share_btn).setOnClickListener(v -> {
-            OutputStream fos;
-            try {
-                if (customContents != null) {
-                    QRGEncoder qrgEncoder = new QRGEncoder(customContents, null, QRGContents.Type.TEXT, 200);
-                }
-                else {
-                    QRGEncoder qrgEncoder = new QRGEncoder(eventID, null, QRGContents.Type.TEXT, 200);
-                }
-                Bitmap bitmap = qrgEncoder.getBitmap(0);
-                ContentResolver resolver = getContentResolver();
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, eventID + "Code" + ".jpg");
-                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
-                Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-                fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                Objects.requireNonNull(fos);
-                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                intent.putExtra(Intent.EXTRA_STREAM, imageUri);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.setType("image/png");
-                startActivity(intent);
-                // Delete the image after sharing (maybe unneeded)
-                // resolver.delete(imageUri, null, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            handleCheckInShare(eventID);
         });
 
         findViewById(R.id.save_btn2).setOnClickListener(v -> {
@@ -183,28 +159,7 @@ public class QRGen extends AppCompatActivity {
         });
 
         findViewById(R.id.share_btn2).setOnClickListener(v -> {
-            OutputStream fos;
-            try {
-                qrgEncoder = new QRGEncoder("promo" + eventID, null, QRGContents.Type.TEXT, 200);
-                Bitmap bitmap = qrgEncoder.getBitmap(0);
-                ContentResolver resolver = getContentResolver();
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, eventID + "Code" + ".jpg");
-                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
-                Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-                fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                Objects.requireNonNull(fos);
-                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                intent.putExtra(Intent.EXTRA_STREAM, imageUri);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.setType("image/png");
-                startActivity(intent);
-                // Delete the image after sharing (maybe unneeded)
-                // resolver.delete(imageUri, null, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            handlePromoShare(eventID);
         });
 
         findViewById(R.id.print_btn).setOnClickListener(v -> {
@@ -212,5 +167,69 @@ public class QRGen extends AppCompatActivity {
             intent.putExtra("contents", eventID);
             startActivity(intent);
         });
+    }
+
+    /**
+     * Handles sharing (emailing, posting, etc.) a promo QR code.
+     * @param eventID: the ID of the event to be shared.
+     */
+
+    private void handlePromoShare(String eventID) {
+        OutputStream fos;
+        try {
+            qrgEncoder = new QRGEncoder("promo" + eventID, null, QRGContents.Type.TEXT, 200);
+            Bitmap bitmap = qrgEncoder.getBitmap(0);
+            ContentResolver resolver = getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, eventID + "Code" + ".jpg");
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
+            Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            Objects.requireNonNull(fos);
+            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, imageUri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setType("image/png");
+            startActivity(intent);
+            // Delete the image after sharing (maybe unneeded)
+            // resolver.delete(imageUri, null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles sharing (emailing, posting, etc.) a check-in QR code.
+     * @param eventID: the ID of the event to be shared.
+     */
+    private void handleCheckInShare(String eventID) {
+        OutputStream fos;
+        try {
+            if (customContents != null) {
+                qrgEncoder = new QRGEncoder(customContents, null, QRGContents.Type.TEXT, 200);
+            }
+            else {
+                qrgEncoder = new QRGEncoder(eventID, null, QRGContents.Type.TEXT, 200);
+            }
+            Bitmap bitmap = qrgEncoder.getBitmap(0);
+            ContentResolver resolver = getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, eventID + "Code" + ".jpg");
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
+            Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            Objects.requireNonNull(fos);
+            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, imageUri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setType("image/png");
+            startActivity(intent);
+            // Delete the image after sharing (maybe unneeded)
+            // resolver.delete(imageUri, null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

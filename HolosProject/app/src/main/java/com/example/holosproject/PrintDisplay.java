@@ -130,6 +130,9 @@ public class PrintDisplay extends AppCompatActivity {
 
     // Printing functions referenced from https://stackoverflow.com/questions/58037591/how-to-print-a-layout-with-print-document-adapter-in-android
 
+    /**
+     * Handles printing the current layout (turns it into a printable .pdf).
+     */
     private void print() {
         printButton.setVisibility(View.GONE);
 

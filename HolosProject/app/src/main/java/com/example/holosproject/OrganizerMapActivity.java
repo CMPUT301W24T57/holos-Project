@@ -26,6 +26,9 @@ public class OrganizerMapActivity extends FragmentActivity implements OnMapReady
     // When I was testing the marker functionality on my computer, they were not showing up.
     // I don't really know if this is due to a bug, or the emulator not entirely sure.
 
+    // It works on my phone!
+    // - Nicolas, Apr. 6
+
     private GoogleMap mMap;
     private static final String TAG = OrganizerMapActivity.class.getSimpleName();
 
