@@ -257,6 +257,13 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                 .addOnFailureListener(e -> Log.e(TAG, "Error adding event to user's list", e));
     }
 
+    /**
+     * Opens a send notification dialog.
+     * @param context
+     * The context of the application.
+     * @param event
+     * The event object.
+     */
     private void showSendNotificationDialog(Context context, Event event) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -272,7 +279,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             @Override
             public void onClick(View v) {
                 String notificationText = editTextNotification.getText().toString();
-                sendNotificationToAttendees(context, event, notificationText);
+                sendNotificationToAttendees(event, notificationText);
                 //sendNotificationToAttendees(context, "This is the first notification for this app");
                 dialog.dismiss();
             }
@@ -286,6 +293,16 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
 
         dialog.show();
     }
+
+    /**
+     * Sends a notification to a specific user using oneSignal api
+     * @param messageContent
+     * The content of the message.
+     * @param notificationTitle
+     * The notification header.
+     * @param targetExternalUserId
+     * The user we will send the notification to.
+     */
     public void sendNotificationThroughServer(String messageContent, String notificationTitle, String targetExternalUserId) {
         // Your OneSignal App REST API key
         // Not safe at all btw 💀💀💀💀
@@ -323,15 +340,20 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             }
         });
     }
-    private void sendNotificationToAttendees(Context context, Event event, String notificationText) {
 
+    /**
+     * Sends notification to many users using oneSignal API.
+     * @param event
+     * The event object
+     * @param notificationText
+     * The notification text
+     */
+    private void sendNotificationToAttendees(Event event, String notificationText) {
         List<String> attendees = event.getAttendees();
-
         for (String attendee : attendees) {
             // Set the notification title to "NEW EVENT ANNOUNCEMENT FROM [Event Name]"
             String notificationTitle = "New Announcement: " + event.getName();
             sendNotificationThroughServer(notificationText, notificationTitle, attendee);
-
         }
     }
 

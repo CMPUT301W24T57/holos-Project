@@ -137,6 +137,9 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                                     String message = "We have reached milestone: " + num + " attendees";
                                     sendNotificationThroughServer(message,"Milestone", event.getCreator());
                                 }
+                                if ( num == eventLimit){
+                                    sendNotificationThroughServer("We have reached maximum capacity: " + num, "Milestone", event.getCreator());
+                                }
                             } else {
                                 new Handler(Looper.getMainLooper()).post(() ->
                                         Toast.makeText(context, "Error: The Event is Full", Toast.LENGTH_SHORT).show());
@@ -243,7 +246,15 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         }
     }
 
-
+    /**
+     * Sends a notification to a specific user using oneSignal api
+     * @param messageContent
+     * The content of the message.
+     * @param notificationTitle
+     * The notification header.
+     * @param targetExternalUserId
+     * The user we will send the notification to.
+     */
     public void sendNotificationThroughServer(String messageContent, String notificationTitle, String targetExternalUserId) {
         // Your OneSignal App REST API key
         // Not safe at all btw 💀💀💀💀
@@ -282,9 +293,4 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         });
     }
 
-    private int notificationIdCounter = 0;
-
-    private int generateUniqueNotificationId() {
-        return notificationIdCounter++;
-    }
 }
