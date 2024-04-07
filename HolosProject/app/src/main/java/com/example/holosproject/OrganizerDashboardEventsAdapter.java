@@ -28,12 +28,22 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<OrganizerDashboardEventsAdapter.EventViewHolder> {
     private List<Event> eventList;
     private final String TAG = "o";
+    private static final String ONESIGNAL_APP_ID = "44fb7829-68a6-45d8-b153-61c241864b10";
 
     /**
      * Constructor for the OrganizerDashboardEventsAdapter class.
@@ -276,45 +286,53 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
 
         dialog.show();
     }
+    public void sendNotificationThroughServer(String messageContent, String notificationTitle, String targetExternalUserId) {
+        // Your OneSignal App REST API key
+        // Not safe at all btw 💀💀💀💀
+        String REST_API_KEY = "NzhhNmY2MDMtODJiYy00MDUyLWFmNTEtZjM5Y2MzYzQxYTNl";
 
+
+        String jsonBody = "{\"app_id\": \"" + ONESIGNAL_APP_ID + "\", \"contents\": {\"en\": \"" + messageContent + "\"}, \"include_external_user_ids\": [\"" + targetExternalUserId + "\"], \"headings\": {\"en\": \"" + notificationTitle + "\"}}";
+        // Create OkHttpClient instance
+        OkHttpClient client = new OkHttpClient();
+
+        // Create the request body
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonBody);
+
+        // Build the request
+        Request request = new Request.Builder()
+                .url("https://onesignal.com/api/v1/notifications")
+                .addHeader("Authorization", "Basic " + REST_API_KEY)
+                .post(body)
+                .build();
+
+        // Execute the request asynchronously
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("Failed to send the message: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    System.out.println("Failed to send the message: " + response.body().string());
+                } else {
+                    System.out.println("Message sent successfully!");
+                }
+            }
+        });
+    }
     private void sendNotificationToAttendees(Context context, Event event, String notificationText) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("NewNotis", "New Notis", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-
 
         List<String> attendees = event.getAttendees();
 
         for (String attendee : attendees) {
             // Set the notification title to "NEW EVENT ANNOUNCEMENT FROM [Event Name]"
             String notificationTitle = "New Announcement: " + event.getName();
+            sendNotificationThroughServer(notificationText, notificationTitle, attendee);
 
-            // Create an intent to open the event details activity
-            Intent intent = new Intent(context, ViewAllEventsActivity.class);
-            intent.putExtra("event_id", event.getEventId()); // Pass the event ID to the activity
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE); // Use FLAG_IMMUTABLE
-
-            // Build the notification
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), "NewNotis")
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setContentTitle(notificationTitle)
-                    .setContentText(notificationText)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setContentIntent(pendingIntent) // Set the pending intent
-                    .setAutoCancel(true);
-            // Notify
-            int notificationId = generateUniqueNotificationId();
-            notificationManager.notify(notificationId, builder.build());
         }
-    }
-    private int notificationIdCounter = 0;
-
-    private int generateUniqueNotificationId() {
-        return notificationIdCounter++;
     }
 
 }

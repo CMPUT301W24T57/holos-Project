@@ -1,8 +1,12 @@
 package com.example.holosproject;
 
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -15,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -27,8 +32,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Transaction;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * FileName: AttendeeDashboardEventsAdapter
@@ -42,6 +56,7 @@ import java.util.List;
 public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<AttendeeDashboardEventsAdapter.EventViewHolder> {
     private List<Event> eventList;
     private final String TAG = "Event_details";
+    private static final String ONESIGNAL_APP_ID = "44fb7829-68a6-45d8-b153-61c241864b10";
 
     /**
      * Constructs an AttendeeDashboardEventsAdapter with the given list of events.
@@ -116,6 +131,12 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                                 currentAttendees.add(currentUserId);
                                 transaction.update(eventRef, "attendees", currentAttendees);
                                 addUserEvent(currentUserId, event.getEventId());
+                                int num = (event.getAttendees().size() + 1);
+                                // These are the milestones that we will send alerts at
+                                if (num == 1 || num == 5 || num == 10 || num == 50 || num == 100 || num == 500 || num == 1000) {
+                                    String message = "We have reached milestone: " + num + " attendees";
+                                    sendNotificationThroughServer(message,"Milestone", event.getCreator());
+                                }
                             } else {
                                 new Handler(Looper.getMainLooper()).post(() ->
                                         Toast.makeText(context, "Error: The Event is Full", Toast.LENGTH_SHORT).show());
@@ -220,5 +241,50 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
                 }
             });
         }
+    }
+
+
+    public void sendNotificationThroughServer(String messageContent, String notificationTitle, String targetExternalUserId) {
+        // Your OneSignal App REST API key
+        // Not safe at all btw 💀💀💀💀
+        String REST_API_KEY = "NzhhNmY2MDMtODJiYy00MDUyLWFmNTEtZjM5Y2MzYzQxYTNl";
+
+
+        String jsonBody = "{\"app_id\": \"" + ONESIGNAL_APP_ID + "\", \"contents\": {\"en\": \"" + messageContent + "\"}, \"include_external_user_ids\": [\"" + targetExternalUserId + "\"], \"headings\": {\"en\": \"" + notificationTitle + "\"}}";
+        // Create OkHttpClient instance
+        OkHttpClient client = new OkHttpClient();
+
+        // Create the request body
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonBody);
+
+        // Build the request
+        Request request = new Request.Builder()
+                .url("https://onesignal.com/api/v1/notifications")
+                .addHeader("Authorization", "Basic " + REST_API_KEY)
+                .post(body)
+                .build();
+
+        // Execute the request asynchronously
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("Failed to send the message: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    System.out.println("Failed to send the message: " + response.body().string());
+                } else {
+                    System.out.println("Message sent successfully!");
+                }
+            }
+        });
+    }
+
+    private int notificationIdCounter = 0;
+
+    private int generateUniqueNotificationId() {
+        return notificationIdCounter++;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.holosproject;
 
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.onesignal.Continue;
+import com.onesignal.OneSignal;
+import com.onesignal.debug.LogLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,12 +43,17 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference userAccountNamesRef;
 
     private static final String TAG = "MainActivity";
+    private static final String ONESIGNAL_APP_ID = "44fb7829-68a6-45d8-b153-61c241864b10";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
+
+        // Initialize one signal
+        OneSignal.getDebug().setLogLevel(LogLevel.VERBOSE);
+        OneSignal.initWithContext(this, ONESIGNAL_APP_ID);
 
         // Initializing the Firestore database instance when the activity is created
         database = FirebaseFirestore.getInstance();
@@ -60,7 +69,19 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             goToTestSuccessDashboard();
         } else {
-            createNewUser();
+            // Prompt for noti's
+            OneSignal.getNotifications().requestPermission(true, Continue.with(r -> {
+                if (r.isSuccess()) {
+                    if (r.getData()) {
+                        // `requestPermission` completed successfully and the user has accepted permission
+                        createNewUser(); // Call createNewUser() here, after the permission request is completed
+                    } else {
+                       createNewUser();
+                    }
+                } else {
+                    // `requestPermission` completed unsuccessfully, check `r.getThrowable()` for more info on the failure reason
+                }
+            }));
         }
     }
 
@@ -111,29 +132,41 @@ public class MainActivity extends AppCompatActivity {
 
                             userProfile.put("profileImageUrl", defaultUrl);
 
+                            // Retrieve OneSignal Player ID
+                            OneSignal.login(user.getUid());
+                  /*          String oneSignalPlayerId = OneSignal.getDeviceState().getUserId();
+                            if (oneSignalPlayerId != null) {
+                                // OneSignal Player ID is available, store it in user profile
+                                userProfile.put("OneSignalPlayerId", oneSignalPlayerId);
+                            }*/
+
                             // Store the user profile in Firestore
-                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            db.collection("userProfiles").document(user.getUid())
-                                    .set(userProfile)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.d(TAG, "DocumentSnapshot successfully written!");
-                                            updateUI(user);
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(TAG, "Error writing document", e);
-                                            updateUI(null);
-                                        }
-                                    });
+                            storeUserProfile(user, userProfile);
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
+                    }
+                });
+    }
+
+    private void storeUserProfile(FirebaseUser user, Map<String, Object> userProfile) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("userProfiles").document(user.getUid())
+                .set(userProfile)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                        updateUI(user);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                        updateUI(null);
                     }
                 });
     }

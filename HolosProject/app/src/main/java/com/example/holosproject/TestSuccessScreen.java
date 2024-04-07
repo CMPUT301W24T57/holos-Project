@@ -17,6 +17,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+
 public class TestSuccessScreen extends AppCompatActivity {
     private final String TAG = "TestScreen";
     private FirebaseUser currentUser;
@@ -54,7 +55,6 @@ public class TestSuccessScreen extends AppCompatActivity {
             // Handle the case where user is null
             textUsername.setText("No user");
         }
-
     }
 
     /**
