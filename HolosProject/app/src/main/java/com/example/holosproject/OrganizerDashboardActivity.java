@@ -107,13 +107,6 @@ public class OrganizerDashboardActivity extends AppCompatActivity
         eventsList.clear();
         // Fetch the events again when coming back to this activity
         // we wait half a second so images load lol
-        try {
-            Thread.sleep(500);
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
        fetchUserEvents();
 
         NavigationView navigationView = findViewById(R.id.nav_view);

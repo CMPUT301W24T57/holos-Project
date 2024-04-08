@@ -214,9 +214,11 @@ public class AddEventActivity extends AppCompatActivity {
                             uploadCustomQR(qrCodeUri, eventID);
                         }
 
+                        // delay to ensure event gets uploaded completely before going back
+
                         try {
                             Toast.makeText(AddEventActivity.this, "Please wait, uploading your new event...", Toast.LENGTH_SHORT).show();
-                            Thread.sleep(800);
+                            Thread.sleep(1100);
                         }
                         catch (InterruptedException e) {
                             e.printStackTrace();

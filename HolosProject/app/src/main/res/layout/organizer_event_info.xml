@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/text_dashboard_title"
         android:layout_marginTop="20dp"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:layout_centerHorizontal="true"
         android:text="Event Name:"
         android:textStyle="bold"
