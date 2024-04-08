@@ -64,6 +64,22 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
+
+    <TextView
+        android:id="@+id/checkInHiddenText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/eventPoster"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="15dp"
+        android:text="Check In Here"
+        android:textAlignment="viewEnd"
+        android:textColor="@color/material_dynamic_primary0"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -84,6 +100,18 @@
         android:textSize="16sp"
         android:layout_centerHorizontal="true"
         android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/eventCheckInHidden"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginBottom="15dp"
+        android:layout_below="@id/checkInHiddenText"
+        android:textColor="@color/material_dynamic_primary0"
+        android:textSize="16sp"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/event_Location"

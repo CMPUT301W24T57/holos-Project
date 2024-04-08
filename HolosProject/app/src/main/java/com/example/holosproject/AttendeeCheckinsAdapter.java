@@ -52,6 +52,7 @@ public class AttendeeCheckinsAdapter extends ArrayAdapter<AttendeeCheckin> {
 
         TextView AttendeeName = convertView.findViewById(R.id.AttendeeName);
         TextView CheckinCount = convertView.findViewById(R.id.CheckinCount);
+
         DocumentReference docRef = usersRef.document(attendeeCheckin.getName());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override

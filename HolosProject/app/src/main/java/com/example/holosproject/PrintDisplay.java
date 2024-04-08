@@ -71,9 +71,20 @@ public class PrintDisplay extends AppCompatActivity {
                         TextView creatorDisplay = findViewById(R.id.event_Creator);
                         TextView eventDisplay = findViewById(R.id.eventTitle);
                         TextView eventLocation = findViewById(R.id.event_Location);
+                        TextView hiddenTitle = findViewById(R.id.checkInHiddenText);
                         ImageView posterDisplay = findViewById(R.id.eventPoster);
                         ImageView avatarDisplay = findViewById(R.id.event_creatorAvatar);
+                        dateDisplay.setVisibility(View.GONE);
+                        creatorDisplay.setVisibility(View.GONE);
+                        eventLocation.setVisibility(View.GONE);
+                        avatarDisplay.setVisibility(View.GONE);
+                        posterDisplay.setVisibility(View.VISIBLE);
+                        hiddenTitle.setVisibility(View.VISIBLE);
                         Picasso.get().load(posterUrl).into(posterDisplay);
+                        printButton.setTranslationY(300);
+
+                        promoDisplay = findViewById(R.id.eventCheckInHidden);
+                        promoDisplay.setVisibility(View.VISIBLE);
 
                         if (customUrl == null) {
                             qrgEncoder2 = new QRGEncoder(eventID, null, QRGContents.Type.TEXT, 250);
@@ -179,7 +190,7 @@ public class PrintDisplay extends AppCompatActivity {
 
         printButton = findViewById(R.id.printButton);
         printButton.setVisibility(View.VISIBLE);
-        promoDisplay=findViewById(R.id.eventCode);
+        promoDisplay = findViewById(R.id.eventCode);
 
 
         Bundle bundle = getIntent().getExtras();

@@ -507,11 +507,13 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                 eventRef.update("checkIns", checkIns)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "User added to checkins"))
                         .addOnFailureListener(e -> Log.e(TAG, "Error adding user", e));
+                checkAndUpdateUserLocation(eventID);
             }
             Toast.makeText(this, "You have successfully checked in.", Toast.LENGTH_SHORT).show();
         }
 
     }
+    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
