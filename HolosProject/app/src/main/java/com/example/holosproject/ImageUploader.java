@@ -18,6 +18,7 @@ public class ImageUploader {
 
     public interface ImageUploadListener {
         void onImageUploadSuccess(String downloadUrl);
+
         void onImageUploadFailure(Exception e);
     }
 
@@ -28,6 +29,7 @@ public class ImageUploader {
 
     /**
      * Constructor to initialize the ImageUploader.
+     *
      * @param listener The listener to handle image upload events.
      */
     public ImageUploader(ImageUploadListener listener) {
@@ -39,6 +41,7 @@ public class ImageUploader {
 
     /**
      * Uploads the profile image to Firebase Storage and updates the profile image URL in Firestore.
+     *
      * @param imageUri The URI of the image to upload.
      */
     public void uploadProfileImage(Uri imageUri) {
@@ -63,6 +66,7 @@ public class ImageUploader {
 
     /**
      * Saves the profile image URL to the user's profile in Firestore.
+     *
      * @param imageUrl The URL of the uploaded profile image.
      */
     private void saveImageUrlToUserProfile(String imageUrl) {
@@ -77,10 +81,11 @@ public class ImageUploader {
 
     /**
      * Sets a new listener to handle image upload events.
+     *
      * @param listener The listener to set, or null to remove the listener.
      */
     public void setImageUploadListener(ImageUploadListener listener) {
         this.listener = listener;
     }
-
 }
+
