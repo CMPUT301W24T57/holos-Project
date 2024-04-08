@@ -83,20 +83,4 @@ public class ImageUploader {
         this.listener = listener;
     }
 
-    /**
-     * Interface to handle image upload events.
-     */
-    public interface ImageUploadListener {
-        /**
-         * Called when image upload is successful.
-         * @param downloadUrl The download URL of the uploaded image.
-         */
-        void onImageUploadSuccess(String downloadUrl);
-
-        /**
-         * Called when image upload fails.
-         * @param e The exception indicating the cause of the failure.
-         */
-        void onImageUploadFailure(Exception e);
-    }
 }
