@@ -16,24 +16,24 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(AndroidJUnit4.class) // Added dependency for this AndroidJUnit4
-@LargeTest
-
 /**
  * FileName: AdminDashboardTest
  * Description: Runs tests relating to the admin dashboard. Viewing/Deleting events, profiles and images.
- *
  * How does the test work? It first enables "Test Mode" for the AdminViewProfiles, Events, and Images activity.
  * When test mode is enabled in those activites, it will load mock data from MockDataProvider, instead of data from
  * firebase. We then view and delete this mock data through this test.
  **/
-
+@RunWith(AndroidJUnit4.class) // Added dependency for this AndroidJUnit4
+@LargeTest
 public class AdminDashboardTest {
 
     @Rule
     public ActivityScenarioRule<AdminDashboardActivity> scenario = new
             ActivityScenarioRule<AdminDashboardActivity>(AdminDashboardActivity.class);
 
+    /**
+     * Sets up test mode for a few admin activities.
+     */
     @Before
     public void setUp() {
         // Enable test mode before starting the activity
@@ -44,8 +44,11 @@ public class AdminDashboardTest {
         AdminViewImagesAdapter.enableTestMode();
     }
 
+    /**
+     * Test for viewing/deleting profiles as an admin.
+     * @throws InterruptedException
+     */
     @Test
-    // Test for Viewing/Deleting profiles as an admin
     public void ViewAndDeleteProfileTest() throws InterruptedException {
 
         // Tap on the View Profiles Button
@@ -59,6 +62,9 @@ public class AdminDashboardTest {
         onView(ViewMatchers.withText("Yes")).perform(click());
     }
 
+    /**
+     * Tests viewing/deleting events as an admin.
+     */
     @Test
     // Test for Viewing/Deleting events as an admin
     public void ViewAndDeleteEventTest()  {
@@ -74,6 +80,10 @@ public class AdminDashboardTest {
         onView(ViewMatchers.withText("OK")).perform(click());
     }
 
+    /**
+     * Tests viewing / deleting images as an admin.
+     * @throws InterruptedException
+     */
     @Test
     public void ViewAndDeleteImagesTest() throws InterruptedException {
         onView(withId(R.id.btnViewImages)).perform(click());
@@ -93,6 +103,9 @@ public class AdminDashboardTest {
 
     }
 
+    /**
+     * Disables test mode for a few admin activities.
+     */
     @After
     public void tearDown() {
         // Disable test mode after each test

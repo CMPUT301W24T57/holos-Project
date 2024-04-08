@@ -11,8 +11,8 @@ public class UploadManager {
     private static final String PREF_NAME = "ImageUploadPref";
     private static final String KEY_IMAGE_UPLOADED = "image_uploaded";
 
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
+    private final SharedPreferences sharedPreferences;
+    private final SharedPreferences.Editor editor;
 
     /**
      * Constructs a new UploadManager instance.

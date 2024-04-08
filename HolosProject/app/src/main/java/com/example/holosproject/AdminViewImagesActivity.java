@@ -22,7 +22,7 @@ public class AdminViewImagesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private AdminViewImagesAdapter imagesAdapter;
-    private List<String> imageUrls = new ArrayList<>();
+    private final List<String> imageUrls = new ArrayList<>();
     // Static variable to control test mode
     public static boolean isTestMode = false;
 

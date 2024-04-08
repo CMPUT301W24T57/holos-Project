@@ -36,10 +36,7 @@ public class AttendeeListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private AdminViewProfilesAdapter adapter;
-    private List<UserProfile> profiles = new ArrayList<>();; // Declare profiles as a member variable
-
-    // Static variable to control test mode
-    public static boolean isTestMode = false;
+    private final List<UserProfile> profiles = new ArrayList<>(); // Declare profiles as a member variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

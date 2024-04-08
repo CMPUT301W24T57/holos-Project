@@ -41,8 +41,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * An adapter based on a typical RecyclerView adapter that is used to display the list of events an organizer has created.
+ */
 public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<OrganizerDashboardEventsAdapter.EventViewHolder> {
-    private List<Event> eventList;
+    private final List<Event> eventList;
     private final String TAG = "o";
     private static final String ONESIGNAL_APP_ID = "44fb7829-68a6-45d8-b153-61c241864b10";
 

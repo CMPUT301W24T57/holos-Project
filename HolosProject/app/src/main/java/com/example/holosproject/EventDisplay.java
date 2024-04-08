@@ -25,10 +25,14 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+/**
+ * This class is used to display the details of an event, as well as prompting a user to check in.
+ */
+
 public class EventDisplay extends AppCompatActivity {
 
-    private FirebaseFirestore database = FirebaseFirestore.getInstance();
-    private CollectionReference eventsRef = database.collection("events");
+    private final FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private final CollectionReference eventsRef = database.collection("events");
 
     private static boolean testMode = false;
 

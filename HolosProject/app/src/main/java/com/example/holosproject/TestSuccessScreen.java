@@ -17,7 +17,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
+/**
+ * The screen a user is sent to every time they open the app, handling things based on their user.
+ */
 public class TestSuccessScreen extends AppCompatActivity {
     private final String TAG = "TestScreen";
     private FirebaseUser currentUser;
@@ -43,7 +45,7 @@ public class TestSuccessScreen extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            textUsername.setText("Username: " + (String) document.get("name"));
+                            textUsername.setText("Username: " + document.get("name"));
                         }
                     }
                 }

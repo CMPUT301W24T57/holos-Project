@@ -5,8 +5,11 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -55,7 +58,7 @@ import java.util.Objects;
  * The XML files associated with the drawer are: drawer_menu.xml, drawer_menu_header.xml, and activity_attendee_dashboard.xml.
  * AttendeeDashboardActivity is associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
  *
- * @noinspection ALL
+ *
  */
 
 public class AttendeeDashboardActivity extends AppCompatActivity
@@ -95,6 +98,8 @@ public class AttendeeDashboardActivity extends AppCompatActivity
     private ListenerRegistration eventsListener;
     private FusedLocationProviderClient fusedLocationClient;
     private String locationID;
+
+    private float initialX;
 
 
     /**
@@ -211,6 +216,23 @@ public class AttendeeDashboardActivity extends AppCompatActivity
                     }
                 }
             }
+        });
+
+
+        // Swipe gesture to open sidebar!
+        findViewById(R.id.eventsRecyclerView).setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    initialX = event.getX();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float finalX = event.getX();
+                    if (finalX - initialX > 100) {
+                        drawerLayout.openDrawer(Gravity.START);
+                    }
+                    break;
+            }
+            return true;
         });
     }
 

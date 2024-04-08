@@ -28,8 +28,8 @@ import java.util.List;
  **/
 public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEventsAdapter.ViewHolder> {
 
-    private List<Event> events;
-    private LayoutInflater inflater;
+    private final List<Event> events;
+    private final LayoutInflater inflater;
 
     /**
      * Constructor for AdminViewEventsAdapter.
@@ -55,6 +55,10 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
         View view = inflater.inflate(R.layout.admin_view_events_item_event, parent, false);
         return new ViewHolder(view);
     }
+
+    /**
+     * Creates a ViewHolder for an event using a Recycler View ViewHolder.
+     */
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView textViewEventName, textViewEventDate, textViewEventTime, textViewEventAddress, textViewEventCreator, textViewEventId;
@@ -139,7 +143,7 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
             } else {
                 Toast.makeText(inflater.getContext(), "Event not found (test mode)", Toast.LENGTH_SHORT).show();
             }
-            return; // Exit the method to avoid attempting to delete from Firebase in test mode
+            // Exit the method to avoid attempting to delete from Firebase in test mode
         }
 
         else {

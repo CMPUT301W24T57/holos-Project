@@ -17,26 +17,30 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
-@RunWith(AndroidJUnit4.class) // Added dependency for this AndroidJUnit4
-@LargeTest
 
 /**
- *
+ * A basic test to handle scanning a check-in QR code.
  */
-
+@RunWith(AndroidJUnit4.class) // Added dependency for this AndroidJUnit4
+@LargeTest
 public class QRScanTest {
 
     @Rule
     public ActivityScenarioRule<TestAttendeeDashboardActivity> scenario = new
             ActivityScenarioRule<TestAttendeeDashboardActivity>(TestAttendeeDashboardActivity.class);
 
+    /**
+     * Enables test mode for the dummy attendee dashboard activity
+     */
     @Before
     public void setUp() {
         TestAttendeeDashboardActivity.enableTestMode();
     }
 
+    /**
+     * A basic test to handle scanning a check-in QR code.
+     */
     @Test
-    // Test for "scanning" an event check-in code
     public void checkInTest()  {
         List<Event> mockEvents = MockDataProvider.getMockEvents();
         Event mockEvent = mockEvents.get(0);

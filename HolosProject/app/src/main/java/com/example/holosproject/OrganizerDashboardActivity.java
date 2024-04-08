@@ -1,10 +1,13 @@
 package com.example.holosproject;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -45,12 +48,13 @@ public class OrganizerDashboardActivity extends AppCompatActivity
     private FirebaseUser currentUser;
     private final String TAG = "OrganizerDashboardActivity";
 
-
+    private float initialX;
 
     /**
      * Initializes activity components and UI elements.
      * @param savedInstanceState The saved instance state.
      */
+    @SuppressLint({"ClickableViewAccessibility", "WrongConstant"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +99,37 @@ public class OrganizerDashboardActivity extends AppCompatActivity
             Intent intent = new Intent(this, AddEventActivity.class);
             startActivity(intent);
             recreate();
+        });
+
+        // Swipe gesture to open sidebar!
+        findViewById(R.id.main_layout).setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    initialX = event.getX();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float finalX = event.getX();
+                    if (finalX - initialX > 100) {
+                        drawerLayout.openDrawer(Gravity.START);
+                    }
+                    break;
+            }
+            return true;
+        });
+
+        findViewById(R.id.recycler_view_events).setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    initialX = event.getX();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float finalX = event.getX();
+                    if (finalX - initialX > 100) {
+                        drawerLayout.openDrawer(Gravity.START);
+                    }
+                    break;
+            }
+            return true;
         });
     }
 

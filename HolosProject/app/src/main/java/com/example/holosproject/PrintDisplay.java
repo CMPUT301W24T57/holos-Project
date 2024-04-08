@@ -28,10 +28,14 @@ import com.squareup.picasso.Picasso;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
+/**
+ * This activity is used to display a bare-bones event poster with a promo code
+ */
+
 public class PrintDisplay extends AppCompatActivity {
 
-    private FirebaseFirestore database = FirebaseFirestore.getInstance();
-    private CollectionReference eventsRef = database.collection("events");
+    private final FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private final CollectionReference eventsRef = database.collection("events");
 
     private Button printButton;
 
@@ -43,7 +47,66 @@ public class PrintDisplay extends AppCompatActivity {
      *
      * @param eventID The ID of the event to be displayed.
      */
-    private void handleEvent(String eventID) {
+    private void handleCheckIn(String eventID) {
+        DocumentReference docRef = eventsRef.document(eventID);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        String name = document.getString("name");
+                        String date = document.getString("date");
+                        String time = document.getString("time");
+                        String address = document.getString("address");
+                        String creator = document.getString("creator");
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        String eventId = document.getId();
+                        String posterUrl = document.getString("imageUrl");
+                        String customUrl = document.getString("qrUrl");
+                        QRGEncoder qrgEncoder2;
+
+                        TextView dateDisplay = findViewById(R.id.event_Date);
+                        TextView creatorDisplay = findViewById(R.id.event_Creator);
+                        TextView eventDisplay = findViewById(R.id.eventTitle);
+                        TextView eventLocation = findViewById(R.id.event_Location);
+                        ImageView posterDisplay = findViewById(R.id.eventPoster);
+                        ImageView avatarDisplay = findViewById(R.id.event_creatorAvatar);
+                        Picasso.get().load(posterUrl).into(posterDisplay);
+
+                        if (customUrl == null) {
+                            qrgEncoder2 = new QRGEncoder(eventID, null, QRGContents.Type.TEXT, 250);
+                            Bitmap bitmap2 = qrgEncoder2.getBitmap(0);
+                            promoDisplay.setImageBitmap(bitmap2);
+                        }
+                        else {
+                            Picasso.get().load(customUrl).into(promoDisplay);
+                        }
+
+                        dateDisplay.setText(getString(R.string.prefixDate, date, time));
+                        eventLocation.setText("Location: " + address);
+                        eventDisplay.setText(name);
+                        db.collection("userProfiles").document(creator).get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        String creatorName = documentSnapshot.getString("name");
+                                        String creatorAvatar = documentSnapshot.getString("profileImageUrl");
+                                        if (name != null) {
+                                            creatorDisplay.setText(getString(R.string.prefixOrganizer, creatorName));
+                                        }
+                                        if (creatorAvatar != null) {
+                                            Picasso.get().load(creatorAvatar).into(avatarDisplay);
+                                        }
+                                    }
+                                });
+                    }
+                }
+            }
+        });
+    }
+
+    private void handlePromo(String eventID) {
         DocumentReference docRef = eventsRef.document(eventID);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @SuppressLint("NotifyDataSetChanged")
@@ -122,9 +185,13 @@ public class PrintDisplay extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String eventID = bundle.getString("contents");
-            handleEvent(eventID);
-
-
+            if (eventID.contains("promo")) {
+                eventID = eventID.replace("promo", "");
+                handlePromo(eventID);
+            }
+            else {
+                handleCheckIn(eventID);
+            }
             printButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

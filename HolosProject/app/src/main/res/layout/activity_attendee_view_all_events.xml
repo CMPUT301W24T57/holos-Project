@@ -14,7 +14,8 @@
     <!-- This main content layout includes the Toolbar, RecyclerView (for events) and FloatingActionButton for QR Code scanning -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/main_layout">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"

@@ -16,6 +16,9 @@ import com.google.firebase.storage.StorageReference;
 
 public class ImageUploader {
 
+    /**
+     * An interface used to keep track of an image being uploaded successfully / unsuccessfully.
+     */
     public interface ImageUploadListener {
         void onImageUploadSuccess(String downloadUrl);
 

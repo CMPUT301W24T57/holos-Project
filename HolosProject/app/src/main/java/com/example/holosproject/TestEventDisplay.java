@@ -26,6 +26,9 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A dummy version of the Event Display screen (so we don't have to deal with Firebase).
+ */
 public class TestEventDisplay extends AppCompatActivity {
 
     /**

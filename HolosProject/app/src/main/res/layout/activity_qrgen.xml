@@ -55,13 +55,22 @@
                 android:layout_below="@id/save_btn"
                 android:text="Share Check-In QR Code" />
 
+            <Button
+                android:id="@+id/print_btn2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/share_btn"
+                android:text="Print Event Check-In Poster" />
+
             <ImageView
                 android:id="@+id/promoQRDisplay"
                 android:layout_width="200sp"
                 android:layout_height="200sp"
-                android:layout_below="@id/save_btn"
+                android:layout_below="@id/print_btn2"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="50dp">
+                android:layout_marginTop="5dp">
             </ImageView>
 
             <Button

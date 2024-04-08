@@ -23,10 +23,10 @@ import java.util.List;
 
 public class AdminViewProfilesAdapter extends RecyclerView.Adapter<AdminViewProfilesAdapter.ViewHolder> {
 
-    private List<UserProfile> profiles;
-    private LayoutInflater inflater;
+    private final List<UserProfile> profiles;
+    private final LayoutInflater inflater;
     private ItemClickListener clickListener;
-    private Context context;
+    private final Context context;
 
     /**
      * Constructor for the AdminViewProfilesAdapter.

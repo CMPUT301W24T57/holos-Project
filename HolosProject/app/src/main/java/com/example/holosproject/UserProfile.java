@@ -1,5 +1,9 @@
 package com.example.holosproject;
 
+/**
+ * Represents a user's profile within the database,
+ * Used to both write to and access a user's data.
+ */
 public class UserProfile {
     private String name;
     private String contact;
@@ -73,6 +77,7 @@ public class UserProfile {
 
     /**
      * Retrieves the URL of the users profile image
+     * @return The URL to be retrieved
      */
     public String getProfileImageUrl() {
         return profileImageUrl;

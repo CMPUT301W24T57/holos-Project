@@ -60,7 +60,7 @@ public class TestViewAllEventsActivity extends AppCompatActivity
     // Using a RecyclerView to display all of the Events that exist within our app
     private RecyclerView allEventsRecyclerView;
     private AttendeeDashboardEventsAdapter eventsAdapter;
-    private List<Event> allEventsList = new ArrayList<>(); // This is the data source
+    private final List<Event> allEventsList = new ArrayList<>(); // This is the data source
 
     // References to The drawer menu
     private DrawerLayout drawerLayout;

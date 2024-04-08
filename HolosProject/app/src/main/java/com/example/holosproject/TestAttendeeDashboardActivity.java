@@ -38,7 +38,7 @@ import java.util.List;
  * The XML files associated with the drawer are: drawer_menu.xml, drawer_menu_header.xml, and activity_attendee_dashboard.xml.
  * AttendeeDashboardActivity is associated with the item_attendee_dashboard.xml layout, and the activity_attendee_dashboard.xml layout.
  *
- * @noinspection ALL
+ *
  */
 
 public class TestAttendeeDashboardActivity extends AppCompatActivity

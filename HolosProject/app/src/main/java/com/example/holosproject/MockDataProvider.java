@@ -10,6 +10,11 @@ import java.util.List;
 
 
 public class MockDataProvider {
+
+    /**
+     * Creates a list of mock user profiles.
+     * @return A static list of user profiles.
+     */
     public static List<UserProfile> getMockProfiles() {
         List<UserProfile> mockProfiles = new ArrayList<>();
 

@@ -2,6 +2,7 @@ package com.example.holosproject;
 
 import static android.content.ContentValues.TAG;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,9 +11,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -60,14 +63,16 @@ public class ViewAllEventsActivity extends AppCompatActivity
     // Using a RecyclerView to display all of the Events that exist within our app
     private RecyclerView allEventsRecyclerView;
     private AttendeeDashboardEventsAdapter eventsAdapter;
-    private List<Event> allEventsList = new ArrayList<>(); // This is the data source
+    private final List<Event> allEventsList = new ArrayList<>(); // This is the data source
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser(); // The current user
-    private FirebaseFirestore database = FirebaseFirestore.getInstance();
-    private CollectionReference eventsRef = database.collection("events");
+    private final FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private final CollectionReference eventsRef = database.collection("events");
     // References to The drawer menu
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
+
+    private float initialX;
 
     // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
     /**
@@ -109,6 +114,7 @@ public class ViewAllEventsActivity extends AppCompatActivity
         return true;
     }
 
+    @SuppressLint({"ClickableViewAccessibility", "WrongConstant"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,7 +163,36 @@ public class ViewAllEventsActivity extends AppCompatActivity
                 }
             }, 1000);
         }
-        // TODO: Fetch all events from Firestore and update the RecyclerView
+
+        findViewById(R.id.main_layout).setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    initialX = event.getX();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float finalX = event.getX();
+                    if (finalX - initialX > 100) {
+                        drawerLayout.openDrawer(Gravity.START);
+                    }
+                    break;
+            }
+            return true;
+        });
+
+        findViewById(R.id.allEventsRecyclerView).setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    initialX = event.getX();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float finalX = event.getX();
+                    if (finalX - initialX > 100) {
+                        drawerLayout.openDrawer(Gravity.START);
+                    }
+                    break;
+            }
+            return true;
+        });
     }
 
     @Override
@@ -173,7 +208,6 @@ public class ViewAllEventsActivity extends AppCompatActivity
         eventsRef.addSnapshotListener(this, (value, error) -> {
             if (error != null) {
                 Log.e(TAG, "Listen failed.", error);
-                return;
             } else {
                 allEventsList.clear();
                 fetchEvents();

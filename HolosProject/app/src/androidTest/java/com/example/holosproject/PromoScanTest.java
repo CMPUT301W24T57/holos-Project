@@ -16,21 +16,22 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
-@RunWith(AndroidJUnit4.class) // Added dependency for this AndroidJUnit4
-@LargeTest
 
 /**
- *
+ * A basic test of handling a promotion code being scanned.
  */
-
+@RunWith(AndroidJUnit4.class) // Added dependency for this AndroidJUnit4
+@LargeTest
 public class PromoScanTest {
 
     @Rule
     public ActivityScenarioRule<TestAttendeeDashboardActivity> scenario = new
             ActivityScenarioRule<TestAttendeeDashboardActivity>(TestAttendeeDashboardActivity.class);
 
+    /**
+     * A basic test to handle scanning a promotional QR code.
+     */
     @Test
-    // Test for "scanning" an event check-in code
     public void promoTest()  {
         List<Event> mockEvents = MockDataProvider.getMockEvents();
         Event mockEvent = mockEvents.get(0);

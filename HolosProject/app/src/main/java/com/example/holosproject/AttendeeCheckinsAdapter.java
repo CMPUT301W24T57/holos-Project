@@ -22,8 +22,8 @@ import java.util.List;
  * Adapter class for displaying attendee check-ins in a ListView.
  */
 public class AttendeeCheckinsAdapter extends ArrayAdapter<AttendeeCheckin> {
-    private FirebaseFirestore database = FirebaseFirestore.getInstance();
-    private CollectionReference usersRef = database.collection("userProfiles");
+    private final FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private final CollectionReference usersRef = database.collection("userProfiles");
 
     /**
      * Constructs a new AttendeeCheckinsAdapter.

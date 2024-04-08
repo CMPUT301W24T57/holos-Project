@@ -14,14 +14,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-// Not in use anymore
+/**
+ * The class used to login to an administrator account.
+ */
 public class Login extends AppCompatActivity {
     private EditText usernameEditText;
     private EditText passwordEditText;
     private FirebaseAuth mAuth;
     private Button signinButton;
     private static final String TAG = "LoginActivity";
-    private String emailpad = "@holos.project";
+    private final String emailpad = "@holos.project";
 
     // I see zero security concerns here at all :-) lgtm
     private static final String ADMIN_USERNAME = "administrator";

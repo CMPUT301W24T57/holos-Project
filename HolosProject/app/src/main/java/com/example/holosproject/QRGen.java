@@ -43,6 +43,12 @@ import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 import androidmads.library.qrgenearator.QRGSaver;
 
+/**
+ * This screen is used to generate / display two different QR codes,
+ * One is the promotional QR code, with the format "promo" + [EVENT ID]
+ * The other is the check-in code, which may be custom, or by default contains the string [EVENT ID] when scanned.
+ */
+
 public class QRGen extends AppCompatActivity {
 
     private String customUrl;
@@ -163,6 +169,12 @@ public class QRGen extends AppCompatActivity {
         });
 
         findViewById(R.id.print_btn).setOnClickListener(v -> {
+            Intent intent = new Intent(this, PrintDisplay.class);
+            intent.putExtra("contents", "promo" + eventID);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.print_btn2).setOnClickListener(v -> {
             Intent intent = new Intent(this, PrintDisplay.class);
             intent.putExtra("contents", eventID);
             startActivity(intent);

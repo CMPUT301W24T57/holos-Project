@@ -65,6 +65,11 @@ public class Event {
         return recentAnnouncement;
     }
 
+    /**
+     * Sets recent announcement
+     * @param recentAnnouncement: what to set the announcement to
+     */
+
     public void setRecentAnnouncement(String recentAnnouncement) {
         this.recentAnnouncement = recentAnnouncement;
     }
@@ -277,6 +282,7 @@ public class Event {
 
     /**
      * Retrieves the image URL for the poster of the event
+     * @return The URL of an image.
      */
     public String getImageUrl() {
         return imageUrl;

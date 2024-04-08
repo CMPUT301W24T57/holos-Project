@@ -368,7 +368,7 @@ public class AddEventActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
             if (bitmap == null)
             {
-                Log.e("TAG", "uri is not a bitmap," + qrCodeUri.toString());
+                Log.e("TAG", "uri is not a bitmap," + qrCodeUri);
                 return;
             }
             int width = bitmap.getWidth(), height = bitmap.getHeight();
@@ -394,7 +394,7 @@ public class AddEventActivity extends AppCompatActivity {
         }
         catch (FileNotFoundException e)
         {
-            Log.e("TAG", "can not open file" + qrCodeUri.toString(), e);
+            Log.e("TAG", "can not open file" + qrCodeUri, e);
         }
     }
 

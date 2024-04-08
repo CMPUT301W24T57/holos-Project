@@ -37,7 +37,6 @@ public class AdminViewEventsActivity extends AppCompatActivity {
      *
      * @param savedInstanceState A Bundle object containing the activity's previously saved state, if any.
      */
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

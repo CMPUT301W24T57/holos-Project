@@ -54,7 +54,7 @@ import okhttp3.Response;
  **/
 
 public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<AttendeeDashboardEventsAdapter.EventViewHolder> {
-    private List<Event> eventList;
+    private final List<Event> eventList;
     private final String TAG = "Event_details";
     private static final String ONESIGNAL_APP_ID = "44fb7829-68a6-45d8-b153-61c241864b10";
 
