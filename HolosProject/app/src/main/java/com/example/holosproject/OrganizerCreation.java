@@ -60,6 +60,10 @@ public class OrganizerCreation extends AppCompatActivity {
     private FirebaseAuth mAuth;
     String emailpad = "@holos.project";
 
+
+    /**
+     * This activity allows organizers to create their profiles.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

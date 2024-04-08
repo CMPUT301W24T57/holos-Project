@@ -97,6 +97,12 @@ public class PrintDisplay extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initializes the activity, sets up the layout, and handles window insets.
+     * Also handles the print button click listener.
+     * @param savedInstanceState The saved instance state.
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

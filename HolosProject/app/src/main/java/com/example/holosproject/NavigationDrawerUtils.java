@@ -10,8 +10,16 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-
+/**
+ * Utility class for updating the navigation drawer header with user information.
+ */
 public class NavigationDrawerUtils {
+
+    /**
+     * Updates the navigation drawer header with the current user's information.
+     *
+     * @param navigationView The NavigationView containing the header to be updated.
+     */
 
     public static void updateNavigationHeader(NavigationView navigationView) {
         View headerView = navigationView.getHeaderView(0);
