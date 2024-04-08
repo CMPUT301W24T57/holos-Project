@@ -70,10 +70,12 @@
         app:layout_constraintTop_toBottomOf="@+id/editTextContact" />
 
     <!-- Add a bell icon in here -->
+
     <Button
         android:id="@+id/buttonNotificationSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
         android:text="Notification Settings"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextHomepage" />
@@ -82,22 +84,24 @@
         android:id="@+id/switchGeolocation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="144dp"
         android:text="Geolocation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/buttonNotificationSettings"
-        app:layout_constraintTop_toBottomOf="@+id/editTextHomepage" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonNotificationSettings" />
 
     <Button
         android:id="@+id/buttonFinishProfileCreation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="#2297ef"
         android:text="Finish Profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        android:backgroundTint="#2297ef"
         app:layout_constraintTop_toBottomOf="@+id/switchGeolocation"
-        />
+        app:layout_constraintVertical_bias="0.062" />
 
     <Button
         android:id="@+id/buttonBack"

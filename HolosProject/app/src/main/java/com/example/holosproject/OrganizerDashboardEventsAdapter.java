@@ -159,7 +159,14 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
         TextView textViewEventTime = diagView.findViewById(R.id.textViewEventTimeDiag);
         TextView textViewEventLocation = diagView.findViewById(R.id.textViewEventLocationDiag);
         ImageView eventPoster = diagView.findViewById(R.id.event_poster);
-        Picasso.get().load(event.getImageUrl()).into(eventPoster);
+        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(event.getImageUrl())
+                    .into(eventPoster);
+        } else {
+            // Here you can set a default image or a placeholder
+            eventPoster.setImageResource(R.drawable.ic_launcher_background); // using launcher background as a placeholder for now
+        }
 
         TextView textViewFull = diagView.findViewById(R.id.textViewFull);
 

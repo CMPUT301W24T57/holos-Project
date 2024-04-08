@@ -101,7 +101,14 @@ public class AttendeeDashboardEventsAdapter extends RecyclerView.Adapter<Attende
         textViewEventName.setText(event.getName());
         textViewEventDate.setText("Date: " + event.getDate() + " at " + event.getTime());
         textViewEventLocation.setText("Location: " + event.getAddress());
-        Picasso.get().load(event.getImageUrl()).into(eventPoster);
+        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(event.getImageUrl())
+                    .into(eventPoster);
+        } else {
+            // Here you can set a default image or a placeholder
+            eventPoster.setImageResource(R.drawable.ic_launcher_background); // using launcher background as a placeholder for now
+        }
 
         if (event.getRecentAnnouncement() != null) {
             textViewEventAnnouncement.setText(event.getRecentAnnouncement());
