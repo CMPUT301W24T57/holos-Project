@@ -116,21 +116,6 @@ public class OrganizerDashboardActivity extends AppCompatActivity
             }
             return true;
         });
-
-        findViewById(R.id.recycler_view_events).setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    initialX = event.getX();
-                    break;
-                case MotionEvent.ACTION_UP:
-                    float finalX = event.getX();
-                    if (finalX - initialX > 100) {
-                        drawerLayout.openDrawer(Gravity.START);
-                    }
-                    break;
-            }
-            return true;
-        });
     }
 
     /**

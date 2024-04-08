@@ -1,5 +1,6 @@
 package com.example.holosproject;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -146,6 +147,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
      * It displays events, allows check-in, and provides access to user settings.
      */
 
+    @SuppressLint({"WrongConstant", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,7 +222,7 @@ public class AttendeeDashboardActivity extends AppCompatActivity
 
 
         // Swipe gesture to open sidebar!
-        findViewById(R.id.eventsRecyclerView).setOnTouchListener((v, event) -> {
+        findViewById(R.id.main_layout).setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     initialX = event.getX();
