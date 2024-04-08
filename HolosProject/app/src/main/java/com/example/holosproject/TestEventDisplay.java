@@ -28,6 +28,12 @@ import java.util.Objects;
 
 public class TestEventDisplay extends AppCompatActivity {
 
+    /**
+     * Handle a test event.
+     * Retrieves mock events from the data provider and matches the event ID to display event details.
+     * @param eventID The ID of the event to be handled.
+     */
+
     private void handleTestEvent(String eventID) {
         List<Event> mockEvents = MockDataProvider.getMockEvents();
         for (Event event : mockEvents) {
@@ -60,6 +66,11 @@ public class TestEventDisplay extends AppCompatActivity {
             intent.putExtra("title", eventID);
             startActivity(intent);
     }
+
+    /**
+     * Called when the activity is starting. Sets up the layout and handles event details display.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down, this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

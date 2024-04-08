@@ -104,24 +104,23 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
 
         scanButton = findViewById(R.id.fabQRCode);
         scanButton.setOnClickListener(v -> {
-                if (checkInMode) {
-                    testScanQRCode();
-                }
-                else {
-                    testPromoQRCode();
-                }
+            if (checkInMode) {
+                testScanQRCode();
+            } else {
+                testPromoQRCode();
+            }
         });
 
         // if we got here from the check-in display screen,
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String eventID = bundle.getString("title");
-                mockEvents = MockDataProvider.getMockEvents();
-                for (Event event : mockEvents) {
-                    if (event.getEventId() == eventID) {
-                        testRSVPEvent(eventID, event);
-                    }
+            mockEvents = MockDataProvider.getMockEvents();
+            for (Event event : mockEvents) {
+                if (event.getEventId() == eventID) {
+                    testRSVPEvent(eventID, event);
                 }
+            }
         }
 
     }
@@ -129,6 +128,7 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
 
     /**
      * Grabs user profile, to determine what they view in the Drawer Menu
+     *
      * @param userId: the users ID
      */
     private void fetchUserProfile(String userId) {
@@ -148,8 +148,7 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
 
                     // hide the login option
                     adminLoginMenuItem.setVisible(false);
-                }
-                else {
+                } else {
                     // if role is not admin, then show the login option
                     adminLoginMenuItem.setVisible(true);
                 }
@@ -159,12 +158,25 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * Fetches the test profile and makes the admin login menu item visible in the navigation drawer.
+     */
+
     private void fetchTestProfile() {
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         Menu menu = navigationView.getMenu();
         MenuItem adminLoginMenuItem = menu.findItem(R.id.admin_login);
         adminLoginMenuItem.setVisible(true);
     }
+
+
+    /**
+     * Handles navigation item selection from the navigation drawer menu.
+     * Navigates to the respective activity based on the selected item.
+     *
+     * @param item The selected menu item.
+     * @return True if the item selection is handled successfully.
+     */
 
     // OnNavigationItemSelected: When a user selects an item from the nav drawer menu, what should happen?
     @Override
@@ -192,8 +204,7 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
             Intent intent = new Intent(this, AdminDashboardActivity.class);
             startActivity(intent);
             finish();
-        }
-        else if (id == R.id.admin_login) {
+        } else if (id == R.id.admin_login) {
             Intent intent = new Intent(this, Login.class);
             startActivity(intent);
         }
@@ -202,18 +213,24 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Test scanning a QR code for an event.
+     * Retrieves a mock event ID and passes it to the handleTestCode method.
+     */
     private void testScanQRCode() {
         List<Event> mockEvents = MockDataProvider.getMockEvents();
         String mockID = mockEvents.get(0).getEventId();
         handleTestCode(mockID);
-
     }
 
+    /**
+     * Test scanning a promotional QR code for an event.
+     * Retrieves a mock event ID and appends "promo" to it, then passes it to the handleTestCode method.
+     */
     private void testPromoQRCode() {
         List<Event> mockEvents = MockDataProvider.getMockEvents();
         String mockID = "promo" + mockEvents.get(0).getEventId();
         handleTestCode(mockID);
-
     }
 
     /**
@@ -287,30 +304,45 @@ public class TestAttendeeDashboardActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Handle a test QR code.
+     * If the event ID contains "promo", it strips "promo" and navigates to the promo display.
+     * Otherwise, it navigates to the event display.
+     *
+     * @param eventID The event ID extracted from the QR code.
+     */
     private void handleTestCode(String eventID) {
         if (eventID.contains("promo")) {
             String strippedContents = eventID.replace("promo", "");
             goToPromoDisplay(eventID);
-        }
-        else {
+        } else {
             goToEventDisplay(eventID);
         }
     }
 
+    /**
+     * Enable test mode for check-in functionality.
+     * Sets the check-in mode to true.
+     */
     protected static void enableTestMode() {
         checkInMode = true;
     }
 
+    /**
+     * Disable test mode for check-in functionality.
+     * Sets the check-in mode to false.
+     */
     protected static void disableTestMode() {
         checkInMode = false;
     }
 
+    /**
+     * Set a test event for check-in functionality.
+     *
+     * @param event The event object to be used for testing check-in.
+     */
     protected void setTestEvent(Event event) {
         this.testEvent = event;
     }
-
-
-
-
 }
 

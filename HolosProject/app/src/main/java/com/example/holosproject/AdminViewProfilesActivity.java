@@ -36,6 +36,13 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
     // Static variable to control test mode
     public static boolean isTestMode = false;
 
+    /**
+     * Called when the activity is first created.
+     * It sets up the layout, initializes the RecyclerView, and sets a click listener for the back button
+     * to finish the activity and return to the previous one.
+     *
+     * @param savedInstanceState A Bundle object containing the activity's previously saved state, if any.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,6 +165,15 @@ public class AdminViewProfilesActivity extends AppCompatActivity {
     public static void disableTestMode() {
         isTestMode = false;
     }
+
+
+    /**
+     * Called when a menu item in the options menu is selected.
+     * It handles the selection of items in the ActionBar, specifically the Up/Home button.
+     *
+     * @param item The selected menu item.
+     * @return True if the selection was handled successfully, otherwise false.
+     */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

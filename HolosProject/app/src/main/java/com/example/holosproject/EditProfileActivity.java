@@ -70,6 +70,16 @@ public class EditProfileActivity extends AppCompatActivity {
     private UploadManager uploadManager;
 
 
+
+    /**
+     * Initializes the EditProfileActivity UI components and sets up event listeners.
+     * Retrieves the current user's profile information and populates the UI elements with the data.
+     * Handles actions related to profile image upload, removal, and other profile updates.
+     *
+     * @param savedInstanceState The saved instance state bundle
+     */
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -332,6 +342,10 @@ public class EditProfileActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Called when the activity is resumed. Updates the bell notification icon.
+     */
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -340,6 +354,15 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     //  handle image selection from user
+
+    /**
+     * Called when an activity that was started for result returns a result.
+     *
+     * @param requestCode The request code passed to startActivityForResult().
+     * @param resultCode  The result code returned by the child activity.
+     * @param data        An Intent that carries the result data.
+     */
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -353,6 +376,13 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     // Method to remove the profile image (activated when user presses "Remove Profile Image" button)
+
+    /**
+     * Removes the profile image of the user from Firebase Storage and updates the Firestore database.
+     *
+     * @param userId The unique identifier of the user whose profile image is to be removed.
+     */
+
     private void removeProfileImage(String userId) {
         // Remove image from Firebase Storage
         StorageReference profileImageRef = FirebaseStorage.getInstance().getReference("profileImages/" + userId + ".jpg");

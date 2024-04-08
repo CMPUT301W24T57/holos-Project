@@ -26,6 +26,10 @@ public class ImageUploader {
     private final FirebaseAuth auth;
     private ImageUploadListener listener;
 
+    /**
+     * Constructor to initialize the ImageUploader.
+     * @param listener The listener to handle image upload events.
+     */
     public ImageUploader(ImageUploadListener listener) {
         this.storage = FirebaseStorage.getInstance();
         this.firestore = FirebaseFirestore.getInstance();
@@ -33,8 +37,13 @@ public class ImageUploader {
         this.listener = listener;
     }
 
+    /**
+     * Uploads the profile image to Firebase Storage and updates the profile image URL in Firestore.
+     * @param imageUri The URI of the image to upload.
+     */
     public void uploadProfileImage(Uri imageUri) {
         if (auth.getCurrentUser() == null) {
+            // User is not authenticated
             listener.onImageUploadFailure(new Exception("Not Authenticated"));
             return;
         }
@@ -42,25 +51,52 @@ public class ImageUploader {
         String userId = auth.getCurrentUser().getUid();
         StorageReference profileImageRef = storage.getReference("profileImages/" + userId + ".jpg");
 
+        // Upload the image to Firebase Storage
         profileImageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> profileImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    // Get the download URL of the uploaded image
                     String downloadUrl = uri.toString();
-                    saveImageUrlToUserProfile(downloadUrl);
+                    saveImageUrlToUserProfile(downloadUrl); // Save the image URL to user profile
                 }))
-                .addOnFailureListener(e -> listener.onImageUploadFailure(e));
+                .addOnFailureListener(e -> listener.onImageUploadFailure(e)); // Notify listener on failure
     }
 
+    /**
+     * Saves the profile image URL to the user's profile in Firestore.
+     * @param imageUrl The URL of the uploaded profile image.
+     */
     private void saveImageUrlToUserProfile(String imageUrl) {
         String userId = auth.getCurrentUser().getUid();
 
+        // Update the profile image URL in Firestore
         firestore.collection("userProfiles").document(userId)
                 .update("profileImageUrl", imageUrl)
-                .addOnSuccessListener(aVoid -> listener.onImageUploadSuccess(imageUrl))
-                .addOnFailureListener(e -> listener.onImageUploadFailure(e));
+                .addOnSuccessListener(aVoid -> listener.onImageUploadSuccess(imageUrl)) // Notify listener on success
+                .addOnFailureListener(e -> listener.onImageUploadFailure(e)); // Notify listener on failure
     }
 
-    // Set a new listener or null to remove
+    /**
+     * Sets a new listener to handle image upload events.
+     * @param listener The listener to set, or null to remove the listener.
+     */
     public void setImageUploadListener(ImageUploadListener listener) {
         this.listener = listener;
+    }
+
+    /**
+     * Interface to handle image upload events.
+     */
+    public interface ImageUploadListener {
+        /**
+         * Called when image upload is successful.
+         * @param downloadUrl The download URL of the uploaded image.
+         */
+        void onImageUploadSuccess(String downloadUrl);
+
+        /**
+         * Called when image upload fails.
+         * @param e The exception indicating the cause of the failure.
+         */
+        void onImageUploadFailure(Exception e);
     }
 }
