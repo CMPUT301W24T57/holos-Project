@@ -289,6 +289,7 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
             @Override
             public void onClick(View v) {
                 String notificationText = editTextNotification.getText().toString();
+                sendNotificationToAttendees(event, notificationText);
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("events").document(event.getEventId())
                         .update("recentAnnouncement", notificationText)
@@ -298,7 +299,6 @@ public class OrganizerDashboardEventsAdapter extends RecyclerView.Adapter<Organi
                         .addOnFailureListener(e -> {
 //                        Log.e(TAG, "Error updating announcement", e);
                         });
-                sendNotificationToAttendees(event, notificationText);
                 dialog.dismiss();
             }
         });
