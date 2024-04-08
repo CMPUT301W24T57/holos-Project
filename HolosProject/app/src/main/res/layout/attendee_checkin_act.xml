@@ -28,8 +28,8 @@
     <ListView
         android:id="@+id/AttendeeCheckins"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/checkInsNum"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/attendeeNav"
         android:layout_marginTop="5dp"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="2dp" />
@@ -49,10 +49,9 @@
         android:id="@+id/attendeeNav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/AttendeeCheckins"
-        android:layout_toEndOf="@id/BackButton"
+        android:layout_below="@+id/checkInsNum"
         android:layout_marginTop="16dp"
-        android:translationX="-50dp"
+        android:layout_centerHorizontal="true"
         android:text="See All Attendees" />
 
 </RelativeLayout>
