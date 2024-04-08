@@ -31,6 +31,13 @@ public class MockDataProvider {
         return mockProfiles;
     }
 
+
+    /**
+     * Retrieves a list of mock events for testing purposes.
+     *
+     * @return A list of mock Event objects.
+     */
+
     public static List<Event> getMockEvents() {
         List<Event> mockEvents = new ArrayList<>();
 
@@ -53,6 +60,11 @@ public class MockDataProvider {
 
         return mockEvents;
     }
+    /**
+     * Retrieves a list of mock image URLs for testing purposes.
+     *
+     * @return A list of mock image URLs.
+     */
 
     public static List<String> getMockImages() {
         List<String> mockImages = new ArrayList<>();
@@ -64,6 +76,12 @@ public class MockDataProvider {
 
         return mockImages;
     }
+
+    /**
+     * Retrieves a mock user profile for testing purposes.
+     *
+     * @return A mock user profile.
+     */
 
     public static UserProfile getMockUser() {
         UserProfile mockUser = new UserProfile();

@@ -124,13 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
                             // Retrieve OneSignal Player ID
                             OneSignal.login(user.getUid());
-                  /*          String oneSignalPlayerId = OneSignal.getDeviceState().getUserId();
-                            if (oneSignalPlayerId != null) {
-                                // OneSignal Player ID is available, store it in user profile
-                                userProfile.put("OneSignalPlayerId", oneSignalPlayerId);
-                            }*/
-
-                            // Store the user profile in Firestore
                             storeUserProfile(user, userProfile);
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());

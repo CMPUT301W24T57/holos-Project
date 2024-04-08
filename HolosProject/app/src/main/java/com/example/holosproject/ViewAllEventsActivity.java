@@ -62,7 +62,8 @@ public class ViewAllEventsActivity extends AppCompatActivity
     private AttendeeDashboardEventsAdapter eventsAdapter;
     private List<Event> allEventsList = new ArrayList<>(); // This is the data source
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser(); // The current user
-
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private CollectionReference eventsRef = database.collection("events");
     // References to The drawer menu
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
@@ -163,8 +164,23 @@ public class ViewAllEventsActivity extends AppCompatActivity
     protected void onResume() {
         // After resuming, updates user profile and username (needed for the case we came back from editprofile)
         super.onResume();
+
+        // Updating the drawer header with potentially new name/profile image
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         NavigationDrawerUtils.updateNavigationHeader(navigationView);
+
+        // If there is a change continue on with the code
+        eventsRef.addSnapshotListener(this, (value, error) -> {
+            if (error != null) {
+                Log.e(TAG, "Listen failed.", error);
+                return;
+            } else {
+                allEventsList.clear();
+                fetchEvents();
+                eventsAdapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     /**

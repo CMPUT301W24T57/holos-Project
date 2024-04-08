@@ -18,15 +18,31 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
+/**
+ * Adapter class for displaying attendee check-ins in a ListView.
+ */
 public class AttendeeCheckinsAdapter extends ArrayAdapter<AttendeeCheckin> {
-
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference usersRef = database.collection("userProfiles");
 
+    /**
+     * Constructs a new AttendeeCheckinsAdapter.
+     *
+     * @param context          The context.
+     * @param attendeeCheckins List of attendee check-ins.
+     */
     public AttendeeCheckinsAdapter(Context context, List<AttendeeCheckin> attendeeCheckins) {
         super(context, 0, attendeeCheckins);
     }
 
+    /**
+     * Gets a View that displays the data at the specified position in the data set.
+     *
+     * @param position    The position of the item within the adapter's data set.
+     * @param convertView The old view to reuse, if possible.
+     * @param parent      The parent that this view will eventually be attached to.
+     * @return A View corresponding to the data at the specified position.
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         AttendeeCheckin attendeeCheckin = getItem(position);
@@ -53,5 +69,4 @@ public class AttendeeCheckinsAdapter extends ArrayAdapter<AttendeeCheckin> {
 
         return convertView;
     }
-
 }

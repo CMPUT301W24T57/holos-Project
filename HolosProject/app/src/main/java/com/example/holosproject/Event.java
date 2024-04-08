@@ -56,6 +56,11 @@ public class Event {
         this.recentAnnouncement = null;
     }
 
+    /**
+     * gets recent announcement
+     * @return
+     * String of the most recent announcement
+     */
     public String getRecentAnnouncement() {
         return recentAnnouncement;
     }
@@ -73,38 +78,83 @@ public class Event {
         return attendees;
     }
 
+    /**
+     * Retrieves the hashmap of all check-ins
+     * @return
+     * The hashmap of check-ins
+     */
     public HashMap<String, String> getCheckIns() {
         return checkIns;
     }
 
+    /**
+     * Retrieves an list of locations
+     * @return
+     * Returns the list of locations
+     */
     public ArrayList<GeoPoint> getLocations() {
         return locations;
     }
 
+    /**
+     * Retrieves the qr url
+     * @return
+     * Returns qr url
+     */
     public String getQrUrl() {
         return qrUrl;
     }
 
+    /**
+     * Sets the qr url
+     * @param qrUrl
+     * The url we wish to set qrUrl to
+     */
     public void setQrUrl(String qrUrl) {
         this.qrUrl = qrUrl;
     }
 
+    /**
+     * Retrieves custom url contents
+     * @return
+     * Returns the custom url contents
+     */
     public String getCustomQRContents() {
         return customQRContents;
     }
 
+    /**
+     * sets the custom qr contents
+     * @param customQRContents
+     * The custom qr content we wish to set to
+     */
     public void setCustomQRContents(String customQRContents) {
         this.customQRContents = customQRContents;
     }
 
+    /**
+     * Sets the locations
+     * @param locations
+     * The locations we wish to set to
+     */
     public void setLocations(ArrayList<GeoPoint> locations) {
         this.locations = locations;
     }
 
+    /**
+     * Sets check-ins
+     * @param checkIns
+     * The check-ins we wish to set to
+     */
     public void setCheckIns(HashMap<String, String> checkIns) {
         this.checkIns = checkIns;
     }
 
+    /**
+     * Retrieve eventID
+     * @return
+     * Returns the event's id
+     */
     public String getEventId() {
         return eventId;
     }
@@ -180,9 +230,21 @@ public class Event {
     public void setTime(String time) {
         this.time = time;
     }
+
+    /**
+     * Sets the limit of people who can join the event
+     * @param limit
+     * The limit we wish to set it to
+     */
     public void setLimit(int limit){
         this.limit = limit;
     }
+
+    /**
+     * Retrieves the limit on the event
+     * @return
+     * Returns the limit of the event
+     */
     public int getLimit(){
         return this.limit;
     }

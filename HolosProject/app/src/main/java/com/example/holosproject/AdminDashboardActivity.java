@@ -27,6 +27,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
 
+    /**
+     * This method is called when the activity is first created. It initializes the layout,
+     * toolbar, navigation drawer, navigation view, and buttons for various administrative actions.
+     * It also sets onClickListeners for each button to navigate to their respective activities.
+     *
+     * @param savedInstanceState A Bundle object containing the activity's previously saved state, if any.
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +81,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Called when the activity will start interacting with the user.
+     * It updates the navigation header in the navigation view when the activity resumes.
+     */
+
     protected void onResume() {
         super.onResume();
 
@@ -80,6 +93,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
         NavigationDrawerUtils.updateNavigationHeader(navigationView);
 
     }
+
+    /**
+     * Called when a menu item in the options menu is selected.
+     * It handles the selection of items in the ActionBarDrawerToggle.
+     *
+     * @param item The selected menu item.
+     * @return True if the selection was handled successfully, otherwise false.
+     */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

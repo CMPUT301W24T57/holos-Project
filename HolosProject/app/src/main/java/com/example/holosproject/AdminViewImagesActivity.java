@@ -26,6 +26,15 @@ public class AdminViewImagesActivity extends AppCompatActivity {
     // Static variable to control test mode
     public static boolean isTestMode = false;
 
+
+    /**
+     * Called when the activity is first created.
+     * It sets up the layout, initializes the RecyclerView, and populates it with images.
+     * It also sets a click listener for the back button to finish the activity and return to the previous one.
+     *
+     * @param savedInstanceState A Bundle object containing the activity's previously saved state, if any.
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,12 +65,21 @@ public class AdminViewImagesActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Fetches image URLs from Firebase Storage.
+     * This method fetches image URLs for both profile images and event images.
+     */
     private void fetchImages() {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         fetchImageUrls(storageRef.child("profileImages"));
         fetchImageUrls(storageRef.child("eventImages"));
     }
 
+    /**
+     * Fetches image URLs from the specified folder in Firebase Storage.
+     *
+     * @param imageFolderRef The reference to the folder containing the images.
+     */
     private void fetchImageUrls(StorageReference imageFolderRef) {
         imageFolderRef.listAll()
                 .addOnSuccessListener(listResult -> {

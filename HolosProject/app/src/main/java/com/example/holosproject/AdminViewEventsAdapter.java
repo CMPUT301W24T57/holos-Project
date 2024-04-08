@@ -42,6 +42,14 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
         this.events = events;
     }
 
+    /**
+     * Called when the RecyclerView needs a new ViewHolder to represent an item.
+     *
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
+     * @param viewType The type of the new View.
+     * @return A new ViewHolder that holds a View of the given view type.
+     */
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.admin_view_events_item_event, parent, false);
@@ -63,6 +71,13 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
             eventPosterImageView = itemView.findViewById(R.id.eventPosterImageViewAdmin);
         }
     }
+
+    /**
+     * Called by RecyclerView to display the data at the specified position.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the item at the given position.
+     * @param position The position of the item within the adapter's data set.
+     */
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -157,6 +172,12 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
         }
     }
 
+
+    /**
+     * Deletes an event from Firestore database.
+     *
+     * @param eventId The ID of the event to be deleted.
+     */
     private void deleteFirestoreEvent(String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("events").document(eventId)
@@ -192,6 +213,12 @@ public class AdminViewEventsAdapter extends RecyclerView.Adapter<AdminViewEvents
         }
         return -1; // Event not found
     }
+
+    /**
+     * Returns the total number of events in the data set.
+     *
+     * @return The total number of events.
+     */
 
     @Override
     public int getItemCount() {

@@ -107,6 +107,15 @@ public class TestViewAllEventsActivity extends AppCompatActivity
         return true;
     }
 
+
+    /**
+     * Called when the activity is starting. Sets up the layout and initializes necessary components.
+     * If a promo event ID is provided in the intent extras, handles the promo event after a delay to ensure
+     * proper initialization of events data.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,6 +166,11 @@ public class TestViewAllEventsActivity extends AppCompatActivity
         // TODO: Fetch all events from Firestore and update the RecyclerView
     }
 
+    /**
+     * Called after the activity has been paused, resumed, or is returning from another activity.
+     * Updates the user profile and username in the navigation drawer header.
+     */
+
     @Override
     protected void onResume() {
         // After resuming, updates user profile and username (needed for the case we came back from editprofile)
@@ -174,6 +188,13 @@ public class TestViewAllEventsActivity extends AppCompatActivity
         allEventsList.addAll(mockEvents);
         eventsAdapter.notifyDataSetChanged();
     }
+
+    /**
+     * Handles the promotional event identified by the given event ID.
+     * If the event ID matches an event in the list of all events, it shows the event details dialog.
+     *
+     * @param eventID The ID of the promotional event to handle.
+     */
 
     private void handlePromo(String eventID) {
         System.out.println("Trying to find " + eventID);
@@ -225,6 +246,11 @@ public class TestViewAllEventsActivity extends AppCompatActivity
         AlertDialog diag = dispbuilder.create();
         diag.show();
     }
+
+    /**
+     * Fetches the test profile and updates the navigation drawer menu accordingly.
+     * It sets the visibility of the admin login menu item to true.
+     */
 
     private void fetchTestProfile() {
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);

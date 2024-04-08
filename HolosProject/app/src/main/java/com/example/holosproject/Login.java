@@ -27,6 +27,9 @@ public class Login extends AppCompatActivity {
     private static final String ADMIN_USERNAME = "administrator";
     private static final String ADMIN_PASSWORD = "administrator";
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +54,9 @@ public class Login extends AppCompatActivity {
             }
         });
     }
-
+    /**
+     * Attempts user login using provided credentials.
+     */
     // Call this method when the login button is pressed
     public void attemptLogin() {
         String username = usernameEditText.getText().toString().trim();
@@ -65,11 +70,28 @@ public class Login extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Checks if the provided username and password match the hardcoded admin credentials.
+     *
+     * @param username The username to check.
+     * @param password The password to check.
+     * @return True if the credentials match the admin credentials, false otherwise.
+     */
+
     // Possibly the most secure login method ever created.
     private boolean checkAdminCredentials(String username, String password) {
         // Check if the credentials match the hardcoded admin credentials
         return ADMIN_USERNAME.equals(username) && ADMIN_PASSWORD.equals(password);
     }
+
+
+    /**
+     * Updates the role of the current user to admin in the user profile document.
+     * If successful, navigates to the admin dashboard. Otherwise, shows a failure message.
+     * If there is no signed-in user, displays a message indicating no user is signed in.
+     */
+
 
     private void updateRoleToAdmin() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -93,13 +115,21 @@ public class Login extends AppCompatActivity {
         }
     }
 
+    /**
+     * Navigates to the admin dashboard activity.
+     * This method is called after successfully logging in as an admin.
+     */
     private void navigateToAdminDashboard() {
-        // navigation to the admin dashboard after we logged in as an admin
         Intent intent = new Intent(this, AdminDashboardActivity.class);
         startActivity(intent);
         finish();
     }
 
+    /**
+     * Displays a toast message with the given message.
+     *
+     * @param message The message to be displayed in the toast.
+     */
     private void showToastMessage(String message) {
         Toast.makeText(Login.this, message, Toast.LENGTH_SHORT).show();
     }

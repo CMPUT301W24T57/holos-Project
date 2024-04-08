@@ -82,6 +82,11 @@ public class EventDisplay extends AppCompatActivity {
             }
         });
     }
+    /**
+     * Handles displaying the details of a test event identified by the event ID.
+     *
+     * @param eventID The unique identifier of the test event.
+     */
 
     private void handleTestEvent(String eventID) {
         List<Event> mockEvents = MockDataProvider.getMockEvents();
@@ -123,6 +128,15 @@ public class EventDisplay extends AppCompatActivity {
         }
     }
 
+    /**
+     * Overrides the onCreate method to initialize the event display activity.
+     * Enables EdgeToEdge and sets the content view.
+     * Applies window insets to adjust padding for system bars.
+     * Retrieves event ID from the intent's extras and handles the event accordingly based on test mode.
+     * Sets an onClickListener for the RSVP button to navigate back to the dashboard.
+     * @param savedInstanceState A Bundle containing the saved state of the activity.
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,11 +167,18 @@ public class EventDisplay extends AppCompatActivity {
         }
     }
 
+    /**
+     * Enables test mode for the event display activity.
+     */
     public static void enableTestMode() {
         testMode = true;
     }
 
+    /**
+     * Disables test mode for the event display activity.
+     */
     public static void disableTestMode() {
         testMode = false;
     }
+
 }
