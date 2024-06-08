@@ -1,21 +1,28 @@
-Project Part 4:
 
-[Updated UI Mockups and Storyboard Sequence]([https://github.com/CMPUT301W24T57/holos-Project/wiki/Updated-UI-Mockups-Storyboard-for-Project-Part-%233](https://github.com/CMPUT301W24T57/holos-Project/wiki/Storyboard-UI-Project-Part-%234) 
+# Holos
+
+Welcome to Holos, an innovative Android app that connects event organizers with attendees. Our app provides a comprehensive platform for managing events, engaging with attendees, and enhancing the overall event experience.
+
+## Features
+* **Event Sign-Up:** Attendees can easily sign up for events in the All Events screen.
+* **Event Creation:** Organizers can create customized events with posters. Organizers can also optionally limit the number of attendees.
+* **QR Code Check-In:** Users can check in to events by scanning a QR code, simplifying check-in.
+* **Real-Time Updates:** Organizers have the most up-to-date information about the status of people attending.
+* **Passwordless Experience:** For ease of user experience, the app is designed to be passwordless, allowing for a speedy onboarding process.
+* **Geolocation Data:** Organizers can view geolocation data of where users check-in on a map.
+* **Announcements:** Organizers can notify users of important announcements and updates related to the event.
+* **Admin Functionality:** Admins have the capability to manage all events on the app.
+## Technologies Used
+* **Frontend:** Java, XML
+*  **Backend:** Java, Onesignal, Firebase, FirebaseAuth
+## Documentation
 
 
-[UML Diagram For Part 4]([https://github.com/CMPUT301W24T57/holos-Project/wiki/UML-Diagram-(Project-Part-%233](https://github.com/CMPUT301W24T57/holos-Project/wiki/UML-Diagram-(Project-Part-4))
 
-To log in as admin, credentials are "administrator" and "administrator". 
 
-There are a couple known bugs, for example, on the organizer dashboard. When you create an event, the event will not display until you leave the activity and come back. Administrator currently cannot return to the admin dashboard after they leave through the drawer, etc.
 
-### HOW TO TEST QR CODE SCANNING:
-1. OPTIONAL, GENERATE A QR CODE ONLINE AND DOWNLOAD IT
-   - A DOWNLOADED QR CODE SHOULD EITHER BE OF THE FORM [eventID] (for checkins) or promo[EVENTID] (for promo), e.g. aOgT0hnP0oJiPyuQle4y or promoaOgT0hnP0oJiPyuQle4y
-   - ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/87889479/d0bb839b-ddab-4e52-a6ef-100d0f7834ad)
-2. LAUNCH THE EMULATOR
-3. CLICK ON THE THREE DOTS (EXTENDED CONTROLS), ADD A QR CODE IMAGE
-   - ![image](https://github.com/CMPUT301W24T57/holos-Project/assets/87889479/51c2d897-d9d2-4cf3-86ab-f9181d455fc8)
-4. GO TO MY EVENTS AND LAUNCH THE QR SCAN IN THE APP
-5. TURN AROUND AND WALK INTO THE DOOR BEHIND YOU
-6. SCAN THE QR CODE ON THE WALL
+* [UI Mockups](https://github.com/CMPUT301W24T57/holos-Project/wiki/Storyboard-UI-Project-Part-%234) 
+* [UML Diagram](https://github.com/CMPUT301W24T57/holos-Project/wiki/UML-Diagram-(Project-Part-4))
+
+
+
